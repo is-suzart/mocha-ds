@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 import ".." // Import the local MochaDS files
 
 
@@ -54,18 +55,17 @@ Window {
     ]
 
     // Main Scrollable Container
-    Flickable {
+    ScrollView {
+        id: mainScroll
         anchors.fill: parent
-        contentWidth: width
-        contentHeight: contentColumn.height + Theme.spacing.xxl * 2
         clip: true
+        contentHeight: contentColumn.height + Theme.spacing.xxl * 4
 
         Column {
             id: contentColumn
-            width: parent.width - Theme.spacing.xxl * 2
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: Theme.spacing.xxl
+            width: mainScroll.width - Theme.spacing.xxl * 2
+            x: Theme.spacing.xxl
+            y: Theme.spacing.xxl
             spacing: Theme.spacing.xl
 
             // ==========================================
@@ -422,6 +422,168 @@ Window {
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // Divider
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.colors.surface0
+            }
+
+            // ==========================================
+            // STEPPER & STEPS SHOWCASE
+            // ==========================================
+            Text {
+                text: "Stepper, Steps & StepsSlider (Fluxos)"
+                font.family: Theme.typography.familyBold
+                font.pixelSize: Theme.typography.sizeXl
+                color: Theme.colors.mauve
+                antialiasing: true
+            }
+
+            Rectangle {
+                width: parent.width
+                height: stepperDemoCol.height + Theme.spacing.lg * 2
+                color: Theme.colors.base
+                radius: Theme.geometry.radiusMd
+                border.color: Theme.colors.surface0
+                border.width: Theme.geometry.borderSm
+
+                Column {
+                    id: stepperDemoCol
+                    width: parent.width - Theme.spacing.lg * 2
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: Theme.spacing.lg
+                    spacing: Theme.spacing.xl
+
+                    Text {
+                        text: "1. Stepper Horizontal (default, icon, dots)"
+                        font.family: Theme.typography.familyBold
+                        font.pixelSize: Theme.typography.sizeMd
+                        color: Theme.colors.subtext0
+                    }
+
+                    // Horizontal Stepper
+                    Stepper {
+                        id: stepperDemo
+                        width: parent.width
+                        currentStep: 1
+                        steps: [
+                            { label: "Perfil", description: "Dados Pessoais", icon: "user" },
+                            { label: "Endereço", description: "Local de Entrega", icon: "map-pin" },
+                            { label: "Pagamento", description: "Cartão / Pix", icon: "credit-card" }
+                        ]
+                    }
+
+                    Row {
+                        spacing: Theme.spacing.md
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        Button {
+                            text: "Anterior"
+                            size: "sm"
+                            variant: "outline"
+                            disabled: stepperDemo.currentStep === 0
+                            onClicked: stepperDemo.currentStep--
+                        }
+                        Button {
+                            text: "Próximo"
+                            size: "sm"
+                            disabled: stepperDemo.currentStep === 2
+                            onClicked: stepperDemo.currentStep++
+                        }
+                    }
+
+                    Text {
+                        text: "2. Steps Timeline & Carousel Integrados com StepsSlider"
+                        font.family: Theme.typography.familyBold
+                        font.pixelSize: Theme.typography.sizeMd
+                        color: Theme.colors.subtext0
+                    }
+
+                    // Steps Timeline
+                    Steps {
+                        id: stepsTimelineDemo
+                        width: parent.width
+                        stepsCount: 3
+                        labels: ["Identificação", "Confirmação", "Finalizado"]
+                        currentStep: 0
+                        onChangeStep: function(step) {
+                            stepsSliderDemo.currentStep = step
+                            stepsCarouselDemo.currentStep = step
+                        }
+                    }
+
+                    // StepsSlider holding 3 slides
+                    StepsSlider {
+                        id: stepsSliderDemo
+                        width: parent.width
+                        height: 100
+                        currentStep: 0
+
+                        Rectangle {
+                            color: Theme.colors.mantle
+                            radius: Theme.geometry.radiusSm
+                            border.color: Theme.colors.surface0
+                            border.width: Theme.geometry.borderSm
+
+                            Text {
+                                text: "Slide 1: Identificação do Usuário\nInsira seus dados para prosseguir."
+                                font.family: Theme.typography.family
+                                font.pixelSize: Theme.typography.sizeMd
+                                color: Theme.colors.text
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Rectangle {
+                            color: Theme.colors.mantle
+                            radius: Theme.geometry.radiusSm
+                            border.color: Theme.colors.surface0
+                            border.width: Theme.geometry.borderSm
+
+                            Text {
+                                text: "Slide 2: Confirmação de Dados\nPor favor revise as informações do lote."
+                                font.family: Theme.typography.family
+                                font.pixelSize: Theme.typography.sizeMd
+                                color: Theme.colors.text
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Rectangle {
+                            color: Theme.colors.mantle
+                            radius: Theme.geometry.radiusSm
+                            border.color: Theme.colors.surface0
+                            border.width: Theme.geometry.borderSm
+
+                            Text {
+                                text: "Slide 3: Processo Finalizado!\nTodos os itens foram processados."
+                                font.family: Theme.typography.family
+                                font.pixelSize: Theme.typography.sizeMd
+                                color: Theme.colors.green
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+
+                    // Steps Carousel indicators
+                    Steps {
+                        id: stepsCarouselDemo
+                        variant: "carousel"
+                        stepsCount: 3
+                        currentStep: 0
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        onChangeStep: function(step) {
+                            stepsSliderDemo.currentStep = step
+                            stepsTimelineDemo.currentStep = step
                         }
                     }
                 }
@@ -828,13 +990,13 @@ Window {
                 antialiasing: true
             }
 
-            Grid {
+            CozyGrid {
                 width: parent.width
                 gap: 4
                 mobile: false
 
                 // Column 1: Card Showcase
-                GridCol {
+                CozyGridCol {
                     span: 6
                     md: 6
                     sm: 12
@@ -919,7 +1081,7 @@ Window {
                 }
 
                 // Column 2: Tile Showcase
-                GridCol {
+                CozyGridCol {
                     span: 6
                     md: 6
                     sm: 12
@@ -983,6 +1145,7 @@ Window {
                                             color: Theme.colors.green
                                             anchors.verticalCenter: parent.verticalCenter
                                         }
+                                        
                                         Text {
                                             text: "Ativo"
                                             font.family: Theme.typography.familyBold
@@ -3159,194 +3322,14 @@ Window {
                                 }
                             }
                         }
-                    }
                 }
+            }
 
-                // Divider
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.colors.surface0
-                }
 
-                // ==========================================
-                // STEPPER & STEPS SHOWCASE
-                // ==========================================
-                Text {
-                    text: "Stepper, Steps & StepsSlider (Fluxos)"
-                    font.family: Theme.typography.familyBold
-                    font.pixelSize: Theme.typography.sizeXl
-                    color: Theme.colors.mauve
-                    antialiasing: true
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: stepperDemoCol.height + Theme.spacing.lg * 2
-                    color: Theme.colors.base
-                    radius: Theme.geometry.radiusMd
-                    border.color: Theme.colors.surface0
-                    border.width: Theme.geometry.borderSm
-
-                    Column {
-                        id: stepperDemoCol
-                        width: parent.width - Theme.spacing.lg * 2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        y: Theme.spacing.lg
-                        spacing: Theme.spacing.xl
-
-                        Text {
-                            text: "1. Stepper Horizontal (default, icon, dots)"
-                            font.family: Theme.typography.familyBold
-                            font.pixelSize: Theme.typography.sizeMd
-                            color: Theme.colors.subtext0
-                        }
-
-                        // Horizontal Stepper
-                        Stepper {
-                            id: stepperDemo
-                            width: parent.width
-                            currentStep: 1
-                            steps: [
-                                { label: "Perfil", description: "Dados Pessoais", icon: "user" },
-                                { label: "Endereço", description: "Local de Entrega", icon: "map-pin" },
-                                { label: "Pagamento", description: "Cartão / Pix", icon: "credit-card" }
-                            ]
-                        }
-
-                        Row {
-                            spacing: Theme.spacing.md
-                            anchors.horizontalCenter: parent.horizontalCenter
-
-                            Button {
-                                text: "Anterior"
-                                size: "sm"
-                                variant: "outline"
-                                disabled: stepperDemo.currentStep === 0
-                                onClicked: stepperDemo.currentStep--
-                            }
-                            Button {
-                                text: "Próximo"
-                                size: "sm"
-                                disabled: stepperDemo.currentStep === 2
-                                onClicked: stepperDemo.currentStep++
-                            }
-                        }
-
-                        Text {
-                            text: "2. Steps Timeline & Carousel Integrados com StepsSlider"
-                            font.family: Theme.typography.familyBold
-                            font.pixelSize: Theme.typography.sizeMd
-                            color: Theme.colors.subtext0
-                        }
-
-                        // Steps Timeline
-                        Steps {
-                            id: stepsTimelineDemo
-                            width: parent.width
-                            stepsCount: 3
-                            labels: ["Identificação", "Confirmação", "Finalizado"]
-                            currentStep: 0
-                            onChangeStep: function(step) {
-                                stepsSliderDemo.currentStep = step
-                                stepsCarouselDemo.currentStep = step
-                            }
-                        }
-
-                        // StepsSlider holding 3 slides
-                        StepsSlider {
-                            id: stepsSliderDemo
-                            width: parent.width
-                            height: 100
-                            currentStep: 0
-
-                            Rectangle {
-                                color: Theme.colors.mantle
-                                radius: Theme.geometry.radiusSm
-                                border.color: Theme.colors.surface0
-                                border.width: Theme.geometry.borderSm
-
-                                Text {
-                                    text: "Slide 1: Identificação do Usuário\nInsira seus dados para prosseguir."
-                                    font.family: Theme.typography.family
-                                    font.pixelSize: Theme.typography.sizeMd
-                                    color: Theme.colors.text
-                                    anchors.centerIn: parent
-                                    horizontalAlignment: Text.AlignHCenter
-                                }
-                            }
-
-                            Rectangle {
-                                color: Theme.colors.mantle
-                                radius: Theme.geometry.radiusSm
-                                border.color: Theme.colors.surface0
-                                border.width: Theme.geometry.borderSm
-
-                                Text {
-                                    text: "Slide 2: Confirmação de Dados\nPor favor revise as informações do lote."
-                                    font.family: Theme.typography.family
-                                    font.pixelSize: Theme.typography.sizeMd
-                                    color: Theme.colors.text
-                                    anchors.centerIn: parent
-                                    horizontalAlignment: Text.AlignHCenter
-                                }
-                            }
-
-                            Rectangle {
-                                color: Theme.colors.mantle
-                                radius: Theme.geometry.radiusSm
-                                border.color: Theme.colors.surface0
-                                border.width: Theme.geometry.borderSm
-
-                                Text {
-                                    text: "Slide 3: Processo Finalizado!\nTodos os itens foram processados."
-                                    font.family: Theme.typography.family
-                                    font.pixelSize: Theme.typography.sizeMd
-                                    color: Theme.colors.green
-                                    anchors.centerIn: parent
-                                    horizontalAlignment: Text.AlignHCenter
-                                }
-                            }
-                        }
-
-                        // Steps Carousel indicators
-                        Steps {
-                            id: stepsCarouselDemo
-                            variant: "carousel"
-                            stepsCount: 3
-                            currentStep: 0
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            onChangeStep: function(step) {
-                                stepsSliderDemo.currentStep = step
-                                stepsTimelineDemo.currentStep = step
-                            }
-                        }
-                    }
-                }
-
-                // Divider
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.colors.surface0
-                }
-
-                // ==========================================
-                // ADVANCED TEXT EDITOR SHOWCASE
-                // ==========================================
-                Text {
-                    text: "Advanced Text Editor (Markdown)"
-                    font.family: Theme.typography.familyBold
-                    font.pixelSize: Theme.typography.sizeXl
-                    color: Theme.colors.mauve
-                    antialiasing: true
-                }
-
-                AdvancedTextEditor {
-                    width: parent.width
-                    height: 380
-                    text: "# Título Principal\n\nEste é um editor de texto **Markdown** avançado com suporte a destaque de sintaxe em tempo real no modo código.\n\n### Tabelas Destacadas\n\n| Item | Qtd | Preço |\n| --- | --- | --- |\n| Café Latte | 2 | R$ 12.00 |\n| Affogato | 1 | R$ 15.50 |\n\n### Bloco de Código\n\n```qml\nimport QtQuick 2.15\nimport MochaDS 1.0\n\nButton {\n    text: \"Enviar\"\n    color: \"green\"\n}\n```\n\n- [x] Suporte a listas de tarefas\n- [x] Destaque de blocos de código\n- [x] Suporte a tabelas em QML\n"
-                }
+            // Bottom padding spacer
+            Item {
+                width: parent.width
+                height: Theme.spacing.xxl * 2
             }
         }
     }
@@ -4162,3 +4145,5 @@ Window {
         }
     }
 }
+}
+

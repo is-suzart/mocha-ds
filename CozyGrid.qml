@@ -15,6 +15,10 @@ Item {
     // Default property to receive children
     default property alias content: root.children
 
+    // Repeater Mode Properties (Optional - for direct loop rendering)
+    property var model: null
+    property Component delegate: null
+
     // Implicit sizing helper (updates on layout)
     implicitWidth: 600
     implicitHeight: layoutHeight
@@ -53,14 +57,15 @@ Item {
     // Internal height tracked dynamically
     property real layoutHeight: 0
 
-    onWidthChanged: doLayout()
-    onChildrenChanged: doLayout()
-    onCurrentScreenSizeChanged: doLayout()
-    onGapChanged: doLayout()
-    onAlignChanged: doLayout()
-    onValignChanged: doLayout()
+    onWidthChanged: Qt.callLater(doLayout)
+    onChildrenChanged: Qt.callLater(doLayout)
+    onCurrentScreenSizeChanged: Qt.callLater(doLayout)
+    onGapChanged: Qt.callLater(doLayout)
+    onAlignChanged: Qt.callLater(doLayout)
+    onValignChanged: Qt.callLater(doLayout)
+    onModelChanged: Qt.callLater(doLayout)
 
-    Component.onCompleted: doLayout()
+    Component.onCompleted: Qt.callLater(doLayout)
 
     function doLayout() {
         var gridWidth = root.width;
@@ -207,5 +212,13 @@ Item {
         }
 
         layoutHeight = Math.max(0, currentY - gapPx);
+    }
+
+    // Internal Repeater for loop mode
+    Repeater {
+        id: internalRepeater
+        model: root.model
+        delegate: root.delegate
+        onCountChanged: Qt.callLater(root.doLayout)
     }
 }

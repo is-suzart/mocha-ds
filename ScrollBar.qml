@@ -52,11 +52,11 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    // Track
+    // Track (faint reference so the thumb position is clear)
     Rectangle {
         anchors.fill: parent
-        color: Theme.colors.surface0
-        opacity: thumbMouseArea.containsMouse ? 0.3 : 0.1
+        color: Theme.colors.overlay0
+        opacity: thumbMouseArea.containsMouse ? 0.15 : 0.06
         radius: root.thickness / 2
         Behavior on opacity { NumberAnimation { duration: 150 } }
     }

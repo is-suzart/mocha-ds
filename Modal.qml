@@ -55,16 +55,41 @@ Item {
         return 600; // "md"
     }
 
-    readonly property real headerHeight: headerSection.visible ? headerSection.height + Theme.spacing.md : 0
-    readonly property real footerHeight: footerSection.visible ? footerSection.height + Theme.spacing.md : 0
-    readonly property real paddingHeight: Theme.spacing.xl * 2
+    readonly property real headerHeight: headerSection.visible ? headerSection.height : 0
+    readonly property real footerHeight: footerSection.visible ? footerSection.height : 0
+    readonly property real paddingHeight: {
+        var p = 0;
+        // Top margins and paddings
+        if (headerSection.visible) {
+            p += Theme.spacing.xl; // header top margin
+            if (headerDivider.visible) {
+                p += Theme.spacing.md * 2 + Theme.geometry.borderSm; // divider margins + border height
+            } else {
+                p += Theme.spacing.xl; // body top margin
+            }
+        } else {
+            p += Theme.spacing.xl * 2; // body top margin + empty header margins
+        }
+        // Bottom margins and paddings
+        if (footerSection.visible) {
+            p += Theme.spacing.xl; // footer bottom margin
+            if (footerDivider.visible) {
+                p += Theme.spacing.md * 2 + Theme.geometry.borderSm; // divider margins + border height
+            } else {
+                p += Theme.spacing.xl; // body bottom margin
+            }
+        } else {
+            p += Theme.spacing.xl * 2; // body bottom margin + empty footer margins
+        }
+        return p;
+    }
 
     readonly property real finalHeight: {
         if (customHeight > 0) return customHeight;
         if (size === "full") return root.height - Theme.spacing.xl * 2;
         
         // Calculate total required height by children inside modalLayout
-        var totalNeeded = headerHeight + customContentContainer.implicitHeight + footerHeight + paddingHeight;
+        var totalNeeded = headerHeight + customContentContainer.implicitHeight + footerHeight + paddingHeight + Theme.spacing.md;
         // Apply minimum height limit
         var heightWithMin = Math.max(totalNeeded, minHeight);
         // Cap height to maximum available screen space minus margins
@@ -354,7 +379,7 @@ Item {
             anchors.leftMargin: Theme.spacing.xl
             anchors.rightMargin: Theme.spacing.xl
             contentWidth: width
-            contentHeight: customContentContainer.implicitHeight
+            contentHeight: customContentContainer.implicitHeight + Theme.spacing.md
             clip: true
 
             Item {

@@ -10,7 +10,7 @@ Item {
     property color color: Theme.colors.primary
     property bool overlay: false
     property string label: ""
-    property color overlayColor: Qt.rgba(Theme.colors.crust.r, Theme.colors.crust.g, Theme.colors.crust.b, 0.7)
+    property color overlayColor: Qt.rgba(Theme.colors.crust.r, Theme.colors.crust.g, Theme.colors.crust.b, 0.85)
 
     // Set implicit sizes for layout integration when not in overlay mode
     implicitWidth: overlay ? parent.width : size

@@ -209,12 +209,14 @@ Item {
             Item {
                 id: bodyWrapper
                 width: parent.width
-                height: bodyContainer.childrenRect.height + root.padding * 2
+                height: bodyContainer.height + root.padding * 2
 
                 Item {
                     id: bodyContainer
-                    anchors.fill: parent
-                    anchors.margins: root.padding
+                    x: root.padding
+                    y: root.padding
+                    width: parent.width - root.padding * 2
+                    height: childrenRect.height
                 }
             }
 

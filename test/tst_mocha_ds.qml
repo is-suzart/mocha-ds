@@ -1480,9 +1480,9 @@ TestCase {
     }
 
     function test_layout_grid() {
-        var gridComp = Qt.createComponent(Qt.resolvedUrl("../Grid.qml"))
+        var gridComp = Qt.createComponent(Qt.resolvedUrl("../CozyGrid.qml"))
         compare(gridComp.status, Component.Ready)
-        var colComp = Qt.createComponent(Qt.resolvedUrl("../GridCol.qml"))
+        var colComp = Qt.createComponent(Qt.resolvedUrl("../CozyGridCol.qml"))
         compare(colComp.status, Component.Ready)
 
         var grid = gridComp.createObject(null, {

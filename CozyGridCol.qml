@@ -24,7 +24,19 @@ Item {
     default property alias content: colRoot.data
 
     implicitWidth: 100
-    implicitHeight: childrenRect.height
+    implicitHeight: {
+        var maxH = 0;
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child.visible) {
+                var h = child.implicitHeight > 0 ? child.implicitHeight : child.height;
+                if (h > maxH) {
+                    maxH = h;
+                }
+            }
+        }
+        return maxH > 0 ? maxH : 100;
+    }
     width: implicitWidth
     height: implicitHeight
 }

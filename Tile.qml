@@ -162,11 +162,9 @@ Item {
         // Content Row
         Row {
             id: contentRow
-            anchors.left: parent.left
-            anchors.leftMargin: (root.variant === "accent" ? 4 : 0) + Theme.spacing.md
-            anchors.right: parent.right
-            anchors.rightMargin: Theme.spacing.md
-            anchors.verticalCenter: parent.verticalCenter
+            x: (root.variant === "accent" ? 4 : 0) + Theme.spacing.md
+            y: (parent.height - height) / 2
+            width: parent.width - x - Theme.spacing.md
             spacing: Theme.spacing.md
 
             // 1. Left Icon Container

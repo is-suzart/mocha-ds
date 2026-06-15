@@ -119,6 +119,19 @@ Item {
         Behavior on border.color { ColorAnimation { duration: 150 } }
     }
 
+    // Outer mouse click focuses the text input (placed behind content Row so it doesn't block actions)
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton
+        onClicked: {
+            if (!root.disabled && !root.readOnly) {
+                textInput.forceActiveFocus();
+            }
+        }
+    }
+
     // Input Content Layout (Horizontal Stack)
     Row {
         id: contentLayout
@@ -261,19 +274,6 @@ Item {
                 color: textInput.activeFocus ? Theme.colors.primary : Theme.colors.subtext0
                 visible: root.iconRight !== "" && root.type !== "password" && (root.text === "" || root.readOnly || root.disabled)
                 anchors.fill: parent
-            }
-        }
-    }
-
-    // Outer mouse click focuses the text input
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton
-        onClicked: {
-            if (!root.disabled && !root.readOnly) {
-                textInput.forceActiveFocus();
             }
         }
     }

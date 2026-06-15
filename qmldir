@@ -33,6 +33,8 @@ PinInput 1.0 PinInput.qml
 TextEditor 1.0 TextEditor.qml
 BarChart 1.0 BarChart.qml
 LineChart 1.0 LineChart.qml
+ScrollBar 1.0 ScrollBar.qml
+
 StripedFill 1.0 StripedFill.qml
 SteppedProgress 1.0 SteppedProgress.qml
 
@@ -59,5 +61,5 @@ Stepper 1.0 Stepper.qml
 Steps 1.0 Steps.qml
 StepsSlider 1.0 StepsSlider.qml
 AdvancedTextEditor 1.0 AdvancedTextEditor.qml
-Grid 1.0 Grid.qml
-GridCol 1.0 GridCol.qml
+CozyGrid 1.0 CozyGrid.qml
+CozyGridCol 1.0 CozyGridCol.qml
