@@ -66,10 +66,7 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.currentStep = index
-                        root.changeStep(index)
-                    }
+                    onClicked: root.changeStep(index)
                 }
             }
         }
@@ -173,16 +170,6 @@ Item {
 
                         Behavior on color { ColorAnimation { duration: 150 } }
                         Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                root.currentStep = stepIdx
-                                root.changeStep(stepIdx)
-                            }
-                        }
                     }
 
                     // Label
@@ -198,6 +185,14 @@ Item {
                         width: parent.width - Theme.spacing.xs
                         horizontalAlignment: Text.AlignHCenter
                         antialiasing: true
+                    }
+
+                    // Clickable area covers the entire item (dot + label)
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.changeStep(stepIdx)
                     }
                 }
             }
@@ -235,16 +230,6 @@ Item {
                         border.width: isActive ? 2 : 0
 
                         Behavior on color { ColorAnimation { duration: 150 } }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                root.currentStep = stepIdx
-                                root.changeStep(stepIdx)
-                            }
-                        }
                     }
 
                     // Label
@@ -260,6 +245,14 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         elide: Text.ElideRight
                         antialiasing: true
+                    }
+
+                    // Clickable area covers the entire item (dot + label)
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.changeStep(stepIdx)
                     }
                 }
             }

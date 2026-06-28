@@ -388,8 +388,6 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 color:  Theme.colors.base
-                border.color: Theme.colors.surface0
-                border.width: Theme.geometry.borderSm
                 radius: Theme.geometry.radiusMd
                 clip: true
 

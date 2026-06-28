@@ -19,7 +19,7 @@ Item {
     // Right icon name (defaults to "chevron-right" if interactive is true, otherwise empty)
     property string rightIcon: ""
 
-    // Variant style: "default" | "accent" | "tonal" | "outline"
+    // Variant style: "default" | "accent" | "tonal" | "outline" | "filled"
     property string variant: "default"
 
     // If true, the tile is visually highlighted as active
@@ -56,6 +56,12 @@ Item {
     readonly property bool hasCustomAccentColor: customAccentColor.toString() !== "#00000000" && customAccentColor.toString() !== "transparent"
     readonly property bool hasCustomTextColor: customTextColor.toString() !== "#00000000" && customTextColor.toString() !== "transparent"
 
+    readonly property bool isColored: {
+        if (variant !== "filled") return false
+        var coloredList = ["mauve", "lavender", "blue", "sapphire", "sky", "teal", "green", "yellow", "peach", "maroon", "red", "pink", "flamingo", "rosewater"]
+        return coloredList.indexOf(backgroundColor) !== -1 || hasCustomColor
+    }
+
     // Right icon logic fallback
     readonly property string finalRightIcon: {
         if (rightIcon !== "") return rightIcon
@@ -64,32 +70,25 @@ Item {
 
     readonly property color finalAccentColor: {
         if (hasCustomAccentColor) return customAccentColor
+        if (isColored) return finalTextColor
         return Theme.colors.primary // Mauve
     }
 
     readonly property color finalTextColor: {
         if (hasCustomTextColor) return customTextColor
+        if (isColored) return Theme.colors.crust
         return Theme.colors.text
     }
 
     // Background color based on variant and mouse interaction state
     readonly property color finalBackgroundColor: {
-        var baseBgColor = Theme.colors.base
-        var themeColor = Theme.colors[backgroundColor]
-        if (themeColor !== undefined) {
-            baseBgColor = themeColor
+        if (variant === "filled") {
+            if (hasCustomColor) return customColor
+            var themeColor = Theme.colors[backgroundColor]
+            if (themeColor !== undefined) return themeColor
+            return Theme.colors.primary // default to mauve
         }
 
-        if (hasCustomColor) {
-            if (interactive && mouseArea.pressed) return Qt.darker(customColor, 1.1)
-            if (interactive && mouseArea.containsMouse) return Qt.lighter(customColor, 1.05)
-            return customColor
-        }
-        if (themeColor !== undefined) {
-            if (interactive && mouseArea.pressed) return Qt.darker(themeColor, 1.1)
-            if (interactive && mouseArea.containsMouse) return Qt.lighter(themeColor, 1.05)
-            return themeColor
-        }
         if (variant === "tonal") {
             if (interactive && mouseArea.pressed) return Theme.colors.surface2
             if (interactive && mouseArea.containsMouse) return Theme.colors.surface1
@@ -103,7 +102,7 @@ Item {
         // default, accent
         if (interactive && mouseArea.pressed) return Theme.colors.surface1
         if (interactive && mouseArea.containsMouse) return Theme.colors.surface0
-        return baseBgColor
+        return Theme.colors.base
     }
 
     // Border properties
@@ -206,7 +205,7 @@ Item {
                     text: root.description
                     font.family: Theme.typography.family
                     font.pixelSize: Theme.typography.sizeSm
-                    color: Theme.colors.subtext0
+                    color: root.isColored ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.7) : Theme.colors.subtext0
                     visible: root.description !== ""
                     elide: Text.ElideRight
                     width: parent.width
@@ -251,7 +250,7 @@ Item {
                 LucideIcon {
                     name: root.finalRightIcon
                     size: 20
-                    color: Theme.colors.overlay1
+                    color: root.isColored ? root.finalTextColor : Theme.colors.overlay1
                     visible: root.finalRightIcon !== "" && !customRightContentContainer.visible
                     anchors.centerIn: parent
                 }

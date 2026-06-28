@@ -19,7 +19,7 @@ Item {
     height: overlay ? undefined : size
 
     // Manage stacking index dynamically when overlay is toggled on/off
-    z: overlay ? Theme.getNextMaxZ() : 1
+    z: overlay ? 99999 : 1
 
     // 1. Normal (inline) mode spinner icon
     LucideIcon {

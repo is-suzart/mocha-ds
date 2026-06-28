@@ -16,11 +16,16 @@ Item {
     // Icon name for the card header (used in default header)
     property string icon: ""
 
-    // Variant style: "default" | "accent" | "tonal" | "outline"
+    // Variant style: "default" | "accent" | "tonal" | "outline" | "filled"
     property string variant: "default"
 
     // Accent line position: "left" | "top" | "none"
     property string accentPosition: "left"
+
+    // When true, the card responds to hover/press with micro-animations
+    property bool clickable: false
+
+    signal clicked()
 
     // Spacing padding inside the card body
     property real padding: Theme.spacing.lg
@@ -53,10 +58,19 @@ Item {
     readonly property bool hasCustomAccentColor: customAccentColor.toString() !== "#00000000" && customAccentColor.toString() !== "transparent"
     readonly property bool hasCustomTextColor: customTextColor.toString() !== "#00000000" && customTextColor.toString() !== "transparent"
 
+    readonly property bool isColored: {
+        if (variant !== "filled") return false
+        var coloredList = ["mauve", "lavender", "blue", "sapphire", "sky", "teal", "green", "yellow", "peach", "maroon", "red", "pink", "flamingo", "rosewater"]
+        return coloredList.indexOf(backgroundColor) !== -1 || hasCustomColor
+    }
+
     readonly property color finalBackgroundColor: {
-        if (hasCustomColor) return customColor
-        var themeColor = Theme.colors[backgroundColor]
-        if (themeColor !== undefined) return themeColor
+        if (variant === "filled") {
+            if (hasCustomColor) return customColor
+            var themeColor = Theme.colors[backgroundColor]
+            if (themeColor !== undefined) return themeColor
+            return Theme.colors.primary // fallback mauve
+        }
         if (variant === "tonal") return Theme.colors.surface0
         if (variant === "outline") return "transparent"
         return Theme.colors.base // default, accent
@@ -74,11 +88,13 @@ Item {
 
     readonly property color finalAccentColor: {
         if (hasCustomAccentColor) return customAccentColor
+        if (isColored) return finalTextColor
         return Theme.colors.primary // Mauve
     }
 
     readonly property color finalTextColor: {
         if (hasCustomTextColor) return customTextColor
+        if (isColored) return Theme.colors.crust
         return Theme.colors.text
     }
 
@@ -89,8 +105,42 @@ Item {
     height: implicitHeight
 
     // ==========================================
+    // Micro-animation (clickable mode)
+    // ==========================================
+
+    scale: root.clickable ? (cardMouse.pressed ? 0.985 : (cardMouse.containsMouse ? 1.015 : 1.0)) : 1.0
+
+    Behavior on scale {
+        NumberAnimation { duration: 130; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
+    }
+
+    // ==========================================
     // Visual Tree
     // ==========================================
+
+    // Invisible hover overlay (brightens background on hover)
+    Rectangle {
+        anchors.fill: parent
+        radius: root.finalRadius
+        color: "white"
+        opacity: root.clickable && cardMouse.containsMouse ? 0.04 : 0.0
+        z: 1
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+    }
+
+    // Click handler (only active when clickable)
+    MouseArea {
+        id: cardMouse
+        anchors.fill: parent
+        hoverEnabled: root.clickable
+        cursorShape: root.clickable ? Qt.PointingHandCursor : Qt.ArrowCursor
+        enabled: root.clickable
+        z: 2
+        onClicked: root.clicked()
+        // Let child mouse events pass through (e.g. buttons inside the card)
+        propagateComposedEvents: true
+        onPressed: mouse.accepted = false
+    }
 
     // Background Rect
     Rectangle {
@@ -188,7 +238,7 @@ Item {
                                 text: root.subtitle
                                 font.family: Theme.typography.family
                                 font.pixelSize: Theme.typography.sizeSm
-                                color: Theme.colors.subtext0
+                                color: root.isColored ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.7) : Theme.colors.subtext0
                                 visible: root.subtitle !== ""
                                 antialiasing: true
                             }
@@ -201,7 +251,7 @@ Item {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: Theme.colors.surface0
+                color: root.isColored ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.15) : Theme.colors.surface0
                 visible: headerWrapper.visible && root.headerSeparator
             }
 
@@ -224,7 +274,7 @@ Item {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: Theme.colors.surface0
+                color: root.isColored ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.15) : Theme.colors.surface0
                 visible: footerWrapper.visible && root.footerSeparator
             }
 

@@ -16,7 +16,7 @@ Item {
     // Expansion state of the accordion
     property bool expanded: false
 
-    // Variant style: "default" | "outline" | "tonal" | "split"
+    // Variant style: "default" | "outline" | "tonal" | "split" | "filled"
     property string variant: "default"
 
     // If true, clicking the header toggles expansion
@@ -49,10 +49,19 @@ Item {
     readonly property bool hasCustomAccentColor: customAccentColor.toString() !== "#00000000" && customAccentColor.toString() !== "transparent"
     readonly property bool hasCustomTextColor: customTextColor.toString() !== "#00000000" && customTextColor.toString() !== "transparent"
 
+    readonly property bool isColored: {
+        if (variant !== "filled") return false
+        var coloredList = ["mauve", "lavender", "blue", "sapphire", "sky", "teal", "green", "yellow", "peach", "maroon", "red", "pink", "flamingo", "rosewater"]
+        return coloredList.indexOf(backgroundColor) !== -1 || hasCustomColor
+    }
+
     readonly property color finalBackgroundColor: {
-        if (hasCustomColor) return customColor
-        var themeColor = Theme.colors[backgroundColor]
-        if (themeColor !== undefined) return themeColor
+        if (variant === "filled") {
+            if (hasCustomColor) return customColor
+            var themeColor = Theme.colors[backgroundColor]
+            if (themeColor !== undefined) return themeColor
+            return Theme.colors.primary // default mauve
+        }
         if (variant === "tonal") return Theme.colors.surface0
         if (variant === "outline") return "transparent"
         return Theme.colors.base // default
@@ -70,6 +79,7 @@ Item {
 
     readonly property color finalAccentColor: {
         if (hasCustomAccentColor) return customAccentColor
+        if (isColored) return finalTextColor
         var stdColor = Theme.colors[accentColor]
         if (stdColor !== undefined) return stdColor
         return Theme.colors.primary // Mauve
@@ -77,6 +87,7 @@ Item {
 
     readonly property color finalTextColor: {
         if (hasCustomTextColor) return customTextColor
+        if (isColored) return Theme.colors.crust
         return Theme.colors.text
     }
 
@@ -149,7 +160,7 @@ Item {
                     id: chevronIcon
                     name: "chevron-down"
                     size: 18
-                    color: Theme.colors.overlay1
+                    color: root.isColored ? root.finalTextColor : Theme.colors.overlay1
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.spacing.lg
                     anchors.verticalCenter: parent.verticalCenter
@@ -180,7 +191,7 @@ Item {
                 id: separatorLine
                 width: parent.width
                 height: 1
-                color: Theme.colors.surface1
+                color: root.isColored ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.15) : Theme.colors.surface1
                 visible: root.expanded && contentClipContainer.height > 0
             }
 

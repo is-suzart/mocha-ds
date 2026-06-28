@@ -8,6 +8,7 @@ Item {
     // ==========================================
     property string text: ""
     property string placeholder: "Digite em Markdown..."
+    property bool disabled: false
     property bool readOnly: false
     property bool visualMode: true // true: WYSIWYG (editable formatted view), false: Raw Code
     property bool showToolbar: true

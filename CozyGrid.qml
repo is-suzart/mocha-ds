@@ -67,6 +67,10 @@ Item {
 
     Component.onCompleted: Qt.callLater(doLayout)
 
+    function requestLayout() {
+        Qt.callLater(doLayout)
+    }
+
     function doLayout() {
         var gridWidth = root.width;
         if (gridWidth <= 0) return;

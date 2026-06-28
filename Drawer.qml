@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Window 2.15
+import QtQuick.Window
 
 Item {
     id: root
@@ -306,22 +306,23 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: Theme.spacing.xl
-            height: footerContainer.children.length > 0 ? footerContainer.implicitHeight : 0
+            height: footerContainer.implicitHeight
             visible: height > 0
 
-            Item {
+            Column {
                 id: footerContainer
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                spacing: Theme.spacing.md
 
-                implicitHeight: {
-                    var h = 0;
+                onChildrenChanged: {
                     for (var i = 0; i < children.length; i++) {
                         var child = children[i];
-                        if (child.visible) {
-                            h = Math.max(h, child.y + child.height);
+                        if (child && (child.width === 0 || child.width === child.implicitWidth)) {
+                            child.width = Qt.binding(function() { return footerContainer.width; });
                         }
                     }
-                    return h;
                 }
             }
         }
@@ -362,7 +363,8 @@ Item {
                     for (var i = 0; i < children.length; i++) {
                         var child = children[i];
                         if (child.visible) {
-                            h = Math.max(h, child.y + child.height);
+                            var ch = child.implicitHeight > 0 ? child.implicitHeight : child.height;
+                            h = Math.max(h, child.y + ch);
                         }
                     }
                     return h;

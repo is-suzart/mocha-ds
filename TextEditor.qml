@@ -85,6 +85,7 @@ Item {
         radius: root.finalRadius
         border.color: root.finalBorderColor
         border.width: textEdit.activeFocus ? Theme.geometry.borderMd : Theme.geometry.borderSm
+        clip: true
 
         Behavior on color { ColorAnimation { duration: 150 } }
         Behavior on border.color { ColorAnimation { duration: 150 } }
@@ -135,19 +136,21 @@ Item {
                     root.textEdited();
                 }
             }
-
-            // Placeholder Overlay Text
-            Text {
-                text: root.placeholder
-                font.family: parent.font.family
-                font.pixelSize: parent.font.pixelSize
-                color: Theme.colors.overlay0
-                visible: parent.text === "" && !textEdit.activeFocus
-                anchors.fill: parent
-                wrapMode: Text.Wrap
-                antialiasing: true
-            }
         }
+    }
+
+    // Placeholder (irmão do Flickable, não filho do TextEdit)
+    Text {
+        text: root.placeholder
+        font.family: Theme.typography.family
+        font.pixelSize: root.currentFontSize
+        color: Theme.colors.overlay0
+        visible: textEdit.text === "" && !textEdit.activeFocus
+        anchors.fill: flickable
+        anchors.leftMargin: root.currentPadding
+        anchors.topMargin: root.currentPadding
+        wrapMode: Text.Wrap
+        antialiasing: true
     }
 
     // Cozy Custom Scrollbar
@@ -162,10 +165,13 @@ Item {
         anchors.bottomMargin: root.currentPadding
     }
 
-    // Update text property when changed from outside
-    onTextChanged: {
-        if (textEdit.text !== text) {
-            textEdit.text = text;
+    // Sync text from outside into the TextEdit
+    Connections {
+        target: root
+        function onTextChanged() {
+            if (textEdit.text !== root.text) {
+                textEdit.text = root.text;
+            }
         }
     }
 }

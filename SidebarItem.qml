@@ -54,6 +54,12 @@ Item {
             width: parent.width
             height: 44
 
+            // Cozy spring micro-animation
+            scale: clickArea.pressed ? 0.96 : (clickArea.containsMouse ? 1.02 : 1.0)
+            transformOrigin: Item.Center
+            Behavior on scale {
+                NumberAnimation { duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.5 }
+            }
             // Hover & Click Area
             MouseArea {
                 id: clickArea

@@ -412,6 +412,30 @@ TestCase {
         drawerBottom.destroy()
     }
 
+    function test_drawer_footer_width() {
+        var component = Qt.createComponent(Qt.resolvedUrl("../Drawer.qml"))
+        compare(component.status, Component.Ready)
+        var drawer = component.createObject(null, { "position": "right", "size": 400 })
+        verify(drawer !== null)
+
+        var btnComponent = Qt.createComponent(Qt.resolvedUrl("../Button.qml"))
+        compare(btnComponent.status, Component.Ready)
+        var btn = btnComponent.createObject(drawer)
+        verify(btn !== null)
+
+        // Assign button to footer
+        var footerList = drawer.footer
+        footerList.push(btn)
+        drawer.footer = footerList
+
+        // Verify button width is stretched to fill the footer container width
+        var expectedWidth = 400 - 2 * Theme.spacing.xl
+        compare(btn.width, expectedWidth)
+
+        btn.destroy()
+        drawer.destroy()
+    }
+
     // ==========================================
     // ItemsPerPage Tests
     // ==========================================
@@ -1487,7 +1511,7 @@ TestCase {
 
         var grid = gridComp.createObject(null, {
             "width": 1200,
-            "gap": 3
+            "gap": 4
         })
         verify(grid !== null)
 

@@ -55,6 +55,8 @@ Item {
         border.color: root.accentColor
         border.width: Theme.geometry.borderSm
 
+        clip: true
+
         // Subtle shadow layer for card depth
         Rectangle {
             anchors.fill: parent
@@ -138,22 +140,21 @@ Item {
             id: progressBar
             height: 3
             color: root.accentColor
-            width: parent.width * (root.remainingTime / root.duration)
+            // width calculates progress but respects the side radius margins
+            width: Math.max(0, (parent.width - (Theme.geometry.radiusMd * 2)) * (root.remainingTime / root.duration))
             anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            
-            // Rounded corners on left and right bottom matching card radius
-            radius: Theme.geometry.radiusMd
+            anchors.bottomMargin: Theme.geometry.borderSm // floats just above the bottom border
+            x: Theme.geometry.radiusMd // starts after the left rounded corner
+            radius: 1.5
         }
     }
 
-    // Hover area to pause timer and progress countdown
-    MouseArea {
-        id: hoverArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: countdownTimer.running = false
-        onExited: countdownTimer.running = true
+    // Hover handler to pause timer and progress countdown
+    HoverHandler {
+        id: hoverHandler
+        onHoveredChanged: {
+            countdownTimer.running = !hovered
+        }
     }
 
     // ==========================================

@@ -29,9 +29,10 @@ Item {
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
             if (child.visible) {
-                var h = child.implicitHeight > 0 ? child.implicitHeight : child.height;
-                if (h > maxH) {
-                    maxH = h;
+                var ch = child.implicitHeight > 0 ? child.implicitHeight : 
+                         (child.childrenRect.height > 0 ? child.childrenRect.height : child.height);
+                if (ch > maxH) {
+                    maxH = ch;
                 }
             }
         }
@@ -39,4 +40,15 @@ Item {
     }
     width: implicitWidth
     height: implicitHeight
+
+    onImplicitHeightChanged: {
+        var p = parent;
+        while (p) {
+            if (p.hasOwnProperty("requestLayout")) {
+                p.requestLayout();
+                break;
+            }
+            p = p.parent;
+        }
+    }
 }

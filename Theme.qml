@@ -66,8 +66,70 @@ Item {
     // Theme & Palette Setup
     // ==========================================
     property string flavor: "mocha" // "mocha" | "macchiato" | "frappe" | "latte"
+    property bool useSystemTheme: false
+
+    SystemPalette {
+        id: sysPalette
+        colorGroup: SystemPalette.Active
+    }
+
+    function isDarkColor(color) {
+        var luminance = (0.2126 * color.r) + (0.7152 * color.g) + (0.0722 * color.b);
+        return luminance < 0.5;
+    }
+
+    readonly property bool isDark: {
+        if (useSystemTheme) {
+            return isDarkColor(sysPalette.window)
+        }
+        return flavor !== "latte"
+    }
 
     function getColor(name) {
+        if (useSystemTheme) {
+            var systemDark = isDarkColor(sysPalette.window)
+
+            // Base and surface layout structure always respects native light/dark theme
+            if (name === "base" || name === "background") return sysPalette.window
+            if (name === "mantle") return Qt.darker(sysPalette.window, 1.05)
+            if (name === "crust") return Qt.darker(sysPalette.window, 1.1)
+            
+            if (name === "text") return sysPalette.windowText
+            if (name === "subtext1") return Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.8)
+            if (name === "subtext0") return Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.6)
+            
+            if (name === "surface0") return sysPalette.button
+            if (name === "surface1") return Qt.darker(sysPalette.button, 1.05)
+            if (name === "surface2") return Qt.darker(sysPalette.button, 1.1)
+            
+            if (name === "overlay0") return sysPalette.mid
+            if (name === "overlay1") return sysPalette.dark
+            if (name === "overlay2") return sysPalette.shadow
+            
+            // If the system theme is LIGHT, mix using Frappe accents as a base
+            if (!systemDark) {
+                var frappePalette = palettes["frappe"];
+                if (frappePalette[name] !== undefined) {
+                    return frappePalette[name];
+                }
+            }
+
+            // If system is dark, keep default system/Catppuccin fallbacks
+            // Accents map to highlight or derived colors
+            if (name === "mauve" || name === "primary" || name === "accent") return sysPalette.highlight
+            if (name === "blue" || name === "secondary") return sysPalette.highlight
+            if (name === "sky" || name === "info") return sysPalette.highlight
+            
+            // Semantic colors
+            if (name === "red" || name === "danger") return "#f38ba8"
+            if (name === "green" || name === "success") return "#a6e3a1"
+            if (name === "yellow" || name === "warning") return "#f9e2af"
+            
+            var accents = ["rosewater", "flamingo", "pink", "maroon", "peach", "teal", "sapphire", "lavender"]
+            if (accents.indexOf(name) !== -1) return sysPalette.highlight
+            return sysPalette.window
+        }
+
         var palette = palettes[flavor];
         if (!palette) palette = palettes["mocha"];
         return palette[name] || "#000000";

@@ -68,9 +68,9 @@ Item {
         SpringAnimation { spring: 3; damping: 0.2 }
     }
 
-    // Cozy scale micro-animation on press
-    scale: mouseArea.pressed ? 0.95 : 1.0
-    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutQuad } }
+    // Cozy scale micro-animation on hover + press
+    scale: mouseArea.pressed ? 0.95 : (mouseArea.containsMouse ? 1.02 : 1.0)
+    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
 
     // ==========================================
     // Visual Tree

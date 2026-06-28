@@ -63,3 +63,15 @@ StepsSlider 1.0 StepsSlider.qml
 AdvancedTextEditor 1.0 AdvancedTextEditor.qml
 CozyGrid 1.0 CozyGrid.qml
 CozyGridCol 1.0 CozyGridCol.qml
+ApplicationWindow 1.0 ApplicationWindow.qml
+Separator 1.0 Separator.qml
+RadioButton 1.0 RadioButton.qml
+RadioGroup 1.0 RadioGroup.qml
+Switch 1.0 Switch.qml
+Avatar 1.0 Avatar.qml
+Breadcrumb 1.0 Breadcrumb.qml
+Tag 1.0 Tag.qml
+Slider 1.0 Slider.qml
+EmptyState 1.0 EmptyState.qml
+AlertDialog 1.0 AlertDialog.qml
+ContextMenu 1.0 ContextMenu.qml

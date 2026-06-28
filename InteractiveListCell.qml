@@ -34,8 +34,8 @@ Item {
     // Dimensions
     implicitHeight: Math.max(48, contentLoader.implicitHeight + (paddingVertical * 2))
     width: parent ? parent.width : 300
-    // Cozy scale micro-animation on press
-    scale: mouseArea.pressed ? 0.985 : 1
+    // Cozy scale micro-animation on press + hover
+    scale: mouseArea.pressed ? 0.985 : (mouseArea.containsMouse ? 1.005 : 1.0)
 
     // Pill background & border container
     Rectangle {
@@ -79,6 +79,18 @@ Item {
 
     }
 
+    // Hover & Click Area
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            root.clicked();
+        }
+    }
+
     // Loader for custom visual structure (rowContent)
     Loader {
         // Propagate list cell context explicitly to Loader children if needed,
@@ -99,24 +111,12 @@ Item {
         property int index: root.cellIndex
     }
 
-    // Hover & Click Area
-    MouseArea {
-        id: mouseArea
-
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            root.clicked();
-        }
-    }
-
     Behavior on scale {
         NumberAnimation {
-            duration: 100
-            easing.type: Easing.OutQuad
+            duration: 120
+            easing.type: Easing.OutBack
+            easing.overshoot: 1.2
         }
-
     }
 
 }

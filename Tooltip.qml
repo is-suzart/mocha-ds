@@ -1,32 +1,18 @@
-import QtQuick 2.15
+import QtQuick
 
-// Tooltip — Place inside any Item. Shows a floating label on hover.
-//
-// Usage:
-//   Button {
-//       text: "Salvar"
-//       Tooltip { text: "Salvar alterações (Ctrl+S)"; placement: "top" }
-//   }
 Item {
     id: root
 
-    // ==========================================
-    // Public API
-    // ==========================================
     property string text: ""
-    property string placement: "top"  // "top" | "bottom" | "left" | "right"
-    property int    delay: 500        // ms before appearing
+    property string placement: "top"
+    property int    delay: 500
     property real   maxWidth: 240
-    property string _actualPlacement: placement
 
-    // ==========================================
-    // Internal
-    // ==========================================
     property var  _origParent: null
-    property bool isHovered: false
+    property bool _hovered: false
 
-    onIsHoveredChanged: {
-        if (isHovered) {
+    on_HoveredChanged: {
+        if (_hovered) {
             _delayTimer.restart();
         } else {
             _delayTimer.stop();
@@ -37,22 +23,25 @@ Item {
     Component.onCompleted: {
         _origParent = parent;
 
-        // Climb to the window root item
         var r = parent;
         while (r.parent) r = r.parent;
 
-        // Create a hover tracker as a sibling-under-origParent BEFORE reparenting
         _hoverTrackerComponent.createObject(_origParent);
 
-        // Reparent self to root so the bubble is never clipped
         root.parent = r;
     }
 
-    Component.onDestruction: {
-        _delayTimer.stop();
+    Component {
+        id: _hoverTrackerComponent
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.NoButton
+            onEntered: root._hovered = true
+            onExited:  root._hovered = false
+        }
     }
 
-    // Delay timer
     Timer {
         id: _delayTimer
         interval: root.delay
@@ -71,12 +60,9 @@ Item {
 
     function _positionBubble(tx, ty, tw, th) {
         var margin = 10;
-        
-        // Determine window boundaries
         var winWidth = root.parent ? root.parent.width : 800;
         var winHeight = root.parent ? root.parent.height : 600;
 
-        // Calculate bubble size dynamically based on placement (avoiding QML binding lag)
         function getBubbleDimensions(p) {
             var rectW = Math.min(_label.implicitWidth + Theme.spacing.md * 2, root.maxWidth);
             var rectH = _label.implicitHeight + Theme.spacing.sm * 2 + 2;
@@ -127,31 +113,15 @@ Item {
             _bubble.x = tx + tw + margin;
             _bubble.y = Math.max(4, Math.min(winHeight - bh - 4, ty + th / 2 - bh / 2));
             break;
-        default: // "top"
+        default:
             _bubble.x = Math.max(4, Math.min(winWidth - bw - 4, tx + tw / 2 - bw / 2));
             _bubble.y = ty - bh - margin;
             break;
         }
     }
 
-    // ==========================================
-    // Hover tracker (lives inside _origParent)
-    // ==========================================
-    Component {
-        id: _hoverTrackerComponent
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            propagateComposedEvents: true
-            acceptedButtons: Qt.NoButton
-            onEntered: root.isHovered = true
-            onExited:  root.isHovered = false
-        }
-    }
+    property string _actualPlacement: placement
 
-    // ==========================================
-    // Bubble (lives at root level after reparent)
-    // ==========================================
     Item {
         id: _bubble
         opacity: 0
@@ -162,7 +132,6 @@ Item {
         width:  _bubbleRect.width  + _caretItem.width  * (root._actualPlacement === "left" || root._actualPlacement === "right" ? 1 : 0)
         height: _bubbleRect.height + _caretItem.height * (root._actualPlacement === "top"  || root._actualPlacement === "bottom" ? 1 : 0)
 
-        // Drop shadow layer
         Rectangle {
             anchors.fill: _bubbleRect
             anchors.margins: -1
@@ -173,7 +142,6 @@ Item {
             z: -1
         }
 
-        // Main bubble
         Rectangle {
             id: _bubbleRect
             x: root._actualPlacement === "right" ? _caretItem.width : 0
@@ -198,13 +166,11 @@ Item {
             }
         }
 
-        // Arrow caret
         Item {
             id: _caretItem
             width:  (root._actualPlacement === "top" || root._actualPlacement === "bottom") ? 12 : 7
             height: (root._actualPlacement === "top" || root._actualPlacement === "bottom") ? 7  : 12
 
-            // Position relative to bubble based on placement
             x: {
                 switch (root._actualPlacement) {
                 case "left":   return _bubbleRect.x - width;
@@ -220,7 +186,6 @@ Item {
                 }
             }
 
-            // Triangle via rotated + clipped rectangle
             clip: true
             Item {
                 property real sz: 9
@@ -230,7 +195,7 @@ Item {
                     case "bottom": return 225;
                     case "left":   return 315;
                     case "right":  return 135;
-                    default:       return 45; // top
+                    default:       return 45;
                     }
                 }
                 x: (parent.width - sz) / 2
