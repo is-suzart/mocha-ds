@@ -1,0 +1,3 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+file:///home/savunma/.gemini/antigravity/scratch/mocha-ds/test/preview.qml:4 module "QtQuick.Controls" is not installed
+

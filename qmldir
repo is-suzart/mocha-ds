@@ -75,3 +75,4 @@ Slider 1.0 Slider.qml
 EmptyState 1.0 EmptyState.qml
 AlertDialog 1.0 AlertDialog.qml
 ContextMenu 1.0 ContextMenu.qml
+HeroCarousel 1.0 HeroCarousel.qml

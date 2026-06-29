@@ -1530,6 +1530,27 @@ TestCase {
 
         grid.destroy()
     }
+
+    function test_hero_carousel_creation() {
+        var component = Qt.createComponent(Qt.resolvedUrl("../HeroCarousel.qml"))
+        compare(component.status, Component.Ready)
+
+        var carousel = component.createObject(null, {
+            "model": [
+                { title: "Slide 1", description: "Desc 1" },
+                { title: "Slide 2", description: "Desc 2" }
+            ],
+            "autoAdvanceInterval": 0
+        })
+        verify(carousel !== null)
+        compare(carousel.slideCount, 2)
+        compare(carousel.currentIndex, 0)
+
+        carousel.currentIndex = 1
+        compare(carousel.currentIndex, 1)
+
+        carousel.destroy()
+    }
 }
 
 
