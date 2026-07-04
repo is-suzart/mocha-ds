@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -306,5 +306,21 @@ Item {
         hoverEnabled: true
         enabled: !root.disabled && !root.isLoading
         onClicked: root.clicked()
+    }
+
+    // Accessibility
+    Accessible.role: Accessible.Button
+    Accessible.name: root.text
+    Accessible.description: root.text + " button"
+    activeFocusOnTab: !root.disabled && !root.isLoading
+
+    // Keyboard support
+    Keys.onReturnPressed: if (!root.disabled && !root.isLoading) root.clicked()
+    Keys.onSpacePressed: if (!root.disabled && !root.isLoading) root.clicked()
+
+    // Focus ring overlay
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
     }
 }

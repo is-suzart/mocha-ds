@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -64,13 +64,30 @@ Item {
         }
     }
 
+    // Accessibility
+    Accessible.role: Accessible.Button
+    Accessible.name: root.label
+    Accessible.checked: root.checked
+    activeFocusOnTab: !root.disabled
+
+    Keys.onReturnPressed: toggle()
+    Keys.onSpacePressed: toggle()
+
+    function toggle() {
+        if (root.disabled) return
+        root.checked = !root.checked;
+        root.toggled(root.checked);
+    }
+
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
+    }
+
     MouseArea {
         anchors.fill: parent
         cursorShape: root.disabled ? Qt.ArrowCursor : Qt.PointingHandCursor
         enabled: !root.disabled
-        onClicked: {
-            root.checked = !root.checked;
-            root.toggled(root.checked);
-        }
+        onClicked: root.toggle()
     }
 }
