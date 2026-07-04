@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import ".." as DS
 
@@ -6,6 +6,7 @@ Playground {
     id: pg
     title: "Badge"
     description: "Pequenos rótulos visuais para estados, contadores ou categorias."
+    codeSnippet: "Badge {\n    text: \"" + badgeText.text + "\"\n    variant: \"" + variantSelect.model[variantSelect.currentIndex] + "\"\n    size: \"" + sizeSelect.model[sizeSelect.currentIndex] + "\"\n    color: \"" + colorSelect.model[colorSelect.currentIndex] + "\"\n    " + (iconSwitch.checked ? "icon: \"sparkles\"\n    " : "") + "}"
 
     componentItem: [
         Row {

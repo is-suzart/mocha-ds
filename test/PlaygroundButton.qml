@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import ".." as DS
@@ -7,6 +7,7 @@ Playground {
     id: pg
     title: "Button"
     description: "Botões versáteis com múltiplos variantes, tamanhos e estados."
+    codeSnippet: "Button {\n    text: \"" + btnText.text + "\"\n    variant: \"" + variantSelect.model[variantSelect.currentIndex] + "\"\n    color: \"" + colorSelect.model[colorSelect.currentIndex] + "\"\n    size: \"" + sizeSelect.model[sizeSelect.currentIndex] + "\"\n    " + (iconText.text !== "" ? "icon: \"" + iconText.text + "\"\n    " : "") + (disabledSwitch.checked ? "disabled: true\n    " : "") + (loadingSwitch.checked ? "isLoading: true\n    " : "") + "onClicked: { /* ação */ }\n}"
 
     // The component being tested
     componentItem: [

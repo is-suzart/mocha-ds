@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import ".." as DS
@@ -10,6 +10,8 @@ Item {
     property alias controls: controlColumn.data
     property string title: ""
     property string description: ""
+    property string codeSnippet: ""
+    property string _copiedText: ""
 
     RowLayout {
         anchors.fill: parent
@@ -26,22 +28,75 @@ Item {
                 Layout.preferredHeight: 80
                 color: "transparent"
                 
-                Column {
+                Row {
                     anchors.fill: parent
                     anchors.margins: DS.Theme.spacing.xl
-                    spacing: DS.Theme.spacing.xs
-                    
-                    Text {
-                        text: root.title
-                        font.family: DS.Theme.typography.familyBold
-                        font.pixelSize: DS.Theme.typography.sizeH2
-                        color: DS.Theme.colors.text
+                    spacing: DS.Theme.spacing.lg
+
+                    Column {
+                        width: parent.width - 120
+                        spacing: DS.Theme.spacing.xs
+
+                        Text {
+                            text: root.title
+                            font.family: DS.Theme.typography.familyBold
+                            font.pixelSize: DS.Theme.typography.sizeH2
+                            color: DS.Theme.colors.text
+                        }
+                        Text {
+                            text: root.description
+                            font.family: DS.Theme.typography.family
+                            font.pixelSize: DS.Theme.typography.sizeMd
+                            color: DS.Theme.colors.subtext0
+                        }
                     }
-                    Text {
-                        text: root.description
-                        font.family: DS.Theme.typography.family
-                        font.pixelSize: DS.Theme.typography.sizeMd
-                        color: DS.Theme.colors.subtext0
+
+                    // Copy Code Button
+                    Rectangle {
+                        width: 100
+                        height: 36
+                        radius: DS.Theme.geometry.radiusSm
+                        color: copyMouse.containsMouse ? DS.Theme.colors.surface1 : "transparent"
+                        border.color: DS.Theme.colors.surface1
+                        border.width: 1
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            text: root._copiedText !== "" ? root._copiedText : "Copiar Código"
+                            font.family: DS.Theme.typography.family
+                            font.pixelSize: DS.Theme.typography.sizeSm
+                            color: DS.Theme.colors.text
+                            anchors.centerIn: parent
+                        }
+
+                        MouseArea {
+                            id: copyMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                var snippet = root.codeSnippet !== ""
+                                    ? root.codeSnippet
+                                    : "// Mocha-DS — " + root.title + "\n// Importe o módulo MochaDS e use o componente diretamente."
+                                clipInput.text = snippet
+                                clipInput.selectAll()
+                                clipInput.copy()
+                                root._copiedText = "Copiado!"
+                                copyTimer.start()
+                            }
+                        }
+
+                        Timer {
+                            id: copyTimer
+                            interval: 2000
+                            onTriggered: root._copiedText = ""
+                        }
+
+                        TextInput {
+                            id: clipInput
+                            visible: false
+                            text: ""
+                        }
                     }
                 }
             }

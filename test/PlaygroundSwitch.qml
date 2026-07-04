@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import ".." as DS
@@ -7,6 +7,7 @@ Playground {
     id: pg
     title: "Switch"
     description: "Controle liga/desliga com animação de slide."
+    codeSnippet: "Switch {\n    checked: false\n    label: \"Notificações\"\n    size: \"" + sizeSelect.model[sizeSelect.currentIndex] + "\"\n    " + (disabledSwitch.checked ? "disabled: true\n    " : "") + "onToggled: function(checked) { /* ação */ }\n}"
 
     componentItem: [
         Column {

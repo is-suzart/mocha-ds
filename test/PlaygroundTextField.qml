@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import ".." as DS
@@ -7,6 +7,7 @@ Playground {
     id: pg
     title: "TextField"
     description: "Campos de entrada de texto flexíveis com ícones e validações."
+    codeSnippet: "TextField {\n    text: \"" + textInputVal.text + "\"\n    placeholder: \"" + placeholderInput.text + "\"\n    type: \"" + typeSelect.model[typeSelect.currentIndex] + "\"\n    size: \"" + sizeSelect.model[sizeSelect.currentIndex] + "\"\n    status: \"" + statusSelect.model[statusSelect.currentIndex] + "\"\n    " + (iconLeftInput.text !== "" ? "iconLeft: \"" + iconLeftInput.text + "\"\n    " : "") + (iconRightInput.text !== "" ? "iconRight: \"" + iconRightInput.text + "\"\n    " : "") + (disabledSwitch.checked ? "disabled: true\n    " : "") + (readOnlySwitch.checked ? "readOnly: true\n    " : "") + "onAccepted: { /* ação */ }\n}"
 
     componentItem: [
         DS.TextField {
