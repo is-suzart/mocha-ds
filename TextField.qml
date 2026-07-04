@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -18,6 +18,10 @@ Item {
     property bool disabled: false
     property bool readOnly: false
     property string size: "md" // "sm" | "md" | "lg"
+
+    // Form validation
+    property string errorText: ""
+    property bool isInvalid: errorText.length > 0
 
     // Style overrides
     property real customRadius: -1
@@ -73,6 +77,7 @@ Item {
     }
 
     readonly property color statusColor: {
+        if (isInvalid) return Theme.colors.danger
         if (status === "success") return Theme.colors.success
         if (status === "error") return Theme.colors.danger
         return textInput.activeFocus ? Theme.colors.primary : Theme.colors.surface2
@@ -80,6 +85,7 @@ Item {
 
     readonly property color finalBorderColor: {
         if (disabled) return Theme.colors.surface0
+        if (isInvalid) return Theme.colors.danger
         if (customBorderColor.toString() !== "#00000000" && customBorderColor.toString() !== "transparent") {
             return customBorderColor
         }
@@ -95,9 +101,7 @@ Item {
 
     // Layout Dimensions
     implicitWidth: 280
-    implicitHeight: currentHeight
-    width: implicitWidth
-    height: implicitHeight
+    implicitHeight: currentHeight + (isInvalid ? 20 : 0)
 
     opacity: disabled ? 0.6 : 1.0
     Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -109,7 +113,9 @@ Item {
     // Background Panel with Border
     Rectangle {
         id: bgPanel
-        anchors.fill: parent
+        y: 0
+        width: parent.width
+        height: root.currentHeight
         color: root.finalBackgroundColor
         radius: root.finalRadius
         border.color: root.finalBorderColor
@@ -119,10 +125,26 @@ Item {
         Behavior on border.color { ColorAnimation { duration: 150 } }
     }
 
+    // Error text label
+    Text {
+        id: errorLabel
+        y: root.currentHeight + 2
+        text: root.errorText
+        font.family: Theme.typography.family
+        font.pixelSize: Theme.typography.sizeXs
+        color: Theme.colors.danger
+        visible: root.isInvalid
+        height: 16
+        anchors.left: parent.left
+        anchors.leftMargin: 2
+    }
+
     // Outer mouse click focuses the text input (placed behind content Row so it doesn't block actions)
     MouseArea {
         id: mouseArea
-        anchors.fill: parent
+        y: 0
+        width: parent.width
+        height: root.currentHeight
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
         onClicked: {
@@ -135,9 +157,11 @@ Item {
     // Input Content Layout (Horizontal Stack)
     Row {
         id: contentLayout
-        anchors.fill: parent
-        anchors.leftMargin: root.currentPadding
-        anchors.rightMargin: root.currentPadding
+        y: 0
+        width: parent.width
+        height: root.currentHeight
+        leftPadding: root.currentPadding
+        rightPadding: root.currentPadding
         spacing: Theme.spacing.sm
 
         // Prefix Icon (Left Icon)
@@ -276,6 +300,18 @@ Item {
                 anchors.fill: parent
             }
         }
+    }
+
+    // Accessibility
+    Accessible.role: Accessible.EditableText
+    Accessible.name: root.placeholder
+    Accessible.description: root.placeholder + " input"
+    activeFocusOnTab: !root.disabled && !root.readOnly
+
+    // Focus ring overlay
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
     }
 
     // Update text property when changed from outside

@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Window
 
 Item {
@@ -19,6 +19,10 @@ Item {
     
     // Validation status: "normal" | "success" | "error"
     property string status: "normal"
+
+    // Form validation
+    property string errorText: ""
+    property bool isInvalid: errorText.length > 0
 
     // Expand state
     property bool expanded: false
@@ -81,6 +85,7 @@ Item {
 
     readonly property color finalBorderColor: {
         if (disabled) return Theme.colors.surface0
+        if (isInvalid) return Theme.colors.danger
         if (customBorderColor.toString() !== "#00000000" && customBorderColor.toString() !== "transparent") {
             return customBorderColor
         }
@@ -108,12 +113,34 @@ Item {
 
     // Layout Dimensions
     implicitWidth: 280
-    implicitHeight: currentHeight
-    width: implicitWidth
-    height: implicitHeight
+    implicitHeight: currentHeight + (isInvalid ? 20 : 0)
 
     opacity: disabled ? 0.6 : 1.0
     Behavior on opacity { NumberAnimation { duration: 150 } }
+
+    // Accessibility
+    Accessible.role: Accessible.ComboBox
+    Accessible.name: placeholder
+    activeFocusOnTab: !disabled
+
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
+    }
+
+    // Error text label
+    Text {
+        id: errorLabel
+        y: currentHeight + 2
+        text: root.errorText
+        font.family: Theme.typography.family
+        font.pixelSize: Theme.typography.sizeXs
+        color: Theme.colors.danger
+        visible: root.isInvalid
+        height: 16
+        anchors.left: parent.left
+        anchors.leftMargin: 2
+    }
 
     // ==========================================
     // Visual Tree
@@ -122,7 +149,10 @@ Item {
     // Outer box panel
     Rectangle {
         id: triggerBox
-        anchors.fill: parent
+        y: 0
+        width: parent.width
+        height: currentHeight
+        color: root.finalBackgroundColor
         color: root.finalBackgroundColor
         radius: root.finalRadius
         border.color: root.finalBorderColor

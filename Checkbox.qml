@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -9,6 +9,10 @@ Item {
     property bool checked: false
     property string label: ""
     property bool disabled: false
+
+    // Form validation
+    property string errorText: ""
+    property bool isInvalid: errorText.length > 0
 
     // Signals
     signal toggled(bool isChecked)
@@ -110,15 +114,34 @@ Item {
         }
     }
 
+    // Accessibility
+    Accessible.role: Accessible.CheckBox
+    Accessible.name: root.label
+    Accessible.checked: root.checked
+    activeFocusOnTab: !root.disabled
+
+    // Keyboard support
+    Keys.onReturnPressed: toggle()
+    Keys.onSpacePressed: toggle()
+
+    function toggle() {
+        if (root.disabled) return
+        root.checked = !root.checked;
+        root.toggled(root.checked);
+    }
+
+    // Focus ring overlay
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
+    }
+
     // Entire Area mouse click interaction
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         enabled: !root.disabled
-        onClicked: {
-            root.checked = !root.checked;
-            root.toggled(root.checked);
-        }
+        onClicked: root.toggle()
     }
 }

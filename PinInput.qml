@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 Item {
     id: root
@@ -30,6 +30,10 @@ Item {
 
     // Spacing between the input slots
     property real spacing: Theme.spacing.sm
+
+    // Form validation
+    property string errorText: ""
+    property bool isInvalid: errorText.length > 0
 
     // ==========================================
     // Signals
@@ -87,6 +91,7 @@ Item {
     // Determine the border color for a given slot index
     function getSlotBorderColor(index) {
         if (disabled) return Theme.colors.surface0
+        if (isInvalid) return Theme.colors.danger
         if (status === "success") return Theme.colors.success
         if (status === "error") return Theme.colors.danger
         if (isSlotActive(index)) return Theme.colors.primary
@@ -116,13 +121,35 @@ Item {
     // ==========================================
     // Layout & Dimensions
     // ==========================================
-    implicitHeight: slotSize
+    implicitHeight: slotSize + (isInvalid ? 20 : 0)
     implicitWidth: length * slotSize + (length - 1) * spacing
     width: implicitWidth
     height: implicitHeight
 
     opacity: disabled ? 0.6 : 1.0
     Behavior on opacity { NumberAnimation { duration: 150 } }
+
+    // Accessibility
+    Accessible.role: Accessible.EditableText
+    Accessible.name: "PIN input"
+    activeFocusOnTab: !root.disabled
+
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
+    }
+
+    // Error text label
+    Text {
+        y: slotSize + 2
+        text: root.errorText
+        font.family: Theme.typography.family
+        font.pixelSize: Theme.typography.sizeXs
+        color: Theme.colors.danger
+        visible: root.isInvalid
+        height: 16
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
 
     // ==========================================
     // Visual Tree
