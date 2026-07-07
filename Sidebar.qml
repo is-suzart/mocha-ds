@@ -31,6 +31,7 @@ Item {
     readonly property bool isHovered: hoverHandler.hovered
     readonly property bool isFullyExpanded: !isCollapsed || (expandOnHover && isHovered)
     readonly property real targetWidth: isFullyExpanded ? expandedWidth : collapsedWidth
+    readonly property real floatedShadowOpacity: root.variant === "floated" ? (root.isFullyExpanded ? 1.0 : 0.72) : 0.0
     
     // Expose the current animated visual width for children to bind to
     property real currentWidth: targetWidth
@@ -67,6 +68,11 @@ Item {
         border.width: 4
         visible: root.variant === "floated"
         z: -1
+        opacity: root.floatedShadowOpacity
+
+        Behavior on opacity {
+            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        }
     }
 
     // Background and container Panel
@@ -95,6 +101,10 @@ Item {
         // Clip content if it is very narrow or during transitions
         clip: true
         z: 10
+
+        Behavior on color {
+            ColorAnimation { duration: 180 }
+        }
 
         // Custom borders layout
         // For fixed layout, we only want the right border, not top/bottom/left.

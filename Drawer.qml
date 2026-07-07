@@ -116,6 +116,7 @@ Item {
             when: root.open
             PropertyChanges { target: root; opacity: 1.0 }
             PropertyChanges { target: backdrop; opacity: 0.7 }
+            PropertyChanges { target: drawerContainer; opacity: 1.0 }
             PropertyChanges {
                 target: drawerContainer
                 x: {
@@ -135,6 +136,7 @@ Item {
             when: !root.open
             PropertyChanges { target: root; opacity: 0.0 }
             PropertyChanges { target: backdrop; opacity: 0.0 }
+            PropertyChanges { target: drawerContainer; opacity: 0.94 }
             PropertyChanges {
                 target: drawerContainer
                 x: {
@@ -159,6 +161,7 @@ Item {
                 ParallelAnimation {
                     NumberAnimation { target: root; property: "opacity"; duration: 150; easing.type: Easing.OutQuad }
                     NumberAnimation { target: backdrop; property: "opacity"; duration: 200; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: drawerContainer; property: "opacity"; duration: 180; easing.type: Easing.OutQuad }
                     NumberAnimation { target: drawerContainer; properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
                 }
                 ScriptAction { script: root.opened() }
@@ -170,6 +173,7 @@ Item {
                 ParallelAnimation {
                     NumberAnimation { target: root; property: "opacity"; duration: 200; easing.type: Easing.InQuad }
                     NumberAnimation { target: backdrop; property: "opacity"; duration: 200; easing.type: Easing.InQuad }
+                    NumberAnimation { target: drawerContainer; property: "opacity"; duration: 160; easing.type: Easing.InQuad }
                     NumberAnimation { target: drawerContainer; properties: "x,y"; duration: 220; easing.type: Easing.InCubic }
                 }
                 PropertyAction { target: root; property: "visible"; value: false }
@@ -220,6 +224,7 @@ Item {
         border.color: Theme.colors.surface1
         border.width: Theme.geometry.borderSm
         clip: true
+        opacity: 0.94
 
         Behavior on color { ColorAnimation { duration: 150 } }
         Behavior on border.color { ColorAnimation { duration: 150 } }
@@ -243,6 +248,9 @@ Item {
             anchors.margins: Theme.spacing.xl
             height: (root.title !== "" || root.subtitle !== "" || root.showCloseButton) ? Math.max(headerColumn.implicitHeight, root.showCloseButton ? 32 : 0) : 0
             visible: height > 0
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Column {
                 id: headerColumn
@@ -308,6 +316,9 @@ Item {
             anchors.margins: Theme.spacing.xl
             height: footerContainer.implicitHeight
             visible: height > 0
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Column {
                 id: footerContainer
@@ -319,7 +330,7 @@ Item {
                 onChildrenChanged: {
                     for (var i = 0; i < children.length; i++) {
                         var child = children[i];
-                        if (child && (child.width === 0 || child.width === child.implicitWidth)) {
+                        if (child && (child.width === 0 || child.width === child.implicitWidth || child.width === undefined)) {
                             child.width = Qt.binding(function() { return footerContainer.width; });
                         }
                     }
@@ -353,6 +364,9 @@ Item {
             contentWidth: width
             contentHeight: customContentContainer.implicitHeight
             clip: true
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Item {
                 id: customContentContainer

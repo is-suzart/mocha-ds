@@ -90,12 +90,30 @@ Item {
         if (isColored) return Theme.colors.crust
         return Theme.colors.text
     }
+    readonly property real triggerScale: {
+        if (!interactive) return 1.0
+        if (headerMouseArea.pressed) return 0.988
+        if (headerMouseArea.containsMouse) return 1.01
+        return 1.0
+    }
 
     // Dynamic Sizing
     implicitWidth: 320
     implicitHeight: headerWrapper.height + contentClipContainer.height
     width: implicitWidth
     height: implicitHeight
+    activeFocusOnTab: interactive
+
+    Keys.onReturnPressed: {
+        if (!root.interactive) return;
+        root.expanded = !root.expanded;
+        root.toggled(root.expanded);
+    }
+    Keys.onSpacePressed: {
+        if (!root.interactive) return;
+        root.expanded = !root.expanded;
+        root.toggled(root.expanded);
+    }
 
     // ==========================================
     // Visual Tree
@@ -122,6 +140,22 @@ Item {
                 id: headerWrapper
                 width: parent.width
                 height: 48
+                scale: root.triggerScale
+                transformOrigin: Item.Center
+
+                Behavior on scale {
+                    NumberAnimation { duration: 110; easing.type: Easing.OutCubic }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: root.isColored
+                           ? Qt.rgba(root.finalTextColor.r, root.finalTextColor.g, root.finalTextColor.b, 0.08)
+                           : Theme.colors.surface0
+                    opacity: headerMouseArea.containsMouse ? 1.0 : 0.0
+
+                    Behavior on opacity { NumberAnimation { duration: 120 } }
+                }
 
                 // Header content row
                 Row {
@@ -203,10 +237,14 @@ Item {
                 height: root.expanded ? (contentContainer.childrenRect.height + Theme.spacing.lg * 2) : 0
                 clip: true
                 color: "transparent"
+                opacity: root.expanded ? 1.0 : 0.0
 
                 // Smooth expansion height animation
                 Behavior on height {
                     NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
+                }
+                Behavior on opacity {
+                    NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
                 }
 
                 // Inner content layout
@@ -222,5 +260,10 @@ Item {
                 }
             }
         }
+    }
+
+    FocusRing {
+        target: root
+        active: root.activeFocus && root.interactive
     }
 }

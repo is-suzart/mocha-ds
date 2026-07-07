@@ -179,8 +179,10 @@ Item {
             radius: Theme.geometry.radiusMd
             clip: true
             z: 10
+            opacity: root.selectedIndexes.length > 0 ? 1.0 : 0.0
 
             Behavior on height { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+            Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
 
             Row {
                 anchors.fill: parent
@@ -283,6 +285,11 @@ Item {
                                                   ? Theme.colors.primary : Theme.colors.surface2
                                     border.width: (root.isAllSelected || root.isSelectionIndeterminate)
                                                   ? 0 : Theme.geometry.borderSm
+                                    scale: headerCheckboxMouse.pressed ? 0.92 : (headerCheckboxMouse.containsMouse ? 1.06 : 1.0)
+
+                                    Behavior on color { ColorAnimation { duration: 120 } }
+                                    Behavior on border.color { ColorAnimation { duration: 120 } }
+                                    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                                     LucideIcon {
                                         name: root.isSelectionIndeterminate ? "minus" : "check"
@@ -291,7 +298,9 @@ Item {
                                         visible: root.isAllSelected || root.isSelectionIndeterminate
                                     }
                                     MouseArea {
+                                        id: headerCheckboxMouse
                                         anchors.fill: parent
+                                        hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: root.toggleSelectAll()
                                     }
@@ -306,6 +315,9 @@ Item {
                                     width:  root.getColWidth(modelData, index)
                                     height: headerCard.height
                                     readonly property bool isActiveSort: root.sortColumn === modelData.name
+                                    scale: headerMouseArea.pressed ? 0.985 : 1.0
+
+                                    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                                     Rectangle {
                                         anchors.fill: parent
@@ -357,7 +369,10 @@ Item {
                                         width:  parent.width - Theme.spacing.md * 2
                                         height: 2
                                         color:  Theme.colors.primary
-                                        visible: headerCell.isActiveSort
+                                        visible: headerCell.isActiveSort || headerMouseArea.containsMouse
+                                        opacity: headerCell.isActiveSort ? 1.0 : (headerMouseArea.containsMouse ? 0.35 : 0.0)
+
+                                        Behavior on opacity { NumberAnimation { duration: 120 } }
                                     }
 
                                     MouseArea {
@@ -431,6 +446,7 @@ Item {
                                         Theme.colors.primary.b, 0.08);
                                     return "transparent";
                                 }
+                                scale: rowMouseArea.pressed ? 0.995 : 1.0
 
                                 // Bottom separator
                                 Rectangle {
@@ -442,6 +458,7 @@ Item {
                                 }
 
                                 Behavior on color { ColorAnimation { duration: 120 } }
+                                Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
 
                                 Row {
                                     anchors.fill: parent
@@ -464,6 +481,11 @@ Item {
                                                           ? Theme.colors.primary : Theme.colors.surface2
                                             border.width: rowRect.isRowSelected
                                                           ? 0 : Theme.geometry.borderSm
+                                            scale: checkboxMouse.pressed ? 0.92 : (checkboxMouse.containsMouse ? 1.06 : 1.0)
+
+                                            Behavior on color { ColorAnimation { duration: 120 } }
+                                            Behavior on border.color { ColorAnimation { duration: 120 } }
+                                            Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                                             LucideIcon {
                                                 name: "check"; size: 12; color: Theme.colors.crust
@@ -471,7 +493,9 @@ Item {
                                                 visible: rowRect.isRowSelected
                                             }
                                             MouseArea {
+                                                id: checkboxMouse
                                                 anchors.fill: parent
+                                                hoverEnabled: true
                                                 cursorShape: Qt.PointingHandCursor
                                                 onClicked: {
                                                     mouse.accepted = true;

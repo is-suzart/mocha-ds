@@ -23,7 +23,7 @@ Item {
     // Custom size overrides
     property real customWidth: -1
     property real customHeight: -1
-    property real minHeight: size === "sm" ? 240 : (size === "full" ? 0 : 320)
+    property real minHeight: 0
 
 
     // Configuration flags
@@ -65,21 +65,21 @@ Item {
             if (headerDivider.visible) {
                 p += Theme.spacing.md * 2 + Theme.geometry.borderSm; // divider margins + border height
             } else {
-                p += Theme.spacing.xl; // body top margin
+                p += Theme.spacing.lg; // body top margin
             }
         } else {
-            p += Theme.spacing.xl * 2; // body top margin + empty header margins
+            p += Theme.spacing.xl + Theme.spacing.lg; // body top margin + empty header margins
         }
         // Bottom margins and paddings
         if (footerSection.visible) {
-            p += Theme.spacing.xl; // footer bottom margin
+            p += Theme.spacing.lg; // footer bottom margin
             if (footerDivider.visible) {
                 p += Theme.spacing.md * 2 + Theme.geometry.borderSm; // divider margins + border height
             } else {
-                p += Theme.spacing.xl; // body bottom margin
+                p += Theme.spacing.lg; // body bottom margin
             }
         } else {
-            p += Theme.spacing.xl * 2; // body bottom margin + empty footer margins
+            p += Theme.spacing.xl + Theme.spacing.lg; // body bottom margin + empty footer margins
         }
         return p;
     }
@@ -269,6 +269,9 @@ Item {
             anchors.margins: Theme.spacing.xl
             height: (root.title !== "" || root.subtitle !== "" || root.showCloseButton) ? Math.max(headerColumn.implicitHeight, root.showCloseButton ? 32 : 0) : 0
             visible: height > 0
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Column {
                 id: headerColumn
@@ -334,9 +337,14 @@ Item {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: Theme.spacing.xl
+            anchors.bottomMargin: Theme.spacing.lg
+            anchors.leftMargin: Theme.spacing.xl
+            anchors.rightMargin: Theme.spacing.xl
             height: footerContainer.children.length > 0 ? footerContainer.implicitHeight : 0
             visible: height > 0
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Item {
                 id: footerContainer
@@ -347,7 +355,8 @@ Item {
                     for (var i = 0; i < children.length; i++) {
                         var child = children[i];
                         if (child.visible) {
-                            h = Math.max(h, child.y + child.height);
+                            var childHeight = child.implicitHeight > 0 ? child.implicitHeight : child.height;
+                            h = Math.max(h, child.y + childHeight);
                         }
                     }
                     return h;
@@ -371,16 +380,19 @@ Item {
         Flickable {
             id: bodyFlickable
             anchors.top: headerDivider.visible ? headerDivider.bottom : headerSection.bottom
-            anchors.topMargin: headerDivider.visible ? Theme.spacing.md : Theme.spacing.xl
+            anchors.topMargin: headerDivider.visible ? Theme.spacing.md : Theme.spacing.lg
             anchors.bottom: footerDivider.visible ? footerDivider.top : footerSection.top
-            anchors.bottomMargin: footerDivider.visible ? Theme.spacing.md : Theme.spacing.xl
+            anchors.bottomMargin: footerDivider.visible ? Theme.spacing.md : Theme.spacing.lg
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.leftMargin: Theme.spacing.xl
             anchors.rightMargin: Theme.spacing.xl
             contentWidth: width
-            contentHeight: customContentContainer.implicitHeight + Theme.spacing.md
+            contentHeight: customContentContainer.implicitHeight
             clip: true
+            opacity: root.open ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
 
             Item {
                 id: customContentContainer
@@ -391,7 +403,8 @@ Item {
                     for (var i = 0; i < children.length; i++) {
                         var child = children[i];
                         if (child.visible) {
-                            h = Math.max(h, child.y + child.height);
+                            var childHeight = child.implicitHeight > 0 ? child.implicitHeight : child.height;
+                            h = Math.max(h, child.y + childHeight);
                         }
                     }
                     return h;

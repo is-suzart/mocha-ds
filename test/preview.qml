@@ -24,7 +24,8 @@ Window {
         { id: "data", label: "Dados", icon: "database", components: ["Table", "Paginator", "InteractiveListCell", "CozyList"] },
         { id: "charts", label: "Gráficos", icon: "pie-chart", components: ["Charts", "PieChart", "BarChart", "LineChart"] },
         { id: "navigation", label: "Navegação", icon: "navigation", components: ["Navigation", "NavigationBar", "Sidebar", "Breadcrumb"] },
-        { id: "interactivity", label: "Interatividade", icon: "move", components: ["Draggable", "DropZone", "SortableList", "Kanban"] }
+        { id: "interactivity", label: "Interatividade", icon: "move", components: ["SortableTabs", "Draggable", "DropZone", "SortableList", "Kanban"] },
+        { id: "animations", label: "Animações", icon: "zap", components: ["Animations"] }
     ]
 
     property int activeCategoryIndex: 0

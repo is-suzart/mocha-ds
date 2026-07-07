@@ -181,6 +181,13 @@ Item {
         return Theme.colors.text
     }
 
+    readonly property color rippleColor: {
+        if (isSolidVariant) {
+            return Qt.rgba(finalTextColor.r, finalTextColor.g, finalTextColor.b, 0.22)
+        }
+        return Qt.rgba(baseAccentColor.r, baseAccentColor.g, baseAccentColor.b, 0.18)
+    }
+
     // Layout Dimensions
     implicitWidth: {
         var contentWidth = 0;
@@ -202,6 +209,7 @@ Item {
     // ==========================================
 
     // Cozy micro-animation scale & opacity
+    transformOrigin: Item.Center
     scale: root.disabled ? 1.0 : (mouseArea.pressed ? 0.97 : (mouseArea.containsMouse ? 1.02 : 1.0))
     opacity: root.disabled ? 0.5 : 1.0
 
@@ -299,13 +307,70 @@ Item {
         visible: children.length > 0
     }
 
+    // Click ripple effect
+    Item {
+        id: rippleWrapper
+        anchors.fill: parent
+        clip: true
+        visible: backgroundRect.visible
+
+        Rectangle {
+            id: ripple
+            width: 0
+            height: 0
+            radius: width / 2
+            color: root.rippleColor
+            opacity: 0
+
+            ParallelAnimation {
+                id: rippleAnim
+
+                NumberAnimation {
+                    target: ripple
+                    property: "width"
+                    from: 0
+                    to: Math.sqrt(root.width * root.width + root.height * root.height) * 2
+                    duration: 500
+                    easing.type: Easing.OutQuad
+                }
+
+                NumberAnimation {
+                    target: ripple
+                    property: "height"
+                    from: 0
+                    to: Math.sqrt(root.width * root.width + root.height * root.height) * 2
+                    duration: 500
+                    easing.type: Easing.OutQuad
+                }
+
+                NumberAnimation {
+                    target: ripple
+                    property: "opacity"
+                    from: 0.5
+                    to: 0
+                    duration: 500
+                    easing.type: Easing.InQuad
+                }
+            }
+        }
+    }
+
     // Mouse Interaction Area
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         enabled: !root.disabled && !root.isLoading
-        onClicked: root.clicked()
+        onClicked: function(mouse) {
+            var maxDim = Math.sqrt(root.width * root.width + root.height * root.height) * 2
+            ripple.x = mouse.x - maxDim / 2
+            ripple.y = mouse.y - maxDim / 2
+            ripple.width = 0
+            ripple.height = 0
+            ripple.opacity = 0.5
+            rippleAnim.start()
+            root.clicked()
+        }
     }
 
     // Accessibility

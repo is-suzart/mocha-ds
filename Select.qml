@@ -74,6 +74,12 @@ Item {
     }
 
     readonly property real finalRadius: customRadius >= 0 ? customRadius : defaultRadius
+    readonly property real triggerScale: {
+        if (disabled) return 1.0
+        if (mouseArea.pressed) return 0.985
+        if (expanded || mouseArea.containsMouse) return 1.01
+        return 1.0
+    }
 
     readonly property color finalBackgroundColor: {
         if (disabled) return Theme.colors.crust
@@ -153,13 +159,15 @@ Item {
         width: parent.width
         height: currentHeight
         color: root.finalBackgroundColor
-        color: root.finalBackgroundColor
         radius: root.finalRadius
         border.color: root.finalBorderColor
         border.width: root.expanded ? Theme.geometry.borderMd : Theme.geometry.borderSm
+        scale: root.triggerScale
+        transformOrigin: Item.Center
 
         Behavior on color { ColorAnimation { duration: 150 } }
         Behavior on border.color { ColorAnimation { duration: 150 } }
+        Behavior on scale { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     }
 
     // Trigger content (Text + Chevron)
@@ -235,6 +243,9 @@ Item {
         visible: height > 0
         clip: true
         z: 99999 // Draw above everything
+        opacity: root.expanded ? 1.0 : 0.0
+        scale: root.expanded ? 1.0 : 0.98
+        transformOrigin: root.openUpward ? Item.Bottom : Item.Top
 
         color: Theme.colors.mantle
         border.color: Theme.colors.surface1
@@ -243,6 +254,12 @@ Item {
 
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+        }
+        Behavior on opacity {
+            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
         }
 
         // Dropdown Items List
@@ -265,6 +282,7 @@ Item {
                     }
                     return delegateMouseArea.containsMouse ? Theme.colors.surface0 : "transparent";
                 }
+                scale: delegateMouseArea.pressed ? 0.985 : (delegateMouseArea.containsMouse ? 1.01 : 1.0)
 
                 Text {
                     text: modelData.label
@@ -278,6 +296,9 @@ Item {
                     elide: Text.ElideRight
                     antialiasing: true
                 }
+
+                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                 MouseArea {
                     id: delegateMouseArea

@@ -121,6 +121,7 @@ Item {
 
                     onActiveChanged: {
                         if (active) {
+                            dragGhost.Drag.active = true
                             root.isDragging = true
                             delegateRoot.held = true
                             root.dragIndex = delegateRoot._index
@@ -138,6 +139,7 @@ Item {
                             delegateRoot.held = false
                             root.isDragging = false
                             Drag.drop()
+                            dragGhost.Drag.active = false
                             if (toIndex >= 0 && toIndex !== fromIndex) {
                                 visualModel.items.move(fromIndex, toIndex)
                                 root.itemsReordered(fromIndex, toIndex)
@@ -217,7 +219,7 @@ Item {
         visible: root.isDragging
         width: 8; height: 8
         Drag.keys: root.sortable ? [root.sortableDragKey] : []
-        Drag.active: root.isDragging
+        Drag.active: false
         Drag.source: dragGhost
         Drag.hotSpot.x: width / 2
         Drag.hotSpot.y: height / 2

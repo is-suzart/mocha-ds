@@ -91,12 +91,14 @@ Item {
 
             // Base and surface layout structure always respects native light/dark theme
             if (name === "base" || name === "background") return sysPalette.window
-            if (name === "mantle") return Qt.darker(sysPalette.window, 1.05)
+            // Rule 2: Integrate sysPalette.base for input fields (mantle) to separate them from buttons
+            if (name === "mantle") return sysPalette.base
             if (name === "crust") return Qt.darker(sysPalette.window, 1.1)
             
             if (name === "text") return sysPalette.windowText
-            if (name === "subtext1") return Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.8)
-            if (name === "subtext0") return Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.6)
+            // Rule 4: Opaque solid colors to preserve subpixel antialiasing
+            if (name === "subtext1") return Qt.tint(sysPalette.window, Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.8))
+            if (name === "subtext0") return Qt.tint(sysPalette.window, Qt.rgba(sysPalette.windowText.r, sysPalette.windowText.g, sysPalette.windowText.b, 0.6))
             
             if (name === "surface0") return sysPalette.button
             if (name === "surface1") return Qt.darker(sysPalette.button, 1.05)
@@ -106,27 +108,40 @@ Item {
             if (name === "overlay1") return sysPalette.dark
             if (name === "overlay2") return sysPalette.shadow
             
-            // If the system theme is LIGHT, mix using Frappe accents as a base
+            // Rule 1: Correct Light Mode fallback using the latte palette
             if (!systemDark) {
-                var frappePalette = palettes["frappe"];
-                if (frappePalette[name] !== undefined) {
-                    return frappePalette[name];
+                var lattePalette = palettes["latte"];
+                if (lattePalette[name] !== undefined) {
+                    return lattePalette[name];
                 }
             }
 
-            // If system is dark, keep default system/Catppuccin fallbacks
-            // Accents map to highlight or derived colors
+            // Rule 3: Programmatic variations for semantic and accent colors to prevent pointing to the same highlight color
+            if (name === "red" || name === "danger") return Qt.tint(sysPalette.window, Qt.rgba(0.9, 0.15, 0.15, 0.8))
+            if (name === "green" || name === "success") return Qt.tint(sysPalette.window, Qt.rgba(0.15, 0.75, 0.15, 0.8))
+            if (name === "yellow" || name === "warning") return Qt.tint(sysPalette.window, Qt.rgba(0.9, 0.65, 0.15, 0.8))
+
+            // Primary accents
             if (name === "mauve" || name === "primary" || name === "accent") return sysPalette.highlight
-            if (name === "blue" || name === "secondary") return sysPalette.highlight
-            if (name === "sky" || name === "info") return sysPalette.highlight
             
-            // Semantic colors
-            if (name === "red" || name === "danger") return "#f38ba8"
-            if (name === "green" || name === "success") return "#a6e3a1"
-            if (name === "yellow" || name === "warning") return "#f9e2af"
+            // Differentiated accents
+            if (name === "blue" || name === "secondary") {
+                return systemDark ? Qt.darker(sysPalette.highlight, 1.1) : Qt.lighter(sysPalette.highlight, 1.1)
+            }
+            if (name === "sky" || name === "info") {
+                return systemDark ? Qt.lighter(sysPalette.highlight, 1.2) : Qt.darker(sysPalette.highlight, 1.2)
+            }
             
-            var accents = ["rosewater", "flamingo", "pink", "maroon", "peach", "teal", "sapphire", "lavender"]
-            if (accents.indexOf(name) !== -1) return sysPalette.highlight
+            // Other accents mapped programmatically to be distinct from highlight
+            if (name === "rosewater") return Qt.tint(sysPalette.highlight, Qt.rgba(0.95, 0.85, 0.85, 0.4))
+            if (name === "flamingo") return Qt.tint(sysPalette.highlight, Qt.rgba(0.95, 0.75, 0.75, 0.4))
+            if (name === "pink") return Qt.tint(sysPalette.highlight, Qt.rgba(0.95, 0.6, 0.85, 0.4))
+            if (name === "maroon") return Qt.tint(sysPalette.highlight, Qt.rgba(0.85, 0.4, 0.4, 0.4))
+            if (name === "peach") return Qt.tint(sysPalette.highlight, Qt.rgba(0.95, 0.65, 0.4, 0.4))
+            if (name === "teal") return Qt.tint(sysPalette.highlight, Qt.rgba(0.2, 0.75, 0.65, 0.4))
+            if (name === "sapphire") return Qt.tint(sysPalette.highlight, Qt.rgba(0.2, 0.6, 0.85, 0.4))
+            if (name === "lavender") return Qt.tint(sysPalette.highlight, Qt.rgba(0.7, 0.65, 0.95, 0.4))
+
             return sysPalette.window
         }
 

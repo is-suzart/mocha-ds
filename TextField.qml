@@ -125,6 +125,26 @@ Item {
         Behavior on border.color { ColorAnimation { duration: 150 } }
     }
 
+    // Shake animation for error state
+    SequentialAnimation {
+        id: shakeAnim
+        running: false
+
+        NumberAnimation { target: root; property: "x"; from: 0; to: -6; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: -6; to: 6; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: 6; to: -4; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: -4; to: 4; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: 4; to: -2; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: -2; to: 2; duration: 40 }
+        NumberAnimation { target: root; property: "x"; from: 2; to: 0; duration: 40 }
+    }
+
+    onErrorTextChanged: {
+        if (errorText.length > 0) {
+            shakeAnim.restart()
+        }
+    }
+
     // Error text label
     Text {
         id: errorLabel
@@ -158,11 +178,13 @@ Item {
     Row {
         id: contentLayout
         y: 0
-        width: parent.width
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: root.currentPadding
+        anchors.rightMargin: root.currentPadding
         height: root.currentHeight
-        leftPadding: root.currentPadding
-        rightPadding: root.currentPadding
         spacing: Theme.spacing.sm
+        clip: true
 
         // Prefix Icon (Left Icon)
         LucideIcon {
@@ -257,10 +279,10 @@ Item {
             // Clear Button (visible when there's text, not a password field, and is editable)
             LucideIcon {
                 name: "x"
-                size: parent.height
+                size: root.currentIconSize
                 color: clearMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.overlay0
                 visible: root.text !== "" && root.type !== "password" && !root.readOnly && !root.disabled
-                anchors.fill: parent
+                anchors.centerIn: parent
 
                 MouseArea {
                     id: clearMouseArea
@@ -278,10 +300,10 @@ Item {
             // Password Toggle Button (Eye)
             LucideIcon {
                 name: root.showPassword ? "eye-off" : "eye"
-                size: parent.height
+                size: root.currentIconSize
                 color: passwordMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.subtext0
                 visible: root.type === "password" && !root.disabled
-                anchors.fill: parent
+                anchors.centerIn: parent
 
                 MouseArea {
                     id: passwordMouseArea
@@ -294,10 +316,10 @@ Item {
             // Custom Suffix Icon (fallback if no password or clear button active)
             LucideIcon {
                 name: root.iconRight
-                size: parent.height
+                size: root.currentIconSize
                 color: textInput.activeFocus ? Theme.colors.primary : Theme.colors.subtext0
                 visible: root.iconRight !== "" && root.type !== "password" && (root.text === "" || root.readOnly || root.disabled)
-                anchors.fill: parent
+                anchors.centerIn: parent
             }
         }
     }

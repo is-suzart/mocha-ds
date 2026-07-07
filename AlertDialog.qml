@@ -35,14 +35,16 @@ Modal {
 
     content: [
         Column {
-            width: dialogContent.width
+            width: parent ? parent.width : 0
             spacing: Theme.spacing.md
 
             Row {
+                id: contentRow
                 spacing: Theme.spacing.md
                 width: parent.width
 
                 LucideIcon {
+                    id: iconItem
                     name: root.typeIcon
                     size: 28
                     color: root.accentColor
@@ -50,8 +52,9 @@ Modal {
                 }
 
                 Column {
+                    id: textColumn
                     spacing: Theme.spacing.xs
-                    width: parent.width - 28 - Theme.spacing.md
+                    width: parent.width - iconItem.width - Theme.spacing.md
 
                     Text {
                         text: root.dialogTitle
@@ -80,6 +83,7 @@ Modal {
     footer: [
         Row {
             width: parent ? parent.width : 0
+            height: implicitHeight
             spacing: Theme.spacing.md
             layoutDirection: Qt.RightToLeft
 
@@ -88,7 +92,7 @@ Modal {
                 text: root.confirmLabel
                 onClicked: {
                     root.confirmed();
-                    root.close();
+                    root.open = false;
                 }
             }
 
@@ -98,7 +102,7 @@ Modal {
                 visible: root.showCancel
                 onClicked: {
                     root.cancelled();
-                    root.close();
+                    root.open = false;
                 }
             }
         }

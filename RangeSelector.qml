@@ -43,6 +43,7 @@ Item {
         if (max === min) return 0;
         return ((secondValue - min) / (max - min)) * trackWidth;
     }
+    readonly property bool isHovered: rangeMouseArea.containsMouse
 
     // Main Track Background
     Rectangle {
@@ -50,8 +51,10 @@ Item {
         width: root.trackWidth
         height: 6
         radius: 3
-        color: Theme.colors.surface0
+        color: (root.isHovered || root.activeThumb !== 0) ? Theme.colors.surface1 : Theme.colors.surface0
         anchors.centerIn: parent
+
+        Behavior on color { ColorAnimation { duration: 120 } }
 
         // Active Track (between thumbs)
         Rectangle {
@@ -61,6 +64,9 @@ Item {
             height: parent.height
             radius: parent.radius
             color: Theme.colors.primary
+
+            Behavior on x { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
+            Behavior on width { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
         }
 
         // First Thumb
@@ -100,6 +106,8 @@ Item {
                 anchors.bottomMargin: 8
                 anchors.horizontalCenter: parent.horizontalCenter
                 visible: firstThumbMouse.containsMouse || root.activeThumb === 1
+                opacity: visible ? 1.0 : 0.0
+                scale: visible ? 1.0 : 0.96
 
                 Text {
                     id: firstTooltipText
@@ -109,6 +117,9 @@ Item {
                     color: Theme.colors.text
                     anchors.centerIn: parent
                 }
+
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+                Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
             }
         }
 
@@ -148,6 +159,8 @@ Item {
                 anchors.bottomMargin: 8
                 anchors.horizontalCenter: parent.horizontalCenter
                 visible: secondThumbMouse.containsMouse || root.activeThumb === 2
+                opacity: visible ? 1.0 : 0.0
+                scale: visible ? 1.0 : 0.96
 
                 Text {
                     id: secondTooltipText
@@ -157,12 +170,16 @@ Item {
                     color: Theme.colors.text
                     anchors.centerIn: parent
                 }
+
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+                Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
             }
         }
     }
 
     // Main Interactive Area across the whole track
     MouseArea {
+        id: rangeMouseArea
         anchors.fill: parent
         enabled: !root.disabled
         hoverEnabled: true

@@ -42,6 +42,11 @@ Item {
 
     // Start invisible for entry animation
     opacity: 0.0
+    scale: hoverHandler.hovered ? 1.01 : 1.0
+
+    Behavior on scale {
+        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+    }
 
     // ==========================================
     // Visual Tree
@@ -120,11 +125,16 @@ Item {
 
             // Right Close Button
             LucideIcon {
+                id: closeIcon
                 name: "x"
                 size: 16
                 color: closeMouseArea.containsMouse ? Theme.colors.text : Theme.colors.overlay0
                 visible: root.showClose
                 anchors.verticalCenter: parent.verticalCenter
+                scale: closeMouseArea.pressed ? 0.92 : (closeMouseArea.containsMouse ? 1.08 : 1.0)
+
+                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                 MouseArea {
                     id: closeMouseArea
@@ -146,6 +156,10 @@ Item {
             anchors.bottomMargin: Theme.geometry.borderSm // floats just above the bottom border
             x: Theme.geometry.radiusMd // starts after the left rounded corner
             radius: 1.5
+
+            Behavior on width {
+                NumberAnimation { duration: 80; easing.type: Easing.Linear }
+            }
         }
     }
 

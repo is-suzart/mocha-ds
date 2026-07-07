@@ -17,8 +17,8 @@ GridLayout {
         return false
     }
 
-    columns: useHorizontal ? rowCount : 1
-    rowCount: useHorizontal ? 1 : children.length
+    columns: useHorizontal ? children.length : 1
+    rows: useHorizontal ? 1 : children.length
     columnSpacing: root.spacing
     rowSpacing: root.spacing
     flow: useHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom

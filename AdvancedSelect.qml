@@ -59,6 +59,12 @@ Item {
     }
 
     readonly property real finalRadius: customRadius >= 0 ? customRadius : defaultRadius
+    readonly property real triggerScale: {
+        if (disabled) return 1.0
+        if (mouseArea.pressed) return 0.985
+        if (expanded || mouseArea.containsMouse) return 1.01
+        return 1.0
+    }
 
     readonly property color finalBackgroundColor: {
         if (disabled) return Theme.colors.crust
@@ -176,6 +182,12 @@ Item {
 
     opacity: disabled ? 0.6 : 1.0
     Behavior on opacity { NumberAnimation { duration: 150 } }
+    activeFocusOnTab: !disabled
+
+    FocusRing {
+        target: root
+        active: root.activeFocus && !root.disabled
+    }
 
     // ==========================================
     // Visual Tree
@@ -189,9 +201,12 @@ Item {
         radius: root.finalRadius
         border.color: root.finalBorderColor
         border.width: root.expanded ? Theme.geometry.borderMd : Theme.geometry.borderSm
+        scale: root.triggerScale
+        transformOrigin: Item.Center
 
         Behavior on color { ColorAnimation { duration: 150 } }
         Behavior on border.color { ColorAnimation { duration: 150 } }
+        Behavior on scale { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     }
 
     // Content container inside the select box
@@ -244,6 +259,9 @@ Item {
                             radius: Theme.geometry.radiusSm
                             border.color: Theme.colors.surface1
                             border.width: Theme.geometry.borderSm
+                            scale: tagCloseMouse.pressed ? 0.97 : (tagCloseMouse.containsMouse ? 1.02 : 1.0)
+
+                            Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                             Row {
                                 anchors.fill: parent
@@ -267,6 +285,10 @@ Item {
                                     color: tagCloseMouse.containsMouse ? Theme.colors.red : Theme.colors.overlay1
                                     anchors.verticalCenter: parent.verticalCenter
                                     visible: !root.disabled
+                                    scale: tagCloseMouse.pressed ? 0.9 : (tagCloseMouse.containsMouse ? 1.08 : 1.0)
+
+                                    Behavior on color { ColorAnimation { duration: 120 } }
+                                    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                                     MouseArea {
                                         id: tagCloseMouse
@@ -346,6 +368,9 @@ Item {
         visible: height > 0
         clip: true
         z: 99999
+        opacity: root.expanded ? 1.0 : 0.0
+        scale: root.expanded ? 1.0 : 0.98
+        transformOrigin: root.openUpward ? Item.Bottom : Item.Top
 
         color: Theme.colors.mantle
         border.color: Theme.colors.surface1
@@ -354,6 +379,12 @@ Item {
 
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+        }
+        Behavior on opacity {
+            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
         }
 
         Column {
@@ -373,6 +404,8 @@ Item {
                 radius: Theme.geometry.radiusSm
                 border.color: searchInput.activeFocus ? Theme.colors.primary : Theme.colors.surface0
                 border.width: Theme.geometry.borderSm
+
+                Behavior on border.color { ColorAnimation { duration: 120 } }
 
                 Row {
                     anchors.fill: parent
@@ -431,6 +464,7 @@ Item {
                         }
                         return delegateMouseArea.containsMouse ? Theme.colors.surface0 : "transparent";
                     }
+                    scale: delegateMouseArea.pressed ? 0.985 : (delegateMouseArea.containsMouse ? 1.01 : 1.0)
 
                     Row {
                         anchors.fill: parent
@@ -469,6 +503,9 @@ Item {
                             antialiasing: true
                         }
                     }
+
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                     MouseArea {
                         id: delegateMouseArea

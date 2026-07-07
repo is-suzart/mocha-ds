@@ -23,6 +23,7 @@ Item {
 
     // Confirm state: input is active (focused) or has text
     readonly property bool isConfirmState: !disabled && showGoToPage && (pageInput.activeFocus || pageInput.text !== "")
+    property bool suppressPageChangeAnim: true
 
     // Layout Dimensions
     implicitWidth: layoutRow.implicitWidth
@@ -32,6 +33,14 @@ Item {
 
     opacity: disabled ? 0.6 : 1.0
     Behavior on opacity { NumberAnimation { duration: 150 } }
+
+    onCurrentPageChanged: {
+        if (suppressPageChangeAnim) {
+            suppressPageChangeAnim = false;
+            return;
+        }
+        pageChangeAnim.restart();
+    }
 
     // ==========================================
     // Visual Tree
@@ -58,46 +67,72 @@ Item {
         }
 
         // Pages List (Numbered buttons and ellipses)
-        Row {
-            spacing: Theme.spacing.xs
+        Item {
+            id: pagesWrapper
+            width: pagesRow.implicitWidth
+            height: pagesRow.implicitHeight
             anchors.verticalCenter: parent.verticalCenter
+            scale: 1.0
+            opacity: 1.0
 
-            Repeater {
-                model: root.pagesList
+            Behavior on scale {
+                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+            }
+            Behavior on opacity {
+                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+            }
 
-                delegate: Item {
-                    width: isEllipsis ? 20 : pageButton.implicitWidth
-                    height: 32
-                    anchors.verticalCenter: parent.verticalCenter
-                    
-                    readonly property bool isEllipsis: modelData === "..."
+            Row {
+                id: pagesRow
+                spacing: Theme.spacing.xs
+                anchors.centerIn: parent
 
-                    // Ellipsis text indicator
-                    Text {
-                        text: "..."
-                        font.family: Theme.typography.family
-                        font.pixelSize: Theme.typography.sizeMd
-                        color: Theme.colors.overlay1
-                        anchors.centerIn: parent
-                        visible: parent.isEllipsis
-                        antialiasing: true
-                    }
+                Repeater {
+                    model: root.pagesList
 
-                    // Numeric Page Button
-                    Button {
-                        id: pageButton
-                        visible: !parent.isEllipsis
-                        text: String(modelData)
-                        size: "sm"
-                        variant: modelData === root.currentPage ? "primary" : "ghost"
-                        disabled: root.disabled
-                        customRadius: Theme.geometry.radiusSm
-                        
-                        onClicked: {
-                            var p = parseInt(modelData);
-                            if (!isNaN(p) && root.currentPage !== p) {
-                                root.currentPage = p;
-                                root.pageChanged(p);
+                    delegate: Item {
+                        width: isEllipsis ? 20 : pageButton.implicitWidth
+                        height: 32
+                        anchors.verticalCenter: parent.verticalCenter
+                        readonly property bool isEllipsis: modelData === "..."
+                        readonly property bool isCurrentPage: !isEllipsis && modelData === root.currentPage
+                        scale: isEllipsis ? 1.0 : (isCurrentPage ? 1.04 : 1.0)
+                        opacity: isEllipsis ? 0.7 : (isCurrentPage ? 1.0 : 0.92)
+
+                        Behavior on scale {
+                            NumberAnimation { duration: 160; easing.type: Easing.OutBack; easing.overshoot: 1.08 }
+                        }
+                        Behavior on opacity {
+                            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                        }
+
+                        // Ellipsis text indicator
+                        Text {
+                            text: "..."
+                            font.family: Theme.typography.family
+                            font.pixelSize: Theme.typography.sizeMd
+                            color: Theme.colors.overlay1
+                            anchors.centerIn: parent
+                            visible: parent.isEllipsis
+                            antialiasing: true
+                        }
+
+                        // Numeric Page Button
+                        Button {
+                            id: pageButton
+                            visible: !parent.isEllipsis
+                            text: String(modelData)
+                            size: "sm"
+                            variant: modelData === root.currentPage ? "primary" : "ghost"
+                            disabled: root.disabled
+                            customRadius: Theme.geometry.radiusSm
+
+                            onClicked: {
+                                var p = parseInt(modelData);
+                                if (!isNaN(p) && root.currentPage !== p) {
+                                    root.currentPage = p;
+                                    root.pageChanged(p);
+                                }
                             }
                         }
                     }
@@ -109,13 +144,17 @@ Item {
         TextField {
             id: pageInput
             visible: root.showGoToPage
-            width: 48
+            width: root.isConfirmState ? 64 : 48
             size: "sm"
             placeholder: "Ir"
             type: "number"
             disabled: root.disabled
             anchors.verticalCenter: parent.verticalCenter
             
+            Behavior on width {
+                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+            }
+
             onAccepted: root.confirmJump()
         }
 
@@ -127,11 +166,6 @@ Item {
             disabled: root.disabled || (!root.isConfirmState && root.currentPage >= root.totalPages)
             anchors.verticalCenter: parent.verticalCenter
 
-            Behavior on variant {
-                // Smooth transition when morphing variants
-                PropertyAnimation { duration: 150 }
-            }
-
             onClicked: {
                 if (root.isConfirmState) {
                     root.confirmJump();
@@ -142,6 +176,14 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    SequentialAnimation {
+        id: pageChangeAnim
+        ParallelAnimation {
+            NumberAnimation { target: pagesWrapper; property: "opacity"; from: 0.86; to: 1.0; duration: 150; easing.type: Easing.OutCubic }
+            NumberAnimation { target: pagesWrapper; property: "scale"; from: 0.985; to: 1.0; duration: 170; easing.type: Easing.OutBack; easing.overshoot: 1.05 }
         }
     }
 

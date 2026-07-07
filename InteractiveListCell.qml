@@ -36,6 +36,13 @@ Item {
     width: parent ? parent.width : 300
     // Cozy scale micro-animation on press + hover
     scale: mouseArea.pressed ? 0.985 : (mouseArea.containsMouse ? 1.005 : 1.0)
+    activeFocusOnTab: true
+
+    Keys.onReturnPressed: root.clicked()
+    Keys.onSpacePressed: root.clicked()
+
+    Accessible.role: Accessible.Button
+    Accessible.name: "Interactive list cell"
 
     // Pill background & border container
     Rectangle {
@@ -117,6 +124,11 @@ Item {
             easing.type: Easing.OutBack
             easing.overshoot: 1.2
         }
+    }
+
+    FocusRing {
+        target: root
+        active: root.activeFocus
     }
 
 }

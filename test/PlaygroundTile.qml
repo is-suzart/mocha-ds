@@ -58,7 +58,6 @@ Playground {
                     radius: DS.Theme.geometry.radiusMd
                     border.color: tileDropZone.containsDrag ? DS.Theme.colors.primary : DS.Theme.colors.surface0
                     border.width: 2
-                    border.style: tileDropZone.containsDrag ? Qt.SolidLine : Qt.DashLine
 
                     Text {
                         text: tileDropZone.containsDrag ? "Solte aqui para adicionar ao dashboard" : "Zona de Dashboard (arraste um tile)"

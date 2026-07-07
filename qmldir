@@ -2,8 +2,22 @@ module MochaDS
 singleton Theme Theme.qml
 singleton MediaQuery MediaQuery.qml
 FadeIn FadeIn.qml
+FadeOut FadeOut.qml
 SlideUp SlideUp.qml
+SlideDown SlideDown.qml
+SlideLeft SlideLeft.qml
+SlideRight SlideRight.qml
+SlideOutUp SlideOutUp.qml
+SlideOutDown SlideOutDown.qml
 ZoomIn ZoomIn.qml
+Bounce Bounce.qml
+Flip Flip.qml
+Spin Spin.qml
+AnimatedPresence AnimatedPresence.qml
+AnimateList AnimateList.qml
+AnimatedNumber AnimatedNumber.qml
+GlowPulse GlowPulse.qml
+Particles Particles.qml
 FocusRing FocusRing.qml
 HStack HStack.qml
 VStack VStack.qml
@@ -70,6 +84,7 @@ StepsSlider StepsSlider.qml
 CozyGrid CozyGrid.qml
 CozyGridCol CozyGridCol.qml
 ApplicationWindow ApplicationWindow.qml
+Window Window.qml
 Separator Separator.qml
 RadioButton RadioButton.qml
 RadioGroup RadioGroup.qml

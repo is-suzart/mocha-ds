@@ -28,6 +28,29 @@ Playground {
             Column {
                 width: parent.width
                 spacing: DS.Theme.spacing.md
+                Text { text: "Sortable Tabs (Line variant)"; color: DS.Theme.colors.subtext0; font.pixelSize: 12 }
+                
+                property var dynamicTabs: ["Documentos", "Imagens", "Vídeos", "Músicas"]
+                
+                DS.Tabs {
+                    width: parent.width
+                    model: parent.dynamicTabs
+                    variant: "line"
+                    sortable: true
+                    
+                    onTabsReordered: function(fromIndex, toIndex) {
+                        var newTabs = parent.dynamicTabs.slice()
+                        var item = newTabs.splice(fromIndex, 1)[0]
+                        newTabs.splice(toIndex, 0, item)
+                        parent.dynamicTabs = newTabs
+                        console.log("Nova ordem das abas:", newTabs)
+                    }
+                }
+            }
+
+            Column {
+                width: parent.width
+                spacing: DS.Theme.spacing.md
                 Text { text: "Steps (Timeline horizontal)"; color: DS.Theme.colors.subtext0; font.pixelSize: 12 }
                 DS.Steps {
                     width: parent.width

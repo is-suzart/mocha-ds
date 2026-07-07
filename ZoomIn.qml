@@ -8,6 +8,9 @@ Item {
     property real fromScale: 0.8
     property bool trigger: true
 
+    property bool triggerOnVisibility: false
+    property real visibilityThreshold: 0.3
+
     default property alias data: container.data
 
     implicitWidth: container.implicitWidth
@@ -41,15 +44,38 @@ Item {
 
     onTriggerChanged: {
         if (trigger) zoomIn()
+        else { root.opacity = 0; root.scale = root.fromScale }
+        if (!trigger && triggerOnVisibility) startVisibilityCheck()
     }
 
     function zoomIn() {
+        visibilityTimer.stop()
         if (delay > 0) {
             zoomTimer.restart()
         } else {
             root.opacity = 1
             root.scale = 1
         }
+    }
+
+    function startVisibilityCheck() {
+        if (!triggerOnVisibility) return
+        visibilityTimer.start()
+    }
+
+    function checkVisibility() {
+        if (!parent || root.trigger) return
+        var pos = mapToItem(parent, 0, 0)
+        if (pos.y + root.height * root.visibilityThreshold < parent.height && pos.y + root.height > 0) {
+            root.trigger = true
+        }
+    }
+
+    Timer {
+        id: visibilityTimer
+        interval: 150
+        repeat: true
+        onTriggered: checkVisibility()
     }
 
     Timer {
@@ -63,6 +89,10 @@ Item {
     }
 
     Component.onCompleted: {
-        if (trigger) Qt.callLater(zoomIn)
+        if (triggerOnVisibility) {
+            Qt.callLater(startVisibilityCheck)
+        } else if (trigger) {
+            Qt.callLater(zoomIn)
+        }
     }
 }

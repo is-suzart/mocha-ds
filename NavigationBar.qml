@@ -38,6 +38,7 @@ Item {
         if (variant === "expanding") return 16;
         return 20;
     }
+    readonly property real chromeShadowOpacity: root.variant === "floating" ? 1.0 : 0.78
 
     implicitHeight: variant === "labeled" ? 72 : 56
     implicitWidth: itemsRow.implicitWidth + 24 // 12px padding on each side
@@ -73,6 +74,11 @@ Item {
         id: shadowStack
         anchors.fill: bgRect
         z: -1
+        opacity: root.chromeShadowOpacity
+
+        Behavior on opacity {
+            NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+        }
         
         // Layer 1: Close shadow
         Rectangle {

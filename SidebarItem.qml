@@ -39,6 +39,20 @@ Item {
     Behavior on height {
         NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
     }
+    activeFocusOnTab: true
+
+    Keys.onReturnPressed: {
+        if (root.hasChildren) {
+            root.expanded = !root.expanded;
+        }
+        root.clicked();
+    }
+    Keys.onSpacePressed: {
+        if (root.hasChildren) {
+            root.expanded = !root.expanded;
+        }
+        root.clicked();
+    }
 
     // ==========================================
     // Visual Tree
@@ -83,11 +97,14 @@ Item {
                 // Active: surface0 solid (100% opacity)
                 // Hover: surface0 50% opacity
                 // Idle: transparent
-                color: Theme.colors.surface0
+                color: root.isActive ? Theme.colors.surface0 : Theme.colors.surface1
                 opacity: root.isActive ? 1.0 : (clickArea.containsMouse ? 0.5 : 0.0)
 
                 Behavior on opacity {
                     NumberAnimation { duration: 200 }
+                }
+                Behavior on color {
+                    ColorAnimation { duration: 150 }
                 }
             }
 
@@ -142,9 +159,10 @@ Item {
             // Chevron Indicator (only if it has sub-items and sidebar is expanded)
             LucideIcon {
                 id: chevronItem
-                name: root.expanded ? "chevron-down" : "chevron-right"
+                name: "chevron-right"
                 size: 16
                 color: root.isActive ? Theme.colors.mauve : Theme.colors.subtext1
+                rotation: root.expanded ? 90 : 0
                 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
@@ -154,6 +172,9 @@ Item {
                 
                 Behavior on color {
                     ColorAnimation { duration: 150 }
+                }
+                Behavior on rotation {
+                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                 }
             }
         }
@@ -182,5 +203,10 @@ Item {
                 }
             }
         }
+    }
+
+    FocusRing {
+        target: root
+        active: root.activeFocus
     }
 }

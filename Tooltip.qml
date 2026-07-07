@@ -17,6 +17,7 @@ Item {
         } else {
             _delayTimer.stop();
             _bubble.opacity = 0;
+            _bubble.scale = 0.96;
         }
     }
 
@@ -54,6 +55,7 @@ Item {
             var nextZ = Theme.getNextMaxZ();
             root.z = nextZ;
             _bubble.z = nextZ;
+            _bubble.scale = 1.0;
             _bubble.opacity = 1;
         }
     }
@@ -125,9 +127,11 @@ Item {
     Item {
         id: _bubble
         opacity: 0
+        scale: 0.96
         z: 9999
 
         Behavior on opacity { NumberAnimation { duration: 130; easing.type: Easing.OutQuad } }
+        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         width:  _bubbleRect.width  + _caretItem.width  * (root._actualPlacement === "left" || root._actualPlacement === "right" ? 1 : 0)
         height: _bubbleRect.height + _caretItem.height * (root._actualPlacement === "top"  || root._actualPlacement === "bottom" ? 1 : 0)

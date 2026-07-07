@@ -27,6 +27,7 @@ Item {
     readonly property bool isActive: navigationBar ? navigationBar.currentIndex === index : false
     readonly property string variant: navigationBar ? navigationBar.variant : "standard"
     readonly property color highlightColor: navigationBar ? navigationBar.highlightColor : Theme.colors.primary
+    readonly property color hoverColor: Qt.rgba(highlightColor.r, highlightColor.g, highlightColor.b, 0.12)
 
     // Popout animation offset
     readonly property real activeY: (variant === "floating" && isActive) ? -28 : 0
@@ -71,6 +72,21 @@ Item {
     // Cozy scale micro-animation on hover + press
     scale: mouseArea.pressed ? 0.95 : (mouseArea.containsMouse ? 1.02 : 1.0)
     Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
+    activeFocusOnTab: index >= 0
+
+    Keys.onReturnPressed: {
+        if (navigationBar && root.index >= 0) {
+            navigationBar.currentIndex = root.index;
+        }
+    }
+    Keys.onSpacePressed: {
+        if (navigationBar && root.index >= 0) {
+            navigationBar.currentIndex = root.index;
+        }
+    }
+
+    Accessible.role: Accessible.Button
+    Accessible.name: root.label
 
     // ==========================================
     // Visual Tree
@@ -92,6 +108,17 @@ Item {
             
             Behavior on y {
                 SpringAnimation { spring: 3.2; damping: 0.55 }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: root.variant === "labeled" ? 2 : 0
+                radius: height / 2
+                color: root.hoverColor
+                opacity: !root.isActive && mouseArea.containsMouse ? 1.0 : 0.0
+
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+                Behavior on color { ColorAnimation { duration: 150 } }
             }
 
             // Row containing the icon and the text
@@ -224,5 +251,10 @@ Item {
                 navigationBar.currentIndex = root.index;
             }
         }
+    }
+
+    FocusRing {
+        target: root
+        active: root.activeFocus
     }
 }
