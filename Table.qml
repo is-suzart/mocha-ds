@@ -544,12 +544,16 @@ Item {
                                             target: null
                                             
                                             property int _originalIndex: -1
+                                            property real _startX: 0
+                                            property real _startY: 0
                                             
                                             onActiveChanged: {
                                                 if (active) {
                                                     rowRect.held = true
-                                                    dragGhost.x = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).x
-                                                    dragGhost.y = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).y
+                                                    _startX = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).x
+                                                    _startY = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).y
+                                                    dragGhost.x = _startX
+                                                    dragGhost.y = _startY
                                                     dragGhost.visible = true
                                                     dragGhost.__startIndex = dropArea.visualIndex
                                                     _originalIndex = index // Data array index
@@ -572,8 +576,8 @@ Item {
                                             
                                             onTranslationChanged: {
                                                 if (active) {
-                                                    dragGhost.y += translation.y
-                                                    dragGhost.x += translation.x
+                                                    dragGhost.y = _startY + translation.y
+                                                    dragGhost.x = _startX + translation.x
                                                 }
                                             }
                                         }

@@ -4,8 +4,8 @@ import ".." as DS
 
 Playground {
     id: pg
-    title: "Table"
-    description: "Tabela de dados avançada com ordenação, seleção e paginação."
+    title: "Sortable Table"
+    description: "Tabela de dados avançada que permite reordenação manual das linhas."
 
     property var mockEmployees: [
         { id: "EMP-1011", name: "Bernardo Dias", email: "bernardo@empresa.com", role: "DevOps Engineer", status: "Ativo" },
@@ -27,21 +27,28 @@ Playground {
                 { name: "role", label: "Cargo", width: 150 },
                 { name: "status", label: "Status", width: 100 }
             ]
-            selectable: selectSwitch.checked
-            showPagination: pageSwitch.checked
+            selectable: true
+            showPagination: true
+            dragToReorder: true
+            
+            onRowsReordered: function(fromIndex, toIndex) {
+                var arr = pg.mockEmployees.slice();
+                var item = arr.splice(fromIndex, 1)[0];
+                arr.splice(toIndex, 0, item);
+                pg.mockEmployees = arr;
+                console.log("Linhas reordenadas: " + fromIndex + " -> " + toIndex);
+            }
         }
     ]
 
     controls: [
-        PlaygroundCtrlSwitch {
-            id: selectSwitch
-            label: "Selecionável"
-            checked: true
-        },
-        PlaygroundCtrlSwitch {
-            id: pageSwitch
-            label: "Paginação"
-            checked: true
+        Text {
+            text: "Experimente arrastar as linhas pelo ícone de grip (⋮⋮) no início de cada linha para reordená-las."
+            font.family: DS.Theme.typography.family
+            font.pixelSize: DS.Theme.typography.sizeMd
+            color: DS.Theme.colors.subtext0
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
         }
     ]
 }
