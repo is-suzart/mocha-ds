@@ -21,7 +21,7 @@ Window {
         { id: "text", label: "Texto", icon: "file-text", components: ["TextEditor", "AdvancedTextEditor", "FormField", "DynamicForm"] },
         { id: "display", label: "Display", icon: "eye", components: ["HeroCarousel", "Badge", "Avatar", "ProgressBar", "Spinner", "Skeleton", "Tooltip", "Toast", "StripedFill", "SteppedProgress", "Stepper"] },
         { id: "layout", label: "Layout", icon: "layout", components: ["HStack", "VStack", "Box", "Card", "Tile", "Accordion", "Modal", "AlertDialog", "Drawer", "EmptyState", "Separator", "Shell", "CozyGrid"] },
-        { id: "data", label: "Dados", icon: "database", components: ["Table", "Paginator", "InteractiveListCell", "CozyList"] },
+        { id: "data", label: "Dados", icon: "database", components: ["Table", "TreeTable", "Paginator", "InteractiveListCell", "CozyList"] },
         { id: "charts", label: "Gráficos", icon: "pie-chart", components: ["Charts", "PieChart", "BarChart", "LineChart"] },
         { id: "navigation", label: "Navegação", icon: "navigation", components: ["Navigation", "NavigationBar", "Sidebar", "Breadcrumb"] },
         { id: "interactivity", label: "Interatividade", icon: "move", components: ["SortableTabs", "Draggable", "DropZone", "SortableList", "Kanban", "SortableTable"] },
