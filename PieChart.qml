@@ -182,9 +182,14 @@ Item {
         }
 
         // Tooltip for Pie mode
-        Tooltip {
-            text: chartRoot.hoveredItem ? chartRoot.hoveredItem.label + ": <b>" + chartRoot.hoveredItem.value + "</b>" : ""
-            visible: chartRoot.hoverIndex >= 0 && chartRoot.donutRatio < 0.4
+        ChartTooltip {
+            showTooltip: chartRoot.hoverIndex >= 0 && chartRoot.donutRatio < 0.4
+            title: chartRoot.hoveredItem ? chartRoot.hoveredItem.label : ""
+            items: chartRoot.hoveredItem ? [{
+                color: chartRoot.colors[chartRoot.hoverIndex % chartRoot.colors.length],
+                label: "Valor",
+                value: chartRoot.hoveredItem.value
+            }] : []
             placement: "top"
         }
     }

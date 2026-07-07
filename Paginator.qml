@@ -20,10 +20,13 @@ Item {
     // Internal Style Tokens & Helpers
     // ==========================================
     readonly property var pagesList: getPagesList(currentPage, totalPages)
+    readonly property real pageItemHeight: 32
 
     // Confirm state: input is active (focused) or has text
     readonly property bool isConfirmState: !disabled && showGoToPage && (pageInput.activeFocus || pageInput.text !== "")
     property bool suppressPageChangeAnim: true
+    property int previousPage: currentPage
+    property int pageDirection: 0
 
     // Layout Dimensions
     implicitWidth: layoutRow.implicitWidth
@@ -37,8 +40,11 @@ Item {
     onCurrentPageChanged: {
         if (suppressPageChangeAnim) {
             suppressPageChangeAnim = false;
+            previousPage = currentPage;
             return;
         }
+        pageDirection = currentPage > previousPage ? 1 : (currentPage < previousPage ? -1 : 0);
+        previousPage = currentPage;
         pageChangeAnim.restart();
     }
 
@@ -70,10 +76,12 @@ Item {
         Item {
             id: pagesWrapper
             width: pagesRow.implicitWidth
-            height: pagesRow.implicitHeight
+            height: root.pageItemHeight
             anchors.verticalCenter: parent.verticalCenter
             scale: 1.0
             opacity: 1.0
+            
+            transform: Translate { id: pagesTranslate; x: 0 }
 
             Behavior on scale {
                 NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
@@ -91,16 +99,17 @@ Item {
                     model: root.pagesList
 
                     delegate: Item {
-                        width: isEllipsis ? 20 : pageButton.implicitWidth
-                        height: 32
+                        width: isEllipsis ? 18 : pageButton.implicitWidth
+                        height: root.pageItemHeight
                         anchors.verticalCenter: parent.verticalCenter
                         readonly property bool isEllipsis: modelData === "..."
                         readonly property bool isCurrentPage: !isEllipsis && modelData === root.currentPage
+                        readonly property Item paginatorRoot: root
                         scale: isEllipsis ? 1.0 : (isCurrentPage ? 1.04 : 1.0)
-                        opacity: isEllipsis ? 0.7 : (isCurrentPage ? 1.0 : 0.92)
+                        opacity: isEllipsis ? 0.7 : (isCurrentPage ? 1.0 : 0.9)
 
                         Behavior on scale {
-                            NumberAnimation { duration: 160; easing.type: Easing.OutBack; easing.overshoot: 1.08 }
+                            NumberAnimation { duration: 170; easing.type: Easing.OutCubic }
                         }
                         Behavior on opacity {
                             NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
@@ -123,15 +132,16 @@ Item {
                             visible: !parent.isEllipsis
                             text: String(modelData)
                             size: "sm"
-                            variant: modelData === root.currentPage ? "primary" : "ghost"
-                            disabled: root.disabled
+                            variant: modelData === parent.paginatorRoot.currentPage ? "primary" : "ghost"
+                            disabled: parent.paginatorRoot.disabled
                             customRadius: Theme.geometry.radiusSm
+                            anchors.centerIn: parent
 
                             onClicked: {
                                 var p = parseInt(modelData);
-                                if (!isNaN(p) && root.currentPage !== p) {
-                                    root.currentPage = p;
-                                    root.pageChanged(p);
+                                if (!isNaN(p) && parent.paginatorRoot.currentPage !== p) {
+                                    parent.paginatorRoot.currentPage = p;
+                                    parent.paginatorRoot.pageChanged(p);
                                 }
                             }
                         }
@@ -182,8 +192,16 @@ Item {
     SequentialAnimation {
         id: pageChangeAnim
         ParallelAnimation {
-            NumberAnimation { target: pagesWrapper; property: "opacity"; from: 0.86; to: 1.0; duration: 150; easing.type: Easing.OutCubic }
-            NumberAnimation { target: pagesWrapper; property: "scale"; from: 0.985; to: 1.0; duration: 170; easing.type: Easing.OutBack; easing.overshoot: 1.05 }
+            NumberAnimation { target: pagesWrapper; property: "opacity"; from: 0.8; to: 1.0; duration: 170; easing.type: Easing.OutCubic }
+            NumberAnimation { target: pagesWrapper; property: "scale"; from: 0.975; to: 1.0; duration: 210; easing.type: Easing.OutBack; easing.overshoot: 1.12 }
+            NumberAnimation {
+                target: pagesTranslate
+                property: "x"
+                from: -root.pageDirection * 10
+                to: 0
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
         }
     }
 

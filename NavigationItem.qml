@@ -28,6 +28,7 @@ Item {
     readonly property string variant: navigationBar ? navigationBar.variant : "standard"
     readonly property color highlightColor: navigationBar ? navigationBar.highlightColor : Theme.colors.primary
     readonly property color hoverColor: Qt.rgba(highlightColor.r, highlightColor.g, highlightColor.b, 0.12)
+    property real expandingProgress: (variant === "expanding" && isActive) ? 1.0 : 0.0
 
     // Popout animation offset
     readonly property real activeY: (variant === "floating" && isActive) ? -28 : 0
@@ -52,10 +53,10 @@ Item {
     // ==========================================
     implicitHeight: navigationBar ? (navigationBar.variant === "labeled" ? 56 : 40) : 40
     
-    // Dynamic width with SpringAnimation Behavior
+    // Dynamic width driven by reveal progress for expanding variant
     width: {
         if (variant === "expanding") {
-            return isActive ? (40 + horizontalText.width + (rowLayout.spacing > 0 ? 12 : 0)) : 40
+            return 40 + (horizontalText.implicitWidth * expandingProgress) + (12 * expandingProgress)
         } else if (variant === "labeled") {
             return 72
         } else {
@@ -64,14 +65,13 @@ Item {
     }
     height: implicitHeight
 
-    // Smooth spring animation on width for expanding pill
-    Behavior on width {
-        SpringAnimation { spring: 3; damping: 0.2 }
+    Behavior on expandingProgress {
+        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
     }
 
     // Cozy scale micro-animation on hover + press
-    scale: mouseArea.pressed ? 0.95 : (mouseArea.containsMouse ? 1.02 : 1.0)
-    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
+    scale: mouseArea.pressed ? 0.97 : (mouseArea.containsMouse ? 1.01 : 1.0)
+    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
     activeFocusOnTab: index >= 0
 
     Keys.onReturnPressed: {
@@ -125,10 +125,10 @@ Item {
             Row {
                 id: rowLayout
                 anchors.centerIn: parent
-                spacing: (root.variant === "expanding" && root.isActive) ? 8 : 0
+                spacing: root.variant === "expanding" ? 8 * root.expandingProgress : 0
                 
                 Behavior on spacing {
-                    NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                 }
 
                 LucideIcon {
@@ -150,15 +150,20 @@ Item {
                     font.pixelSize: Theme.typography.sizeMd
                     color: Theme.colors.base
                     
-                    width: (root.variant === "expanding" && root.isActive) ? implicitWidth : 0
+                    width: root.variant === "expanding" ? implicitWidth * root.expandingProgress : 0
                     clip: true
-                    opacity: (root.variant === "expanding" && root.isActive) ? 1.0 : 0.0
+                    opacity: root.variant === "expanding" ? root.expandingProgress : 0.0
+                    scale: root.variant === "expanding" ? (0.94 + (0.06 * root.expandingProgress)) : 1.0
+                    transformOrigin: Item.Left
                     
                     Behavior on width {
-                        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                     }
                     Behavior on opacity {
-                        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                        NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                    }
+                    Behavior on scale {
+                        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                     }
 
                     anchors.verticalCenter: parent.verticalCenter

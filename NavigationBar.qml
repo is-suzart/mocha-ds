@@ -35,15 +35,20 @@ Item {
     // ==========================================
     readonly property real rowSpacing: {
         if (variant === "labeled") return 12;
-        if (variant === "expanding") return 16;
+        if (variant === "expanding") return 14;
         return 20;
     }
     readonly property real chromeShadowOpacity: root.variant === "floating" ? 1.0 : 0.78
+    readonly property int chromeAnimDuration: root.variant === "expanding" ? 220 : 180
 
     implicitHeight: variant === "labeled" ? 72 : 56
     implicitWidth: itemsRow.implicitWidth + 24 // 12px padding on each side
     width: implicitWidth
     height: implicitHeight
+
+    Behavior on width {
+        NumberAnimation { duration: root.chromeAnimDuration; easing.type: Easing.OutCubic }
+    }
 
     // ==========================================
     // Registration & Lifecycle
@@ -164,16 +169,16 @@ Item {
             
             // Premium smooth spring animations
             Behavior on x {
-                SpringAnimation { spring: 3.2; damping: 0.62 }
+                NumberAnimation { duration: root.chromeAnimDuration; easing.type: Easing.OutCubic }
             }
             Behavior on width {
-                SpringAnimation { spring: 3.2; damping: 0.62 }
+                NumberAnimation { duration: root.chromeAnimDuration; easing.type: Easing.OutCubic }
             }
             Behavior on y {
-                SpringAnimation { spring: 3.2; damping: 0.62 }
+                NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
             }
             Behavior on height {
-                SpringAnimation { spring: 3.2; damping: 0.62 }
+                NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
             }
             
             // Nested shadow stack for floating indicator

@@ -139,7 +139,15 @@ Item {
             y: chartRoot.hoverIndex < 0 ? 0 : parent.height - 20 - (chartRoot.chartData[chartRoot.hoverIndex].value / chartRoot.computedMaxValue) * (parent.height - 40) - 6
             Behavior on x { NumberAnimation { duration: 80 } }
             Behavior on y { NumberAnimation { duration: 80 } }
-            Tooltip { text: chartRoot.hoveredItem ? chartRoot.hoveredItem.label + ": <b>" + chartRoot.hoveredItem.value + "</b>" : ""; visible: true }
+            ChartTooltip {
+                showTooltip: chartRoot.hoverIndex >= 0
+                title: chartRoot.hoveredItem ? chartRoot.hoveredItem.label : ""
+                items: chartRoot.hoveredItem ? [{
+                    color: chartRoot.lineColor,
+                    label: "Valor",
+                    value: chartRoot.hoveredItem.value
+                }] : []
+            }
         }
     }
 

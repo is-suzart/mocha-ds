@@ -16,7 +16,9 @@ Playground {
             DS.Paginator {
                 totalPages: 10
                 currentPage: 1
-                onPageChanged: console.log("Página: " + page)
+                onPageChanged: function(page) {
+                    console.log("Página: " + page)
+                }
             }
             
             Text {

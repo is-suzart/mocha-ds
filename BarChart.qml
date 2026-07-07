@@ -83,7 +83,16 @@ Item {
                         }
                         Rectangle { width: parent.width; height: parent.radius; color: chartRoot.colors[index % chartRoot.colors.length]; anchors.bottom: parent.bottom; visible: parent.height > parent.radius }
                         MouseArea { id: ma; anchors.fill: parent; hoverEnabled: true }
-                        Tooltip { text: modelData.label + ": <b>" + modelData.value + "</b>"; visible: ma.containsMouse; placement: "top" }
+                        ChartTooltip { 
+                            showTooltip: ma.containsMouse
+                            title: modelData.label
+                            items: [{
+                                color: chartRoot.colors[index % chartRoot.colors.length],
+                                label: "Valor",
+                                value: modelData.value
+                            }]
+                            placement: "top" 
+                        }
                     }
                     Component.onCompleted: if (chartRoot.animated) animatedHeight = targetHeight
                     onTargetHeightChanged: if (chartRoot.animated) animatedHeight = targetHeight
