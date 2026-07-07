@@ -85,7 +85,7 @@ Item {
                 var node = processedNodes[i];
                 var nodeId = node.id || node.name;
                 node._treeDepth = depth;
-                node._hasChildren = (node.children && node.children.length > 0);
+                node._hasChildren = !!(node.children && node.children.length > 0);
                 node._isExpanded = !!root._expandedMap[nodeId];
                 
                 arr.push(node);
