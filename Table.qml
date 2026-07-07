@@ -30,11 +30,15 @@ Item {
     // Selection
     property bool selectable: true
 
+    // Drag and Drop Reordering
+    property bool dragToReorder: false
+
     // ==========================================
     // Signals
     // ==========================================
     signal selectionChanged(var indexes)
     signal sortChanged(string column, string order)
+    signal rowsReordered(int fromIndex, int toIndex)
     signal editSelected(var selectedRows)
     signal downloadSelected(var selectedRows)
     signal deleteSelected(var selectedRows)
@@ -58,14 +62,15 @@ Item {
     }
 
     readonly property int  checkboxColWidth: selectable ? 44 : 0
+    readonly property int  dragHandleWidth: dragToReorder ? 44 : 0
 
     // Total minimum content width (used for horizontal scrolling)
-    readonly property real minContentWidth: checkboxColWidth + baseColumnsWidth
+    readonly property real minContentWidth: dragHandleWidth + checkboxColWidth + baseColumnsWidth
 
     // Returns the effective rendered pixel-width for a given column
     function getColWidth(col, idx) {
         var baseW = col.width || 120;
-        var avail = root.width - checkboxColWidth;
+        var avail = root.width - checkboxColWidth - dragHandleWidth;
         if (avail > baseColumnsWidth && baseColumnsWidth > 0)
             return (baseW / baseColumnsWidth) * avail;
         return baseW;
@@ -268,6 +273,13 @@ Item {
                             anchors.fill: parent
                             spacing: 0
 
+                            // Drag handle spacer
+                            Item {
+                                width:   root.dragHandleWidth
+                                height:  parent.height
+                                visible: root.dragToReorder
+                            }
+
                             // Checkbox header cell
                             Item {
                                 id: headerCheckboxContainer
@@ -406,32 +418,69 @@ Item {
                 radius: Theme.geometry.radiusMd
                 clip: true
 
-                Flickable {
+                ListView {
                     id: bodyFlickable
                     anchors.fill: parent
                     contentWidth:  root.sharedContentWidth
-                    contentHeight: bodyColumn.implicitHeight
                     boundsBehavior: Flickable.StopAtBounds
                     clip: true
+                    spacing: 0
 
                     // Keep header in sync with horizontal scroll
                     onContentXChanged: root.sharedContentX = contentX
-
-                    Column {
-                        id: bodyColumn
+                    
+                    // Empty state as footer
+                    footer: Item {
                         width:   bodyFlickable.contentWidth
-                        spacing: 0
+                        height:  (root.paginatedRows && root.paginatedRows.length === 0) ? 120 : 0
+                        visible: root.paginatedRows && root.paginatedRows.length === 0
 
-                        // ── Body Rows ─────────────────────────────────────────
-                        Repeater {
-                            model: root.paginatedRows
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: Theme.spacing.sm
 
-                            delegate: Rectangle {
+                            LucideIcon {
+                                name: "inbox"; size: 32; color: Theme.colors.overlay0
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                            Text {
+                                text: "Nenhum registro encontrado"
+                                font.family:    Theme.typography.family
+                                font.pixelSize: Theme.typography.sizeMd
+                                color: Theme.colors.overlay0
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                antialiasing: true
+                            }
+                        }
+                    }
+
+                    model: DelegateModel {
+                        id: visualModel
+                        model: root.paginatedRows
+
+                        delegate: DropArea {
+                            id: dropArea
+                            width:  bodyFlickable.contentWidth
+                            height: 48
+                            keys: ["table-row"]
+
+                            property int visualIndex: DelegateModel.itemsIndex
+
+                            onEntered: function(drag) {
+                                var sourceIndex = drag.source.__startIndex;
+                                var targetIndex = dropArea.visualIndex;
+                                if (sourceIndex !== targetIndex) {
+                                    visualModel.items.move(sourceIndex, targetIndex);
+                                    drag.source.__startIndex = targetIndex;
+                                }
+                            }
+
+                            Rectangle {
                                 id: rowRect
-                                width:  bodyColumn.width
-                                height: 48
+                                width:  parent.width
+                                height: parent.height
 
-                                readonly property var rowData: modelData
+                                readonly property var rowData: typeof modelData !== "undefined" ? modelData : null
                                 readonly property int globalIndex: root.showPagination
                                     ? (root.currentPage - 1) * root.pageSize + index
                                     : index
@@ -439,6 +488,7 @@ Item {
                                     root.selectedIndexes.indexOf(globalIndex) !== -1
 
                                 color: {
+                                    if (rowRect.held) return Theme.colors.surface0;
                                     if (rowMouseArea.containsMouse) return Theme.colors.surface0;
                                     if (isRowSelected) return Qt.rgba(
                                         Theme.colors.primary.r,
@@ -446,7 +496,11 @@ Item {
                                         Theme.colors.primary.b, 0.08);
                                     return "transparent";
                                 }
-                                scale: rowMouseArea.pressed ? 0.995 : 1.0
+                                
+                                property bool held: false
+                                scale: held ? 1.02 : (rowMouseArea.pressed ? 0.995 : 1.0)
+                                opacity: held ? 0.8 : 1.0
+                                z: held ? 100 : 0
 
                                 // Bottom separator
                                 Rectangle {
@@ -459,10 +513,72 @@ Item {
 
                                 Behavior on color { ColorAnimation { duration: 120 } }
                                 Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
+                                Behavior on opacity { NumberAnimation { duration: 90 } }
 
                                 Row {
                                     anchors.fill: parent
                                     spacing: 0
+                                    
+                                    // Drag handle cell
+                                    Item {
+                                        id: dragHandleContainer
+                                        width:   root.dragHandleWidth
+                                        height:  parent.height
+                                        visible: root.dragToReorder
+                                        
+                                        LucideIcon {
+                                            name: "grip-vertical"
+                                            size: 16
+                                            color: Theme.colors.overlay0
+                                            anchors.centerIn: parent
+                                        }
+                                        
+                                        MouseArea {
+                                            id: dragMouseArea
+                                            anchors.fill: parent
+                                            cursorShape: Qt.OpenHandCursor
+                                        }
+                                        
+                                        DragHandler {
+                                            id: dragHandler
+                                            target: null
+                                            
+                                            property int _originalIndex: -1
+                                            
+                                            onActiveChanged: {
+                                                if (active) {
+                                                    rowRect.held = true
+                                                    dragGhost.x = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).x
+                                                    dragGhost.y = dropArea.mapToItem(bodyFlickable.contentItem, 0, 0).y
+                                                    dragGhost.visible = true
+                                                    dragGhost.__startIndex = dropArea.visualIndex
+                                                    _originalIndex = index // Data array index
+                                                    
+                                                    dragGhost.Drag.active = true
+                                                } else {
+                                                    rowRect.held = false
+                                                    dragGhost.Drag.active = false
+                                                    dragGhost.visible = false
+                                                    
+                                                    var finalIdx = dropArea.visualIndex;
+                                                    if (_originalIndex !== finalIdx) {
+                                                        visualModel.items.move(finalIdx, _originalIndex);
+                                                        Qt.callLater(function() {
+                                                            root.rowsReordered(_originalIndex, finalIdx);
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                            
+                                            onTranslationChanged: {
+                                                if (active) {
+                                                    dragGhost.y += translation.y
+                                                    dragGhost.x += translation.x
+                                                }
+                                            }
+                                        }
+                                    }
+
 
                                     // Checkbox cell
                                     Item {
@@ -562,35 +678,55 @@ Item {
                                     z: -1
                                     onClicked: root.toggleRowSelection(rowRect.globalIndex)
                                 }
-                            }
-                        }
-
-                        // ── Empty state ───────────────────────────────────────
-                        Item {
-                            width:   bodyColumn.width
-                            height:  (root.paginatedRows && root.paginatedRows.length === 0) ? 120 : 0
-                            visible: root.paginatedRows && root.paginatedRows.length === 0
-
-                            Column {
-                                anchors.centerIn: parent
-                                spacing: Theme.spacing.sm
-
+                            } // rowRect
+                        } // DropArea
+                    } // DelegateModel
+                    
+                    // The Ghost Item for Dragging
+                    Item {
+                        id: dragGhost
+                        width: bodyFlickable.contentWidth
+                        height: 48
+                        visible: false
+                        z: 999
+                        
+                        property int __startIndex: -1
+                        
+                        Drag.active: false
+                        Drag.keys: ["table-row"]
+                        Drag.hotSpot.x: width / 2
+                        Drag.hotSpot.y: height / 2
+                        
+                        Rectangle {
+                            anchors.fill: parent
+                            color: Theme.colors.surface0
+                            radius: Theme.geometry.radiusSm
+                            border.color: Theme.colors.primary
+                            border.width: 1
+                            opacity: 0.9
+                            
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: Theme.spacing.sm
+                                spacing: Theme.spacing.md
+                                
                                 LucideIcon {
-                                    name: "inbox"; size: 32; color: Theme.colors.overlay0
-                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    name: "grip-vertical"
+                                    size: 16
+                                    color: Theme.colors.primary
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Text {
-                                    text: "Nenhum registro encontrado"
-                                    font.family:    Theme.typography.family
+                                    text: "Arrastando linha..."
+                                    font.family: Theme.typography.family
                                     font.pixelSize: Theme.typography.sizeMd
-                                    color: Theme.colors.overlay0
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    antialiasing: true
+                                    color: Theme.colors.text
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
                             }
                         }
                     }
-                }
+                } // ListView
             }
         }
 

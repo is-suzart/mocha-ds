@@ -29,6 +29,15 @@ Playground {
             ]
             selectable: selectSwitch.checked
             showPagination: pageSwitch.checked
+            dragToReorder: dragSwitch.checked
+            
+            onRowsReordered: function(fromIndex, toIndex) {
+                var arr = pg.mockEmployees.slice();
+                var item = arr.splice(fromIndex, 1)[0];
+                arr.splice(toIndex, 0, item);
+                pg.mockEmployees = arr;
+                console.log("Linhas reordenadas: " + fromIndex + " -> " + toIndex);
+            }
         }
     ]
 
@@ -41,6 +50,11 @@ Playground {
         PlaygroundCtrlSwitch {
             id: pageSwitch
             label: "Paginação"
+            checked: true
+        },
+        PlaygroundCtrlSwitch {
+            id: dragSwitch
+            label: "Drag & Drop"
             checked: true
         }
     ]
