@@ -165,6 +165,14 @@ Item {
         anchors.bottomMargin: root.currentPadding
     }
 
+    activeFocusOnTab: !root.disabled && !root.readOnly
+
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            textEdit.forceActiveFocus()
+        }
+    }
+
     // Sync text from outside into the TextEdit
     Connections {
         target: root

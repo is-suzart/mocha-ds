@@ -330,6 +330,12 @@ Item {
     Accessible.description: root.placeholder + " input"
     activeFocusOnTab: !root.disabled && !root.readOnly
 
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            textInput.forceActiveFocus()
+        }
+    }
+
     // Focus ring overlay
     FocusRing {
         target: root
