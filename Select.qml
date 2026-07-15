@@ -215,17 +215,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         enabled: !root.disabled
-        onClicked: {
-            if (!root.expanded) {
-                // Smart flip: detect if there is room below
-                var windowItem = root;
-                while (windowItem.parent !== null) windowItem = windowItem.parent;
-                var posInWindow = root.mapToItem(windowItem, 0, 0);
-                var spaceBelow = windowItem.height - (posInWindow.y + root.height);
-                root.openUpward = spaceBelow < (root.maxDropdownHeight + Theme.spacing.md);
-            }
-            root.expanded = !root.expanded;
-        }
+        onClicked: root.toggleDropdown()
     }
 
     // Dropdown list container (drawn relative to the parent)
@@ -277,10 +267,14 @@ Item {
                 height: root.currentHeight - 4
                 radius: Theme.geometry.radiusSm
                 color: {
-                    if (modelData.value === root.selectedValue) {
-                        return delegateMouseArea.containsMouse ? Qt.rgba(Theme.colors.primary.r, Theme.colors.primary.g, Theme.colors.primary.b, 0.25) : Qt.rgba(Theme.colors.primary.r, Theme.colors.primary.g, Theme.colors.primary.b, 0.15);
+                    var isSelected = (modelData.value === root.selectedValue);
+                    var isHighlighted = (index === optionsListView.currentIndex);
+                    if (isSelected) {
+                        return (delegateMouseArea.containsMouse || isHighlighted)
+                            ? Qt.rgba(Theme.colors.primary.r, Theme.colors.primary.g, Theme.colors.primary.b, 0.25)
+                            : Qt.rgba(Theme.colors.primary.r, Theme.colors.primary.g, Theme.colors.primary.b, 0.15);
                     }
-                    return delegateMouseArea.containsMouse ? Theme.colors.surface0 : "transparent";
+                    return (delegateMouseArea.containsMouse || isHighlighted) ? Theme.colors.surface0 : "transparent";
                 }
                 scale: delegateMouseArea.pressed ? 0.985 : (delegateMouseArea.containsMouse ? 1.01 : 1.0)
 
@@ -387,6 +381,15 @@ Item {
     onExpandedChanged: {
         if (expanded) {
             hoistDropdown();
+            var selectedIdx = -1
+            for (var i = 0; i < root.formattedOptions.length; i++) {
+                if (root.formattedOptions[i].value === root.selectedValue) {
+                    selectedIdx = i
+                    break
+                }
+            }
+            optionsListView.currentIndex = selectedIdx >= 0 ? selectedIdx : 0
+            optionsListView.positionViewAtIndex(optionsListView.currentIndex, ListView.Contain)
         } else {
             restoreDropdown();
         }
@@ -464,5 +467,59 @@ Item {
         }
         // Fallback to string representation if not found in options
         root.selectedLabel = String(root.selectedValue);
+    }
+
+    function toggleDropdown() {
+        if (root.disabled) return;
+        if (!root.expanded) {
+            var windowItem = root;
+            while (windowItem.parent !== null) windowItem = windowItem.parent;
+            var posInWindow = root.mapToItem(windowItem, 0, 0);
+            var spaceBelow = windowItem.height - (posInWindow.y + root.height);
+            root.openUpward = spaceBelow < (root.maxDropdownHeight + Theme.spacing.md);
+        }
+        root.expanded = !root.expanded;
+    }
+
+    function selectIndex(index) {
+        if (index >= 0 && index < root.formattedOptions.length) {
+            var item = root.formattedOptions[index]
+            root.selectedValue = item.value;
+            root.selectedLabel = item.label;
+            root.valueChanged(item.value);
+            root.expanded = false;
+        }
+    }
+
+
+
+    Keys.onSpacePressed: toggleDropdown()
+    Keys.onReturnPressed: {
+        if (root.expanded) {
+            selectIndex(optionsListView.currentIndex)
+        } else {
+            toggleDropdown()
+        }
+    }
+    Keys.onEscapePressed: {
+        if (root.expanded) {
+            root.expanded = false;
+        }
+    }
+    Keys.onDownPressed: {
+        if (!root.expanded) {
+            toggleDropdown()
+        } else {
+            if (optionsListView.currentIndex < optionsListView.count - 1) {
+                optionsListView.currentIndex++
+            }
+        }
+    }
+    Keys.onUpPressed: {
+        if (root.expanded) {
+            if (optionsListView.currentIndex > 0) {
+                optionsListView.currentIndex--
+            }
+        }
     }
 }
