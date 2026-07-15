@@ -45,7 +45,7 @@ Item {
                 width: 18
                 height: 18
                 radius: 9
-                color: Theme.colors.text
+                color: Theme.isDark ? (root.checked ? Theme.colors.crust : Theme.colors.text) : "#ffffff"
                 anchors.verticalCenter: parent.verticalCenter
                 
                 // Slide thumb animation

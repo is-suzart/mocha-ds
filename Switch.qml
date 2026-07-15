@@ -45,7 +45,7 @@ Item {
                 width: root.thumbSize
                 height: root.thumbSize
                 radius: root.thumbSize / 2
-                color: Theme.colors.crust
+                color: Theme.isDark ? (root.checked ? Theme.colors.crust : Theme.colors.text) : "#ffffff"
                 x: root.checked ? root.trackWidth - root.thumbSize - 3 : 3
                 anchors.verticalCenter: parent.verticalCenter
 
