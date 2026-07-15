@@ -37,6 +37,7 @@ Item {
 
     // Mobile Column visibility switch
     property int activeMobileColumn: 0 // 0 = col1 | 1 = col2 | 2 = col3
+    property bool isReady: false
 
     // Breakpoint limits
     property real breakpointMd: 768
@@ -91,6 +92,14 @@ Item {
 
     Component.onCompleted: {
         reparentSidebars();
+        startupTimer.start();
+    }
+
+    Timer {
+        id: startupTimer
+        interval: 100
+        repeat: false
+        onTriggered: root.isReady = true
     }
 
     function reparentSidebars() {
@@ -255,6 +264,7 @@ Item {
         anchors.leftMargin: root.targetLeftMargin
 
         Behavior on anchors.leftMargin {
+            enabled: root.isReady
             NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
         }
 
@@ -273,7 +283,6 @@ Item {
                 width: root.isMobile ? parent.width : root.calculateColumnWidth(0)
                 opacity: visible ? 1.0 : 0.0
 
-                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 Behavior on opacity { NumberAnimation { duration: 200 } }
 
                 Item {
@@ -295,7 +304,6 @@ Item {
                 width: root.isMobile ? parent.width : root.calculateColumnWidth(1)
                 opacity: visible ? 1.0 : 0.0
 
-                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 Behavior on opacity { NumberAnimation { duration: 200 } }
 
                 Item {
@@ -317,7 +325,6 @@ Item {
                 width: root.isMobile ? parent.width : root.calculateColumnWidth(2)
                 opacity: visible ? 1.0 : 0.0
 
-                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 Behavior on opacity { NumberAnimation { duration: 200 } }
 
                 Item {
