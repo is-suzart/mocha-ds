@@ -21,6 +21,16 @@ QtObject {
     signal missingTranslation(string key, string locale)
 
     onLocaleChanged: {
+        _loadFallback();
+        reload();
+    }
+
+    onFallbackLocaleChanged: {
+        _loadFallback();
+    }
+
+    onBasePathChanged: {
+        _loadFallback();
         reload();
     }
 
@@ -63,11 +73,13 @@ QtObject {
                 text = text.zero;
             } else if (count === 1 && text.one !== undefined) {
                 text = text.one;
+            } else if (count === 2 && text.two !== undefined) {
+                text = text.two;
             } else if (text.other !== undefined) {
                 text = text.other;
             } else {
                 // Fallback to whatever is available in the plural object
-                text = text.other || text.one || text.zero || key;
+                text = text.other || text.one || text.two || text.zero || key;
             }
         }
 
@@ -86,7 +98,11 @@ QtObject {
     }
 
     function _loadFallback() {
-        if (locale === fallbackLocale) return;
+        if (locale === fallbackLocale) {
+            _fallbackMessages = {};
+            _version++;
+            return;
+        }
         _loadLocale(fallbackLocale, function(data) {
             _fallbackMessages = _flattenJSON(data);
             _version++;
@@ -140,9 +156,13 @@ QtObject {
             } else {
                 var isEmpty = true;
                 // Check if this object is a pluralization object
-                var hasPluralKeys = (cur.zero !== undefined || cur.one !== undefined || cur.other !== undefined);
+                var curKeys = Object.keys(cur);
+                var pluralKeys = ["zero", "one", "two", "few", "many", "other"];
+                var isPluralObject = curKeys.length > 0 && curKeys.every(function(k) {
+                    return pluralKeys.indexOf(k) !== -1;
+                });
                 
-                if (hasPluralKeys && Object.keys(cur).length <= 3) {
+                if (isPluralObject) {
                     // Stop flattening here, keep it as an object for the t() function to consume
                     result[prop] = cur;
                     return;

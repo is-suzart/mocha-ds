@@ -138,6 +138,13 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    HoverHandler {
+        id: hoverHandler
+    }
+
+    scale: hoverHandler.hovered ? 1.04 : 1.0
+    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+
     // ==========================================
     // Visual Tree
     // ==========================================

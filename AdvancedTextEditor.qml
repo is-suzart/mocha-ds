@@ -284,6 +284,22 @@ Item {
                         }
                     }
 
+                    Keys.onTabPressed: function(event) {
+                        var next = root.nextItemInFocusChain(true);
+                        if (next) {
+                            next.forceActiveFocus();
+                            event.accepted = true;
+                        }
+                    }
+
+                    Keys.onBacktabPressed: function(event) {
+                        var prev = root.nextItemInFocusChain(false);
+                        if (prev) {
+                            prev.forceActiveFocus();
+                            event.accepted = true;
+                        }
+                    }
+
                     // Placeholder
                     Text {
                         text: root.placeholder

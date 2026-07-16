@@ -24,6 +24,14 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    HoverHandler {
+        id: hoverHandler
+    }
+
+    scale: hoverHandler.hovered ? 1.06 : 1.0
+    z: hoverHandler.hovered ? 2 : 1
+    Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutBack } }
+
     Rectangle {
         anchors.fill: parent
         radius: shape === "circle" ? avatarSize / 2 : Theme.geometry.radiusMd

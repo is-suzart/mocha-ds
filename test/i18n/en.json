@@ -6,10 +6,12 @@
       "save": "Save",
       "cancel": "Cancel"
     },
+    "fallback_example": "This is a fallback string",
     "notifications": {
       "count": {
         "zero": "No notifications",
         "one": "1 notification",
+        "two": "2 notifications!",
         "other": "{{count}} notifications"
       }
     }

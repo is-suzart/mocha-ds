@@ -56,6 +56,14 @@ Item {
                 font.pixelSize: DS.Theme.typography.sizeSm
                 color: DS.Theme.colors.red
             }
+
+            Text {
+                // Fallback key (missing in pt-BR, present in en)
+                text: "Fallback test: " + DS.MochaI18n.t("fallback_example")
+                font.family: DS.Theme.typography.family
+                font.pixelSize: DS.Theme.typography.sizeSm
+                color: DS.Theme.colors.green
+            }
         }
 
         DS.Separator {}
@@ -71,6 +79,10 @@ Item {
             DS.Badge {
                 text: DS.MochaI18n.t("notifications.count", { count: 1 })
                 variant: "primary"
+            }
+            DS.Badge {
+                text: DS.MochaI18n.t("notifications.count", { count: 2 })
+                variant: "warning"
             }
             DS.Badge {
                 text: DS.MochaI18n.t("notifications.count", { count: 5 })
