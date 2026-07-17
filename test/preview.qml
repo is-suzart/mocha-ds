@@ -23,7 +23,7 @@ Window {
         { id: "layout", label: "Layout", icon: "layout", components: ["HStack", "VStack", "Box", "Card", "Tile", "Accordion", "Modal", "AlertDialog", "Popover", "Drawer", "EmptyState", "Separator", "Shell", "CozyGrid"] },
         { id: "data", label: "Dados", icon: "database", components: ["Table", "TreeTable", "Paginator", "InteractiveListCell", "CozyList"] },
         { id: "charts", label: "Gráficos", icon: "pie-chart", components: ["Charts", "PieChart", "BarChart", "LineChart"] },
-        { id: "navigation", label: "Navegação", icon: "navigation", components: ["Navigation", "NavigationBar", "Sidebar", "Breadcrumb"] },
+        { id: "navigation", label: "Navegação", icon: "navigation", components: ["Navigation", "NavigationBar", "Sidebar", "Breadcrumb", "Router"] },
         { id: "interactivity", label: "Interatividade", icon: "move", components: ["SortableTabs", "Draggable", "DropZone", "SortableList", "Kanban", "SortableTable"] },
         { id: "animations", label: "Animações", icon: "zap", components: ["Animations"] }
     ]

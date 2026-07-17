@@ -98,3 +98,6 @@ EmptyState EmptyState.qml
 AlertDialog AlertDialog.qml
 ContextMenu ContextMenu.qml
 HeroCarousel HeroCarousel.qml
+Route Route.qml
+Router Router.qml
+RouterLink RouterLink.qml
