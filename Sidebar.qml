@@ -6,7 +6,7 @@ Item {
     // ==========================================
     // Public API (Properties)
     // ==========================================
-    
+
     // Layout variant: "fixed" | "floated"
     property string variant: "fixed"
 
@@ -20,34 +20,47 @@ Item {
     property real collapsedWidth: 68
     property real expandedWidth: 260
 
-    // List of children components (Header, Section, Footer)
+    // Default property: filhos vão para o slot de seções (SidebarSection, SidebarItem, etc.)
+    // mas SidebarHeader/SidebarFooter são detectados pelo flag isSidebarHeader/isSidebarFooter.
     default property list<Item> content
+
+    // ── Slots livres ──────────────────────────────────────────
+    // Use estes slots quando quiser colocar QUALQUER item no topo
+    // ou rodapé da sidebar, sem precisar usar SidebarHeader/SidebarFooter.
+    //
+    // Exemplo:
+    //   Sidebar {
+    //       header: Rectangle { color: "red"; height: 60 }
+    //       footer: Button { text: "Sair" }
+    //       SidebarSection { ... }
+    //   }
+    //
+    // SidebarHeader/SidebarFooter continuam funcionando normalmente
+    // como filhos do slot default — eles têm prioridade sobre estes slots
+    // caso ambos sejam fornecidos simultaneamente.
+    property list<Item> header
+    property list<Item> footer
 
     // ==========================================
     // Internal State and Animation
     // ==========================================
-    
-    // Expose layout parameters to children
+
     readonly property bool isHovered: hoverHandler.hovered
     readonly property bool isFullyExpanded: !isCollapsed || (expandOnHover && isHovered)
     readonly property real targetWidth: isFullyExpanded ? expandedWidth : collapsedWidth
     readonly property real floatedShadowOpacity: root.variant === "floated" ? (root.isFullyExpanded ? 1.0 : 0.72) : 0.0
-    
-    // Expose the current animated visual width for children to bind to
+
     property real currentWidth: targetWidth
     Behavior on currentWidth {
         NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
     }
 
-    // Set implicit sizes
     implicitWidth: isCollapsed ? collapsedWidth : expandedWidth
     implicitHeight: 600
 
-    // Root logical width is fixed to layout state to prevent pushing siblings on hover
     width: isCollapsed ? collapsedWidth : expandedWidth
     height: implicitHeight
 
-    // Hover handler to detect hover expansion
     HoverHandler {
         id: hoverHandler
         enabled: root.isCollapsed && root.expandOnHover
@@ -57,7 +70,6 @@ Item {
     // Visual Tree
     // ==========================================
 
-    // Shadow Layer (only for floated variant)
     Rectangle {
         id: shadowEffect
         anchors.fill: bgRect
@@ -75,30 +87,22 @@ Item {
         }
     }
 
-    // Background and container Panel
     Rectangle {
         id: bgRect
-        
-        // Match the animated visual width
+
         width: root.currentWidth
-        
-        // Height adjustments based on variant
         height: root.variant === "floated" ? root.height - Theme.spacing.md * 2 : root.height
-        
+
         anchors.left: parent.left
         anchors.leftMargin: root.variant === "floated" ? Theme.spacing.md : 0
         anchors.verticalCenter: parent.verticalCenter
-        
-        // Colors & Border based on variant
+
         color: root.variant === "fixed" ? Theme.colors.crust : Theme.colors.mantle
-        
+
         border.color: Theme.colors.surface0
         border.width: root.variant === "fixed" ? Theme.geometry.borderSm : 0
-        
-        // Border Radius
+
         radius: root.variant === "floated" ? Theme.geometry.radiusLg : 0
-        
-        // Clip content if it is very narrow or during transitions
         clip: true
         z: 10
 
@@ -106,9 +110,7 @@ Item {
             ColorAnimation { duration: 180 }
         }
 
-        // Custom borders layout
-        // For fixed layout, we only want the right border, not top/bottom/left.
-        // QML's border draws on all sides. We can override by placing a 1px line on the right edge.
+        // Borda direita apenas no modo fixed
         Rectangle {
             id: rightBorder
             width: Theme.geometry.borderSm
@@ -119,9 +121,7 @@ Item {
             visible: root.variant === "fixed"
         }
 
-        // Layout Containers
-        
-        // 1. Header Container (Pushed to the top)
+        // ── 1. Header Container ───────────────────────────────
         Item {
             id: headerContainer
             width: parent.width
@@ -130,7 +130,7 @@ Item {
             anchors.topMargin: root.variant === "floated" ? Theme.spacing.sm : 0
         }
 
-        // 3. Footer Container (Pushed to the bottom)
+        // ── 3. Footer Container ───────────────────────────────
         Item {
             id: footerContainer
             width: parent.width
@@ -139,7 +139,7 @@ Item {
             anchors.bottomMargin: root.variant === "floated" ? Theme.spacing.sm : 0
         }
 
-        // 2. Sections/Scroll Container (Takes remaining space)
+        // ── 2. Section Container (espaço restante) ────────────
         Item {
             id: sectionContainer
             width: parent.width
@@ -149,9 +149,31 @@ Item {
         }
     }
 
-    // Dynamic Reparenting of Children
+    // ==========================================
+    // Reparenting de Filhos
+    // ==========================================
+
     Component.onCompleted: {
-        for (var i = 0; i < content.length; i++) {
+        var i;
+
+        // 1. Slots livres: header / footer (propriedades explícitas)
+        //    São inseridos ANTES do loop do content para que o SidebarHeader/Footer
+        //    possa ainda sobrescrever via content se o dev quiser.
+        for (i = 0; i < root.header.length; i++) {
+            var hItem = root.header[i];
+            hItem.parent = headerContainer;
+            hItem.width = Qt.binding(function() { return headerContainer.width; });
+        }
+
+        for (i = 0; i < root.footer.length; i++) {
+            var fItem = root.footer[i];
+            fItem.parent = footerContainer;
+            fItem.width = Qt.binding(function() { return footerContainer.width; });
+        }
+
+        // 2. Slot default: detecta SidebarHeader/SidebarFooter pelos flags,
+        //    o restante vai para o sectionContainer.
+        for (i = 0; i < content.length; i++) {
             var child = content[i];
             if (child.isSidebarHeader === true) {
                 child.parent = headerContainer;
@@ -159,12 +181,12 @@ Item {
                 child.parent = footerContainer;
             } else {
                 child.parent = sectionContainer;
-                // Make sections fill the container width
-                child.anchors.left = sectionContainer.left;
+                child.anchors.left  = sectionContainer.left;
                 child.anchors.right = sectionContainer.right;
-                child.anchors.top = sectionContainer.top;
+                child.anchors.top   = sectionContainer.top;
                 child.anchors.bottom = sectionContainer.bottom;
             }
         }
     }
 }
+
