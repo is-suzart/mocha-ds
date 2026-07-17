@@ -1,0 +1,716 @@
+{
+  // ============================================================
+  // snippets/snippets.json
+  // Snippets declarativos para os componentes mais comuns do MochaDS.
+  // Cada snippet cria o esqueleto completo do componente com
+  // placeholders ($1, $2...) para as props principais.
+  // ============================================================
+
+  // ─── AÇÕES ───────────────────────────────────────────────────
+
+  "MochaDS Button": {
+    "scope": "qml",
+    "prefix": ["Button", "mds-button"],
+    "description": "Botão MochaDS com variante e ícone",
+    "body": [
+      "Button {",
+      "    text: \"${1:Label}\"",
+      "    variant: \"${2|primary,secondary,danger,success,warning,info,outline,tonal,ghost,filled|}\"",
+      "    ${3:leftIcon: \"${4:icon-name}\"}",
+      "    onClicked: ${5:console.log(\"clicked\")}",
+      "}"
+    ]
+  },
+
+  "MochaDS ButtonGroup": {
+    "scope": "qml",
+    "prefix": ["ButtonGroup", "mds-buttongroup"],
+    "description": "Grupo de botões com indicador deslizante",
+    "body": [
+      "ButtonGroup {",
+      "    currentIndex: ${1:0}",
+      "    ButtonGroupItem { text: \"${2:Opção A}\" }",
+      "    ButtonGroupItem { text: \"${3:Opção B}\" }",
+      "    ButtonGroupItem { text: \"${4:Opção C}\" }",
+      "}"
+    ]
+  },
+
+  "MochaDS TextField": {
+    "scope": "qml",
+    "prefix": ["TextField", "mds-textfield"],
+    "description": "Campo de texto MochaDS",
+    "body": [
+      "TextField {",
+      "    placeholder: \"${1:Digite aqui...}\"",
+      "    type: \"${2|text,password,email,number|}\"",
+      "    ${3:iconLeft: \"${4:search}\"}",
+      "    onTextEdited: ${5:console.log(text)}",
+      "}"
+    ]
+  },
+
+  "MochaDS Select": {
+    "scope": "qml",
+    "prefix": ["Select", "mds-select"],
+    "description": "Select dropdown MochaDS",
+    "body": [
+      "Select {",
+      "    options: [${1:\"Opção A\", \"Opção B\", \"Opção C\"}]",
+      "    placeholder: \"${2:Selecione...}\"",
+      "    onValueChanged: function(val) {",
+      "        ${3:console.log(val)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS Checkbox": {
+    "scope": "qml",
+    "prefix": ["Checkbox", "mds-checkbox"],
+    "description": "Checkbox MochaDS",
+    "body": [
+      "Checkbox {",
+      "    label: \"${1:Aceito os termos}\"",
+      "    onToggled: function(checked) {",
+      "        ${2:console.log(checked)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS Switch": {
+    "scope": "qml",
+    "prefix": ["Switch", "mds-switch"],
+    "description": "Toggle switch MochaDS",
+    "body": [
+      "Switch {",
+      "    label: \"${1:Ativar}\"",
+      "    checked: ${2:false}",
+      "    onToggled: function(on) {",
+      "        ${3:console.log(on)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS Slider": {
+    "scope": "qml",
+    "prefix": ["Slider", "mds-slider"],
+    "description": "Slider numérico MochaDS",
+    "body": [
+      "Slider {",
+      "    minimum: ${1:0}",
+      "    maximum: ${2:100}",
+      "    value: ${3:50}",
+      "    onValueChanged: ${4:console.log(value)}",
+      "}"
+    ]
+  },
+
+  "MochaDS PinInput": {
+    "scope": "qml",
+    "prefix": ["PinInput", "mds-pininput"],
+    "description": "Input de PIN/OTP MochaDS",
+    "body": [
+      "PinInput {",
+      "    length: ${1:6}",
+      "    mask: ${2|true,false|}",
+      "    onCompleted: function(code) {",
+      "        ${3:verifyCode(code)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  // ─── FEEDBACK ─────────────────────────────────────────────────
+
+  "MochaDS Badge": {
+    "scope": "qml",
+    "prefix": ["Badge", "mds-badge"],
+    "description": "Badge/tag MochaDS",
+    "body": [
+      "Badge {",
+      "    text: \"${1:Novo}\"",
+      "    color: \"${2|mauve,green,red,blue,yellow,peach,sky,teal,pink|}\"",
+      "    variant: \"${3|filled,tonal,outline,flat|}\"",
+      "}"
+    ]
+  },
+
+  "MochaDS Toast": {
+    "scope": "qml",
+    "prefix": ["Toast", "mds-toast"],
+    "description": "Notificação toast MochaDS",
+    "body": [
+      "Toast {",
+      "    type: \"${1|info,success,warning,error|}\"",
+      "    title: \"${2:Título}\"",
+      "    message: \"${3:Mensagem da notificação}\"",
+      "    duration: ${4:3000}",
+      "}"
+    ]
+  },
+
+  "MochaDS ToastManager": {
+    "scope": "qml",
+    "prefix": ["ToastManager", "mds-toastmanager"],
+    "description": "Gerenciador de toasts — posicione na raiz da aplicação",
+    "body": [
+      "ToastManager {",
+      "    id: ${1:toasts}",
+      "    position: \"${2|top-right,top-left,bottom-right,bottom-left|}\"",
+      "}"
+    ]
+  },
+
+  "MochaDS ProgressBar": {
+    "scope": "qml",
+    "prefix": ["ProgressBar", "mds-progressbar"],
+    "description": "Barra de progresso MochaDS",
+    "body": [
+      "ProgressBar {",
+      "    value: ${1:0.0}",
+      "    variant: \"${2|primary,success,warning,danger,info|}\"",
+      "    showLabel: ${3|true,false|}",
+      "    indeterminate: ${4|false,true|}",
+      "}"
+    ]
+  },
+
+  "MochaDS CozySpinner": {
+    "scope": "qml",
+    "prefix": ["CozySpinner", "mds-spinner"],
+    "description": "Spinner de carregamento MochaDS",
+    "body": [
+      "CozySpinner {",
+      "    visible: ${1:isLoading}",
+      "    overlay: ${2|false,true|}",
+      "    label: \"${3:Carregando...}\"",
+      "}"
+    ]
+  },
+
+  "MochaDS EmptyState": {
+    "scope": "qml",
+    "prefix": ["EmptyState", "mds-emptystate"],
+    "description": "Estado vazio MochaDS",
+    "body": [
+      "EmptyState {",
+      "    icon: \"${1:package-open}\"",
+      "    title: \"${2:Nenhum resultado encontrado}\"",
+      "    description: \"${3:Tente ajustar seus filtros}\"",
+      "}"
+    ]
+  },
+
+  // ─── OVERLAY / MODAL ──────────────────────────────────────────
+
+  "MochaDS Modal": {
+    "scope": "qml",
+    "prefix": ["Modal", "mds-modal"],
+    "description": "Modal centralizado MochaDS",
+    "body": [
+      "Modal {",
+      "    id: ${1:myModal}",
+      "    open: ${2:showModal}",
+      "    title: \"${3:Título do Modal}\"",
+      "    size: \"${4|sm,md,lg,full|}\"",
+      "    onRejected: ${2} = false",
+      "",
+      "    ${5:// conteúdo aqui}",
+      "",
+      "    footer: Button {",
+      "        text: \"${6:Confirmar}\"",
+      "        variant: \"primary\"",
+      "        onClicked: {",
+      "            ${7:root.accepted()}",
+      "            ${2} = false",
+      "        }",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS Drawer": {
+    "scope": "qml",
+    "prefix": ["Drawer", "mds-drawer"],
+    "description": "Painel deslizante lateral MochaDS",
+    "body": [
+      "Drawer {",
+      "    open: ${1:showDrawer}",
+      "    title: \"${2:Painel}\"",
+      "    position: \"${3|right,left,top,bottom|}\"",
+      "    size: ${4:360}",
+      "    onClosed: ${1} = false",
+      "",
+      "    ${5:// conteúdo aqui}",
+      "}"
+    ]
+  },
+
+  "MochaDS AlertDialog": {
+    "scope": "qml",
+    "prefix": ["AlertDialog", "mds-alertdialog"],
+    "description": "Dialog de confirmação MochaDS",
+    "body": [
+      "AlertDialog {",
+      "    open: ${1:showDialog}",
+      "    dialogType: \"${2|info,success,warning,error|}\"",
+      "    dialogTitle: \"${3:Confirmar ação}\"",
+      "    dialogMessage: \"${4:Esta ação não pode ser desfeita.}\"",
+      "    onConfirmed: ${5:handleConfirm()}",
+      "    onCancelled: ${1} = false",
+      "}"
+    ]
+  },
+
+  "MochaDS Tooltip": {
+    "scope": "qml",
+    "prefix": ["Tooltip", "mds-tooltip"],
+    "description": "Tooltip MochaDS (coloque dentro do componente alvo)",
+    "body": [
+      "Tooltip {",
+      "    text: \"${1:Dica de uso}\"",
+      "    placement: \"${2|top,bottom,left,right|}\"",
+      "    delay: ${3:500}",
+      "}"
+    ]
+  },
+
+  "MochaDS ContextMenu": {
+    "scope": "qml",
+    "prefix": ["ContextMenu", "mds-contextmenu"],
+    "description": "Menu de contexto MochaDS",
+    "body": [
+      "ContextMenu {",
+      "    id: ${1:ctxMenu}",
+      "    items: [",
+      "        { label: \"${2:Editar}\",  icon: \"${3:pencil}\",   onClicked: function() { ${4} } },",
+      "        { separator: true },",
+      "        { label: \"${5:Excluir}\", icon: \"${6:trash-2}\", onClicked: function() { ${7} } }",
+      "    ]",
+      "}"
+    ]
+  },
+
+  "MochaDS Dropdown": {
+    "scope": "qml",
+    "prefix": ["Dropdown", "mds-dropdown"],
+    "description": "Dropdown menu MochaDS",
+    "body": [
+      "Button {",
+      "    id: ${1:triggerBtn}",
+      "    text: \"${2:Ações ▾}\"",
+      "    onClicked: ${3:menu}.toggle(${1})",
+      "}",
+      "Dropdown {",
+      "    id: ${3:menu}",
+      "    items: [",
+      "        { label: \"${4:Exportar}\", icon: \"${5:download}\", onClicked: function() { ${6} } }",
+      "    ]",
+      "}"
+    ]
+  },
+
+  // ─── LAYOUT ───────────────────────────────────────────────────
+
+  "MochaDS Card": {
+    "scope": "qml",
+    "prefix": ["Card", "mds-card"],
+    "description": "Card completo com header, body e footer MochaDS",
+    "body": [
+      "Card {",
+      "    title: \"${1:Título}\"",
+      "    subtitle: \"${2:Subtítulo}\"",
+      "    icon: \"${3:bar-chart-2}\"",
+      "    variant: \"${4|default,accent,tonal,outline,filled|}\"",
+      "",
+      "    ${5:// body content}",
+      "",
+      "    footer: [",
+      "        HStack {",
+      "            ${6:Button { text: \"Ação\"; variant: \"ghost\" }}",
+      "        }",
+      "    ]",
+      "}"
+    ]
+  },
+
+  "MochaDS Card (simples)": {
+    "scope": "qml",
+    "prefix": ["CardSimple", "mds-card-simple"],
+    "description": "Card simples sem header/footer",
+    "body": [
+      "Card {",
+      "    title: \"${1:Título}\"",
+      "    ${2:// conteúdo aqui}",
+      "}"
+    ]
+  },
+
+  "MochaDS Accordion": {
+    "scope": "qml",
+    "prefix": ["Accordion", "mds-accordion"],
+    "description": "Painel colapsável MochaDS",
+    "body": [
+      "Accordion {",
+      "    title: \"${1:Seção}\"",
+      "    icon: \"${2:chevron-down}\"",
+      "    variant: \"${3|default,outline,tonal,split,filled|}\"",
+      "",
+      "    ${4:// conteúdo colapsável}",
+      "}"
+    ]
+  },
+
+  "MochaDS Tabs": {
+    "scope": "qml",
+    "prefix": ["Tabs", "mds-tabs"],
+    "description": "Sistema de abas MochaDS",
+    "body": [
+      "property int ${1:activeTab}: 0",
+      "",
+      "Tabs {",
+      "    model: [\"${2:Aba 1}\", \"${3:Aba 2}\", \"${4:Aba 3}\"]",
+      "    currentIndex: ${1}",
+      "    variant: \"${5|line,pill,segmented,card|}\"",
+      "    onTabSelected: function(i) { ${1} = i }",
+      "}"
+    ]
+  },
+
+  "MochaDS Separator": {
+    "scope": "qml",
+    "prefix": ["Separator", "mds-separator"],
+    "description": "Linha divisória MochaDS",
+    "body": [
+      "Separator { variant: \"${1|default,accent,subtle|}\" }"
+    ]
+  },
+
+  "MochaDS HStack": {
+    "scope": "qml",
+    "prefix": ["HStack", "mds-hstack"],
+    "description": "Layout horizontal MochaDS",
+    "body": [
+      "HStack {",
+      "    spacing: Theme.spacing.${1|sm,md,lg,xl|}",
+      "    ${2}",
+      "}"
+    ]
+  },
+
+  "MochaDS VStack": {
+    "scope": "qml",
+    "prefix": ["VStack", "mds-vstack"],
+    "description": "Layout vertical MochaDS",
+    "body": [
+      "VStack {",
+      "    spacing: Theme.spacing.${1|sm,md,lg,xl|}",
+      "    ${2}",
+      "}"
+    ]
+  },
+
+  "MochaDS CozyGrid": {
+    "scope": "qml",
+    "prefix": ["CozyGrid", "mds-grid"],
+    "description": "Grid de 12 colunas MochaDS",
+    "body": [
+      "CozyGrid {",
+      "    gap: ${1:3}",
+      "    CozyGridCol { span: ${2:6}",
+      "        ${3:// coluna esquerda}",
+      "    }",
+      "    CozyGridCol { span: ${4:6}",
+      "        ${5:// coluna direita}",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS CozyList": {
+    "scope": "qml",
+    "prefix": ["CozyList", "mds-list"],
+    "description": "Lista virtualizada MochaDS",
+    "body": [
+      "CozyList {",
+      "    model: ${1:myModel}",
+      "    isLoading: ${2:isLoading}",
+      "    emptyStateTitle: \"${3:Nenhum item encontrado}\"",
+      "    rowContent: Component {",
+      "        InteractiveListCell {",
+      "            rowContent: Component {",
+      "                HStack {",
+      "                    Text {",
+      "                        text: modelData.${4:name}",
+      "                        color: Theme.colors.text",
+      "                        font.family: Theme.typography.family",
+      "                    }",
+      "                }",
+      "            }",
+      "            onClicked: ${5:console.log(cellIndex)}",
+      "        }",
+      "    }",
+      "}"
+    ]
+  },
+
+  // ─── NAVEGAÇÃO ────────────────────────────────────────────────
+
+  "MochaDS Sidebar (completa)": {
+    "scope": "qml",
+    "prefix": ["Sidebar", "mds-sidebar"],
+    "description": "Sidebar completa com header, seção e footer MochaDS",
+    "body": [
+      "Sidebar {",
+      "    id: ${1:sidebar}",
+      "    isCollapsed: ${2:false}",
+      "",
+      "    SidebarHeader {",
+      "        title: \"${3:MeuApp}\"",
+      "        logoIcon: \"${4:coffee}\"",
+      "    }",
+      "",
+      "    SidebarSection {",
+      "        SidebarItem {",
+      "            icon: \"${5:home}\"",
+      "            label: \"${6:Início}\"",
+      "            isActive: true",
+      "            onClicked: ${7:navigateTo(\"home\")}",
+      "        }",
+      "        SidebarItem {",
+      "            icon: \"${8:settings}\"",
+      "            label: \"${9:Configurações}\"",
+      "            onClicked: ${10:navigateTo(\"settings\")}",
+      "        }",
+      "    }",
+      "",
+      "    SidebarFooter {",
+      "        username: \"${11:João Silva}\"",
+      "        email: \"${12:joao@mail.com}\"",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS NavigationBar": {
+    "scope": "qml",
+    "prefix": ["NavigationBar", "mds-navbar"],
+    "description": "Barra de navegação inferior MochaDS",
+    "body": [
+      "NavigationBar {",
+      "    variant: \"${1|standard,floating,expanding,labeled|}\"",
+      "    currentIndex: ${2:0}",
+      "    NavigationItem { iconName: \"${3:home}\";     label: \"${4:Início}\" }",
+      "    NavigationItem { iconName: \"${5:search}\";   label: \"${6:Buscar}\" }",
+      "    NavigationItem { iconName: \"${7:settings}\"; label: \"${8:Config.}\" }",
+      "}"
+    ]
+  },
+
+  "MochaDS Breadcrumb": {
+    "scope": "qml",
+    "prefix": ["Breadcrumb", "mds-breadcrumb"],
+    "description": "Trilha de navegação MochaDS",
+    "body": [
+      "Breadcrumb {",
+      "    items: [",
+      "        { label: \"${1:Home}\",    onClicked: function() { ${2} } },",
+      "        { label: \"${3:Seção}\",   onClicked: function() { ${4} } },",
+      "        { label: \"${5:Página Atual}\" }",
+      "    ]",
+      "}"
+    ]
+  },
+
+  // ─── DRAG & DROP ──────────────────────────────────────────────
+
+  "MochaDS Draggable": {
+    "scope": "qml",
+    "prefix": ["Draggable", "mds-draggable"],
+    "description": "Elemento arrastável MochaDS",
+    "body": [
+      "Draggable {",
+      "    key: \"${1:meu-drag-key}\"",
+      "    dragData: ({ uid: \"${2:item-1}\", ${3} })",
+      "    width: ${4:120}; height: ${5:60}",
+      "    onDragStarted: function(data) { ${6} }",
+      "",
+      "    ${7:// conteúdo}",
+      "}"
+    ]
+  },
+
+  "MochaDS DropZone": {
+    "scope": "qml",
+    "prefix": ["DropZone", "mds-dropzone"],
+    "description": "Zona de drop MochaDS",
+    "body": [
+      "DropZone {",
+      "    acceptedKeys: [\"${1:meu-drag-key}\"]",
+      "    width: ${2:200}; height: ${3:200}",
+      "    onDropped: function(src) {",
+      "        ${4:handleDrop(src.dragData)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  // ─── ANIMAÇÕES ────────────────────────────────────────────────
+
+  "MochaDS AnimatedPresence": {
+    "scope": "qml",
+    "prefix": ["AnimatedPresence", "mds-animated-presence"],
+    "description": "Presença animada (entrada + saída) MochaDS",
+    "body": [
+      "AnimatedPresence {",
+      "    shown: ${1:isVisible}",
+      "    enterAnimation: \"${2|fade,zoom,slide,spin,flip,bounce,all|}\"",
+      "    exitAnimation: \"${3|fade,zoom,slide,all|}\"",
+      "",
+      "    ${4:// conteúdo}",
+      "}"
+    ]
+  },
+
+  "MochaDS AnimatedNumber": {
+    "scope": "qml",
+    "prefix": ["AnimatedNumber", "mds-animated-number"],
+    "description": "Contador animado MochaDS",
+    "body": [
+      "AnimatedNumber {",
+      "    value: ${1:totalValue}",
+      "    prefix: \"${2:R\\$ }\"",
+      "    suffix: \"${3:}\"",
+      "    decimalPlaces: ${4:0}",
+      "    separator: \"${5:.}\"",
+      "    duration: ${6:600}",
+      "    font.pixelSize: Theme.typography.${7:sizeH1}",
+      "    color: Theme.colors.${8:green}",
+      "}"
+    ]
+  },
+
+  // ─── FORMULÁRIOS ──────────────────────────────────────────────
+
+  "MochaDS FormField": {
+    "scope": "qml",
+    "prefix": ["FormField", "mds-formfield"],
+    "description": "Wrapper de campo de formulário MochaDS",
+    "body": [
+      "FormField {",
+      "    label: \"${1:Label do Campo}\"",
+      "    required: ${2|true,false|}",
+      "    errorMessage: ${3:fieldError}",
+      "    description: \"${4:Descrição opcional}\"",
+      "",
+      "    ${5:TextField} {",
+      "        placeholder: \"${6:Placeholder...}\"",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS DynamicForm": {
+    "scope": "qml",
+    "prefix": ["DynamicForm", "mds-dynamicform"],
+    "description": "Formulário gerado por schema MochaDS",
+    "body": [
+      "DynamicForm {",
+      "    id: ${1:form}",
+      "    schema: [",
+      "        { name: \"${2:nome}\",  label: \"${3:Nome Completo}\", type: \"text\",  required: true },",
+      "        { name: \"${4:email}\", label: \"${5:E-mail}\",        type: \"email\", required: true },",
+      "    ]",
+      "    onSubmitted: function(values) {",
+      "        ${6:console.log(values)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  // ─── SINGLETONS ───────────────────────────────────────────────
+
+  "MochaDS import relativo": {
+    "scope": "qml",
+    "prefix": ["mds-import", "import mochads"],
+    "description": "Import relativo do MochaDS para arquivos de playground",
+    "body": ["import \"..\" as DS"]
+  },
+
+  "MochaDS import módulo": {
+    "scope": "qml",
+    "prefix": ["mds-import-module"],
+    "description": "Import via módulo registrado",
+    "body": ["import MochaDS 1.0"]
+  },
+
+  "MochaDS Theme token": {
+    "scope": "qml",
+    "prefix": ["mds-color", "Theme.colors"],
+    "description": "Cor do Theme MochaDS",
+    "body": ["Theme.colors.${1|text,subtext0,primary,secondary,success,warning,danger,info,mauve,blue,green,red,yellow,peach,surface0,surface1,base,mantle,crust|}"]
+  },
+
+  "MochaDS LucideIcon": {
+    "scope": "qml",
+    "prefix": ["LucideIcon", "mds-icon"],
+    "description": "Ícone Lucide MochaDS",
+    "body": [
+      "LucideIcon {",
+      "    name: \"${1:home}\"",
+      "    size: ${2:24}",
+      "    color: Theme.colors.${3:text}",
+      "}"
+    ]
+  },
+
+  "MochaDS Avatar": {
+    "scope": "qml",
+    "prefix": ["Avatar", "mds-avatar"],
+    "description": "Avatar de usuário MochaDS",
+    "body": [
+      "Avatar {",
+      "    name: \"${1:João Silva}\"",
+      "    size: \"${2|xs,sm,md,lg,xl|}\"",
+      "    showStatus: ${3|false,true|}",
+      "    status: \"${4|online,offline,busy,away|}\"",
+      "}"
+    ]
+  },
+
+  "MochaDS Paginator": {
+    "scope": "qml",
+    "prefix": ["Paginator", "mds-paginator"],
+    "description": "Paginação MochaDS",
+    "body": [
+      "Paginator {",
+      "    currentPage: ${1:currentPage}",
+      "    totalPages: ${2:totalPages}",
+      "    totalItems: ${3:totalItems}",
+      "    itemsPerPage: ${4:10}",
+      "    onPageChanged: function(p) {",
+      "        ${1} = p",
+      "        ${5:loadData(p)}",
+      "    }",
+      "}"
+    ]
+  },
+
+  "MochaDS MochaI18n setup": {
+    "scope": "qml",
+    "prefix": ["MochaI18n", "mds-i18n"],
+    "description": "Configuração do sistema de internacionalização MochaDS",
+    "body": [
+      "Component.onCompleted: {",
+      "    MochaI18n.basePath = Qt.resolvedUrl(\"i18n\").toString()",
+      "    MochaI18n.locale = \"${1:pt-BR}\"",
+      "    MochaI18n.debugMode = ${2|false,true|}",
+      "}",
+      "",
+      "// Uso: MochaI18n.t(\"${3:chave}\", { ${4:variavel}: ${5:valor} })"
+    ]
+  }
+}

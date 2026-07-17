@@ -1,0 +1,85 @@
+{
+  "name": "mocha-ds-qml",
+  "displayName": "Mocha-DS QML IntelliSense",
+  "description": "Autocomplete, hover docs e snippets para o design system MochaDS em QML",
+  "version": "0.1.0",
+  "publisher": "mocha-ds",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Snippets",
+    "Other"
+  ],
+  "icon": "assets/icon.png",
+  "keywords": [
+    "qml",
+    "qt",
+    "mocha",
+    "catppuccin",
+    "design-system",
+    "intellisense"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mocha-ds/vscode-extension"
+  },
+  "activationEvents": [
+    "onLanguage:qml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "qml",
+        "aliases": [
+          "QML",
+          "qml"
+        ],
+        "extensions": [
+          ".qml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "qml",
+        "path": "./snippets/snippets.json"
+      }
+    ],
+    "configuration": {
+      "title": "Mocha-DS",
+      "properties": {
+        "mochads.importAlias": {
+          "type": "string",
+          "default": "DS",
+          "description": "Alias padrão usado ao importar o módulo MochaDS (ex: import \"..\" as DS)"
+        },
+        "mochads.moduleStyle": {
+          "type": "string",
+          "enum": [
+            "module",
+            "relative"
+          ],
+          "default": "relative",
+          "description": "Estilo de import: 'module' (import MochaDS 1.0) ou 'relative' (import \"..\" as DS)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "./node_modules/.bin/tsc -p ./",
+    "watch": "./node_modules/.bin/tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "package": "./node_modules/.bin/vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.0"
+  }
+}

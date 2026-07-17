@@ -1,0 +1,23 @@
+{
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*[A-Z][a-zA-Z]+ \\{\\s*$",
+      "action": { "indent": "indent" }
+    }
+  ],
+  "comments": {
+    "lineComment": "//",
+    "blockComment": ["/*", "*/"]
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "[", "close": "]" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"" }
+  ]
+}
