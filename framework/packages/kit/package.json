@@ -1,0 +1,27 @@
+{
+  "name": "@mocha/kit",
+  "version": "0.1.0",
+  "description": "Mocha Kit - Build tools, CLI, dev server, and hot reload",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./dist/*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mocha/core": "*",
+    "@mocha/qml": "*",
+    "@mocha/shared": "*"
+  }
+}
