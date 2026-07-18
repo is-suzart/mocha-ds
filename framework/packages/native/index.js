@@ -50,6 +50,13 @@ export const {
   nativeProcessEvents,
   nativeAppExec,
   nativeAppQuit,
+  nativeEngineCreateProxy,
+  nativeProxySetValue,
+  nativeProxySetInt,
+  nativeProxySetBool,
+  nativeProxyGetValue,
+  nativeProxyDrainPendingCall,
+  nativeEngineSetContext,
 } = native;
 
 // High-level API
@@ -104,6 +111,32 @@ class NativeApp {
   getProperty(property) {
     if (!this._rootObject) throw new Error("No root object. Call loadQML first.");
     return nativeObjectGetProperty(this._rootObject, property);
+  }
+
+  createProxy() {
+    return nativeEngineCreateProxy(this._engine);
+  }
+
+  proxySetValue(proxyId, name, value) {
+    if (typeof value === "number" && Number.isInteger(value)) {
+      nativeProxySetInt(proxyId, name, value);
+    } else if (typeof value === "boolean") {
+      nativeProxySetBool(proxyId, name, value);
+    } else {
+      nativeProxySetValue(proxyId, name, String(value));
+    }
+  }
+
+  proxyGetValue(proxyId, name) {
+    return nativeProxyGetValue(proxyId, name);
+  }
+
+  proxyDrainPendingCall(proxyId) {
+    return nativeProxyDrainPendingCall(proxyId);
+  }
+
+  setContextProperty(name, proxyId) {
+    nativeEngineSetContext(this._engine, name, proxyId);
   }
 
   exec() {

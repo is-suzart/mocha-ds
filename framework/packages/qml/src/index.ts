@@ -1,5 +1,5 @@
 export { QMLComponent, getQMLComponentMetadata, getAllQMLComponents, generateQMLSource, generateQMLFile } from "./qml-component.js";
-export type { QMLComponentOptions, QMLComponentMetadata } from "./qml-component.js";
+export type { QMLComponentOptions, QMLComponentMetadata, ProxyEntry } from "./qml-component.js";
 export { runApp } from "./run-app.js";
 export type { RunAppOptions } from "./run-app.js";
 export { QMLTemplateParser } from "./qml-parser.js";

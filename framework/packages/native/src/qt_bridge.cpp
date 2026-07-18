@@ -10,7 +10,62 @@
 #include <QMetaProperty>
 #include <QDebug>
 
+#include <QMap>
+#include <functional>
 #include <cstdio>
+
+// ── MochaDynamicObject: TS ↔ QML proxy ──
+
+class MochaDynamicObject : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(int __seq READ seq NOTIFY seqChanged)
+
+    QMap<QString, QVariant> _values;
+    QStringList _pendingCalls;
+    int _seq = 0;
+
+public:
+    MochaDynamicObject(QObject* parent = nullptr) : QObject(parent) {}
+
+    int seq() const { return _seq; }
+
+    Q_INVOKABLE void setValue(const char* name, const char* value) {
+        _values[QString::fromUtf8(name)] = QVariant(QString::fromUtf8(value));
+        _seq++; emit seqChanged();
+    }
+
+    Q_INVOKABLE void setInt(const char* name, int value) {
+        _values[QString::fromUtf8(name)] = QVariant(value);
+        _seq++; emit seqChanged();
+    }
+
+    Q_INVOKABLE void setBool(const char* name, bool value) {
+        _values[QString::fromUtf8(name)] = QVariant(value);
+        _seq++; emit seqChanged();
+    }
+
+    Q_INVOKABLE QVariant getValue(const char* name) const {
+        return _values.value(QString::fromUtf8(name));
+    }
+
+    Q_INVOKABLE void __call(const char* method) {
+        _pendingCalls.append(QString::fromUtf8(method));
+        _seq++; emit seqChanged();
+    }
+
+    void setAny(const char* name, const QVariant& v) {
+        _values[QString::fromUtf8(name)] = v;
+        _seq++; emit seqChanged();
+    }
+
+    QString drainPendingCall() {
+        if (_pendingCalls.isEmpty()) return QString();
+        return _pendingCalls.takeFirst();
+    }
+
+signals:
+    void seqChanged();
+};
 
 static void mochaMessageHandler(QtMsgType type, const QMessageLogContext& ctx, const QString& msg) {
     fprintf(stderr, "[QT %s] %s\n",
@@ -150,4 +205,51 @@ void qt_app_quit(void* app) {
     static_cast<QGuiApplication*>(app)->quit();
 }
 
+// MochaDynamicObject
+
+void* mocha_object_create() {
+    auto* obj = new MochaDynamicObject();
+    QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+    return obj;
+}
+
+void mocha_object_destroy(void* obj) {
+    delete static_cast<MochaDynamicObject*>(obj);
+}
+
+void mocha_object_set_value(void* obj, const char* name, const char* value) {
+    static_cast<MochaDynamicObject*>(obj)->setValue(name, value);
+}
+
+void mocha_object_set_int(void* obj, const char* name, int value) {
+    static_cast<MochaDynamicObject*>(obj)->setInt(name, value);
+}
+
+void mocha_object_set_bool(void* obj, const char* name, int value) {
+    static_cast<MochaDynamicObject*>(obj)->setBool(name, value != 0);
+}
+
+const char* mocha_object_get_value(void* obj, const char* name) {
+    auto* mo = static_cast<MochaDynamicObject*>(obj);
+    static thread_local QByteArray result;
+    result = mo->getValue(name).toString().toUtf8();
+    return result.constData();
+}
+
+const char* mocha_object_drain_pending_call(void* obj) {
+    auto* mo = static_cast<MochaDynamicObject*>(obj);
+    static thread_local QByteArray result;
+    result = mo->drainPendingCall().toUtf8();
+    return result.constData();
+}
+
+void qml_engine_set_context_property(void* engine, const char* name, void* obj) {
+    auto* e = static_cast<QQmlApplicationEngine*>(engine);
+    auto* qobj = static_cast<QObject*>(obj);
+    e->rootContext()->setContextProperty(QString::fromUtf8(name), qobj);
+}
+
 } // extern "C"
+
+// Include moc-generated code for MochaDynamicObject
+#include "qt_bridge.moc"

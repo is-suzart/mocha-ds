@@ -20,6 +20,16 @@ extern "C" {
     fn qt_app_process_events();
     fn qt_app_exec(app: *mut c_void) -> i32;
     fn qt_app_quit(app: *mut c_void);
+
+    // MochaDynamicObject
+    fn mocha_object_create() -> *mut c_void;
+    fn mocha_object_destroy(obj: *mut c_void);
+    fn mocha_object_set_value(obj: *mut c_void, name: *const c_char, value: *const c_char);
+    fn mocha_object_set_int(obj: *mut c_void, name: *const c_char, value: i32);
+    fn mocha_object_set_bool(obj: *mut c_void, name: *const c_char, value: i32);
+    fn mocha_object_get_value(obj: *mut c_void, name: *const c_char) -> *const c_char;
+    fn mocha_object_drain_pending_call(obj: *mut c_void) -> *const c_char;
+    fn qml_engine_set_context_property(engine: *mut c_void, name: *const c_char, obj: *mut c_void);
 }
 
 struct NativeState {
@@ -205,6 +215,104 @@ pub fn native_app_quit() -> Result<()> {
     let app = state.app;
     if !app.is_null() {
         unsafe { qt_app_quit(app); }
+    }
+    Ok(())
+}
+
+// ── Proxy (MochaDynamicObject) bindings ──
+
+#[napi]
+pub fn native_engine_create_proxy(engine_id: u32) -> Result<u32> {
+    unsafe {
+        let proxy = mocha_object_create();
+        if proxy.is_null() {
+            return Err(Error::new(Status::GenericFailure, "Failed to create MochaDynamicObject"));
+        }
+        let mut state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+        Ok(state.alloc_id(proxy))
+    }
+}
+
+#[napi]
+pub fn native_proxy_set_value(proxy_id: u32, name: String, value: String) -> Result<()> {
+    let c_name = CString::new(name).map_err(|e| Error::from_reason(e.to_string()))?;
+    let c_value = CString::new(value).map_err(|e| Error::from_reason(e.to_string()))?;
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        mocha_object_set_value(proxy, c_name.as_ptr(), c_value.as_ptr());
+    }
+    Ok(())
+}
+
+#[napi]
+pub fn native_proxy_set_int(proxy_id: u32, name: String, value: i32) -> Result<()> {
+    let c_name = CString::new(name).map_err(|e| Error::from_reason(e.to_string()))?;
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        mocha_object_set_int(proxy, c_name.as_ptr(), value);
+    }
+    Ok(())
+}
+
+#[napi]
+pub fn native_proxy_set_bool(proxy_id: u32, name: String, value: bool) -> Result<()> {
+    let c_name = CString::new(name).map_err(|e| Error::from_reason(e.to_string()))?;
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        mocha_object_set_bool(proxy, c_name.as_ptr(), if value { 1 } else { 0 });
+    }
+    Ok(())
+}
+
+#[napi]
+pub fn native_proxy_get_value(proxy_id: u32, name: String) -> Result<String> {
+    let c_name = CString::new(name).map_err(|e| Error::from_reason(e.to_string()))?;
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        let result = mocha_object_get_value(proxy, c_name.as_ptr());
+        let c_str = CStr::from_ptr(result);
+        Ok(c_str.to_string_lossy().into_owned())
+    }
+}
+
+#[napi]
+pub fn native_proxy_drain_pending_call(proxy_id: u32) -> Result<Option<String>> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        let result = mocha_object_drain_pending_call(proxy);
+        if result.is_null() {
+            return Ok(None);
+        }
+        let c_str = CStr::from_ptr(result);
+        let method = c_str.to_string_lossy().into_owned();
+        if method.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(method))
+        }
+    }
+}
+
+#[napi]
+pub fn native_engine_set_context(engine_id: u32, name: String, proxy_id: u32) -> Result<()> {
+    let c_name = CString::new(name).map_err(|e| Error::from_reason(e.to_string()))?;
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let engine = state.get_ptr(engine_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid engine handle"))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe {
+        qml_engine_set_context_property(engine, c_name.as_ptr(), proxy);
     }
     Ok(())
 }
