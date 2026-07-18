@@ -29,27 +29,31 @@ public:
 
     int seq() const { return _seq; }
 
-    Q_INVOKABLE void setValue(const char* name, const char* value) {
-        _values[QString::fromUtf8(name)] = QVariant(QString::fromUtf8(value));
+    Q_INVOKABLE void setValue(QString name, QString value) {
+        _values[name] = QVariant(value);
         _seq++; emit seqChanged();
     }
 
-    Q_INVOKABLE void setInt(const char* name, int value) {
-        _values[QString::fromUtf8(name)] = QVariant(value);
+    Q_INVOKABLE void setInt(QString name, int value) {
+        _values[name] = QVariant(value);
         _seq++; emit seqChanged();
     }
 
-    Q_INVOKABLE void setBool(const char* name, bool value) {
-        _values[QString::fromUtf8(name)] = QVariant(value);
+    Q_INVOKABLE void setBool(QString name, bool value) {
+        _values[name] = QVariant(value);
         _seq++; emit seqChanged();
     }
 
-    Q_INVOKABLE QVariant getValue(const char* name) const {
-        return _values.value(QString::fromUtf8(name));
+    Q_INVOKABLE QVariant getValue(QString name) const {
+        return _values.value(name);
     }
 
-    Q_INVOKABLE void __call(const char* method) {
-        _pendingCalls.append(QString::fromUtf8(method));
+    Q_INVOKABLE QVariant get(QString name) const {
+        return _values.value(name);
+    }
+
+    Q_INVOKABLE void __call(QString method) {
+        _pendingCalls.append(method);
         _seq++; emit seqChanged();
     }
 
@@ -218,21 +222,22 @@ void mocha_object_destroy(void* obj) {
 }
 
 void mocha_object_set_value(void* obj, const char* name, const char* value) {
-    static_cast<MochaDynamicObject*>(obj)->setValue(name, value);
+    static_cast<MochaDynamicObject*>(obj)->setValue(
+        QString::fromUtf8(name), QString::fromUtf8(value));
 }
 
 void mocha_object_set_int(void* obj, const char* name, int value) {
-    static_cast<MochaDynamicObject*>(obj)->setInt(name, value);
+    static_cast<MochaDynamicObject*>(obj)->setInt(QString::fromUtf8(name), value);
 }
 
 void mocha_object_set_bool(void* obj, const char* name, int value) {
-    static_cast<MochaDynamicObject*>(obj)->setBool(name, value != 0);
+    static_cast<MochaDynamicObject*>(obj)->setBool(QString::fromUtf8(name), value != 0);
 }
 
 const char* mocha_object_get_value(void* obj, const char* name) {
     auto* mo = static_cast<MochaDynamicObject*>(obj);
     static thread_local QByteArray result;
-    result = mo->getValue(name).toString().toUtf8();
+    result = mo->getValue(QString::fromUtf8(name)).toString().toUtf8();
     return result.constData();
 }
 

@@ -66,29 +66,6 @@ export function getAllQMLComponents(): Map<Function, QMLComponentMetadata> {
   return new Map(componentRegistry);
 }
 
-function isMethodCall(expr: string): boolean {
-  return /\.\w+\s*\(/.test(expr);
-}
-
-function transformExpression(expr: string, contextName: string): string {
-  const propertyMatch = expr.match(/^controller\.(\w+)\.(value|get)\(\)$/);
-  if (propertyMatch) {
-    return `${contextName}.get("${propertyMatch[1]}")`;
-  }
-
-  const methodMatch = expr.match(/^controller\.(\w+)\s*\(/);
-  if (methodMatch) {
-    return `${contextName}.__call("${methodMatch[1]}")`;
-  }
-
-  const simplePropertyMatch = expr.match(/^controller\.(\w+)$/);
-  if (simplePropertyMatch) {
-    return `${contextName}.get("${simplePropertyMatch[1]}")`;
-  }
-
-  return expr;
-}
-
 export function generateQMLSource(
   component: QObject,
   metadata: QMLComponentMetadata,
@@ -96,64 +73,22 @@ export function generateQMLSource(
 ): string {
   let qml = metadata.options.qml;
 
-  // Transform controller.xxx bindings for root proxies
+  // Transform controller.xxx bindings via global regex — robust against parser quirks
+  qml = qml.replace(/controller\.(\w+)\.value\b/g, 'controller.get("$1")');
+  qml = qml.replace(/controller\.(\w+)\s*\(\)/g, 'controller.__call("$1")');
+
+  // If proxies exist, inject __seq bridge for reactive dependency
   if (rootProxies && rootProxies.length > 0) {
-    for (const [key, binding] of Object.entries(metadata.bindings)) {
-      const contextName = "controller";
-      const transformed = transformExpression(binding.expression, contextName);
-      if (transformed !== binding.expression) {
-        qml = qml.replace(binding.expression, transformed);
-      } else {
-        // Fallback: still try to replace with static value
-        const propPath = binding.expression.replace(/^controller\./, "").replace(/\.(value|get)\(\)$/, "");
-        const value = propPath
-          .split(".")
-          .reduce((obj: any, part) => {
-            if (typeof obj === "object" && part in obj) {
-              const val = obj[part];
-              return val instanceof QProperty ? val.value : val;
-            }
-            return undefined;
-          }, component);
-
-        if (value !== undefined) {
-          const jsonValue = JSON.stringify(value);
-          qml = qml.replace(binding.expression, jsonValue);
-        }
-      }
-    }
-
-    // Add __seq bridge for each root proxy component
     for (const proxy of rootProxies) {
       const bridgeExpr = `readonly property int __bridge_${proxy.componentName}: ${proxy.componentName}.__seq`;
       if (!qml.includes(bridgeExpr)) {
-        // Inject bridge into the root QML element
-        const rootElMatch = qml.match(/^(\w+\s*\{[\s\S]*?)(?=\n\s+\w+[\s\S]*)/m);
-        if (rootElMatch) {
-          qml = qml.replace(
-            rootElMatch[0],
-            `${rootElMatch[1]}\n    ${bridgeExpr}`
-          );
+        // Inject bridge into the root QML element (first opening brace)
+        const braceIdx = qml.indexOf("{");
+        if (braceIdx >= 0) {
+          const before = qml.slice(0, braceIdx + 1);
+          const after = qml.slice(braceIdx + 1);
+          qml = `${before}\n    ${bridgeExpr}${after}`;
         }
-      }
-    }
-  } else {
-    // No proxies — static value replacement (legacy behavior)
-    for (const [key, binding] of Object.entries(metadata.bindings)) {
-      const propPath = binding.expression.replace(/^controller\./, "").replace(/\.(value|get)\(\)$/, "");
-      const value = propPath
-        .split(".")
-        .reduce((obj: any, part) => {
-          if (typeof obj === "object" && part in obj) {
-            const val = obj[part];
-            return val instanceof QProperty ? val.value : val;
-          }
-          return undefined;
-        }, component);
-
-      if (value !== undefined) {
-        const jsonValue = JSON.stringify(value);
-        qml = qml.replace(binding.expression, jsonValue);
       }
     }
   }
