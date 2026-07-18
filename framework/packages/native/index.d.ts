@@ -15,7 +15,8 @@ export function nativeProxySetValue(proxyId: number, name: string, value: string
 export function nativeProxySetInt(proxyId: number, name: string, value: number): void;
 export function nativeProxySetBool(proxyId: number, name: string, value: boolean): void;
 export function nativeProxyGetValue(proxyId: number, name: string): string;
-export function nativeProxyDrainPendingCall(proxyId: number): string | null;
+export function nativeProxyHasPendingCalls(proxyId: number): boolean;
+export function nativeProxyDrainPendingCalls(proxyId: number): string[];
 export function nativeEngineSetContext(engineId: number, name: string, proxyId: number): void;
 
 export class NativeApp {
@@ -26,7 +27,8 @@ export class NativeApp {
   createProxy(): number;
   proxySetValue(proxyId: number, name: string, value: string | number | boolean): void;
   proxyGetValue(proxyId: number, name: string): string;
-  proxyDrainPendingCall(proxyId: number): string | null;
+  proxyHasPendingCalls(proxyId: number): boolean;
+  proxyDrainPendingCalls(proxyId: number): string[];
   setContextProperty(name: string, proxyId: number): void;
   processEvents(): void;
   exec(): number;

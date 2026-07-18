@@ -26,17 +26,13 @@ export async function runApp<T extends QObject>(
     nativeApp = createMockNativeApp();
   }
 
-  // ── Scan & instantiate root services ──
-  const rootServices = scanRootServices();
   const proxyEntries: ProxyEntry[] = [];
 
+  // ── Root services ──
+  const rootServices = scanRootServices();
   for (const service of rootServices) {
     const proxyId = nativeApp.createProxy();
-    proxyEntries.push({
-      proxyId,
-      instance: service.instance,
-      componentName: service.componentName,
-    });
+    proxyEntries.push({ proxyId, instance: service.instance, componentName: service.componentName });
 
     const props = scanProperties(service.instance);
     for (const { name, qp } of props) {
@@ -45,19 +41,14 @@ export async function runApp<T extends QObject>(
         nativeApp.proxySetValue(proxyId, name, val);
       });
     }
-
     nativeApp.setContextProperty(service.componentName, proxyId);
   }
 
-  // ── Create main controller and register as context property ──
+  // ── Main controller ──
   const controller = new componentClass();
   const CONTEXT_NAME = "controller";
   const mainProxyId = nativeApp.createProxy();
-  proxyEntries.push({
-    proxyId: mainProxyId,
-    instance: controller,
-    componentName: CONTEXT_NAME,
-  });
+  proxyEntries.push({ proxyId: mainProxyId, instance: controller, componentName: CONTEXT_NAME });
 
   const mainProps = scanProperties(controller);
   for (const { name, qp } of mainProps) {
@@ -71,7 +62,6 @@ export async function runApp<T extends QObject>(
   // ── Generate and load QML ──
   const qmlSource = generateQMLSource(controller, meta, proxyEntries);
   nativeApp.loadQML(qmlSource, options?.basePath || process.cwd());
-
   options?.onReady?.();
 
   // ── Event loop: interleave Qt events + Node.js event loop ──
@@ -80,11 +70,11 @@ export async function runApp<T extends QObject>(
 
 function drainPendingCalls(nativeApp: any, entries: ProxyEntry[]): void {
   for (const entry of entries) {
-    const method = nativeApp.proxyDrainPendingCall(entry.proxyId);
-    if (method) {
-      const fn = (entry.instance as any)[method];
-      if (typeof fn === "function") {
-        fn.call(entry.instance);
+    const calls: string[] = nativeApp.proxyDrainPendingCalls(entry.proxyId);
+    if (calls && calls.length > 0) {
+      for (const method of calls) {
+        const fn = (entry.instance as any)[method];
+        if (typeof fn === "function") fn.call(entry.instance);
       }
     }
   }
@@ -95,30 +85,14 @@ function runEventLoop(nativeApp: any, entries: ProxyEntry[]): Promise<void> {
     let running = true;
 
     const tick = () => {
-      if (!running) {
-        resolve();
-        return;
-      }
-
-      try {
-        nativeApp.processEvents();
-      } catch {
-        running = false;
-        resolve();
-        return;
-      }
-
+      if (!running) { resolve(); return; }
+      try { nativeApp.processEvents(); } catch { running = false; resolve(); return; }
       drainPendingCalls(nativeApp, entries);
-
-      if (running) {
-        setTimeout(tick, 8);
-      }
+      if (running) setTimeout(tick, 8);
     };
 
-    // Hook window close to stop the loop
     process.once("SIGINT", () => { running = false; });
     process.once("SIGTERM", () => { running = false; });
-
     tick();
   });
 }
@@ -126,62 +100,42 @@ function runEventLoop(nativeApp: any, entries: ProxyEntry[]): Promise<void> {
 function scanRootServices(): Array<{ instance: QObject; componentName: string }> {
   const results: Array<{ instance: QObject; componentName: string }> = [];
   const all = getAllQMLComponents();
-
   for (const [cls, meta] of all.entries()) {
     if (meta.providedIn === "root") {
       const name = meta.componentName;
       let instance: QObject;
-
-      if (globalContainer.has(cls as any)) {
-        instance = globalContainer.resolve(cls as any);
-      } else {
-        instance = new (cls as any)();
-      }
-
+      if (globalContainer.has(cls as any)) instance = globalContainer.resolve(cls as any);
+      else instance = new (cls as any)();
       results.push({ instance, componentName: name });
     }
   }
-
   return results;
 }
 
 function scanProperties(instance: QObject): Array<{ name: string; qp: QProperty }> {
   const props: Array<{ name: string; qp: QProperty }> = [];
   const visited = new Set<string>();
-
   let proto = Object.getPrototypeOf(instance);
   while (proto && proto !== Object.prototype) {
-    const ownKeys = Object.getOwnPropertyNames(proto);
-    for (const key of ownKeys) {
+    for (const key of Object.getOwnPropertyNames(proto)) {
       if (key.startsWith("__qproperty_")) {
         const propName = key.replace("__qproperty_", "");
         if (visited.has(propName)) continue;
         visited.add(propName);
-
         const val = (instance as any)[propName];
-        if (val instanceof QProperty) {
-          props.push({ name: propName, qp: val });
-        }
+        if (val instanceof QProperty) props.push({ name: propName, qp: val });
       }
     }
     proto = Object.getPrototypeOf(proto);
   }
-
   return props;
 }
 
 function createMockNativeApp() {
   return {
-    loadQML: () => {},
-    setProperty: () => {},
-    getProperty: () => "",
-    createProxy: () => 0,
-    proxySetValue: () => {},
-    proxyGetValue: () => "",
-    proxyDrainPendingCall: () => null,
-    setContextProperty: () => {},
-    processEvents: () => {},
-    exec: () => 0,
-    quit: () => {},
+    loadQML: () => {}, setProperty: () => {}, getProperty: () => "",
+    createProxy: () => 0, proxySetValue: () => {}, proxyGetValue: () => "",
+    proxyDrainPendingCalls: () => [], setContextProperty: () => {},
+    processEvents: () => {}, exec: () => 0, quit: () => {},
   };
 }

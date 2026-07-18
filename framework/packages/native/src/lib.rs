@@ -22,13 +22,15 @@ extern "C" {
     fn qt_app_quit(app: *mut c_void);
 
     // MochaDynamicObject
-    fn mocha_object_create() -> *mut c_void;
+    fn mocha_object_create(proxy_id: i32) -> *mut c_void;
     fn mocha_object_destroy(obj: *mut c_void);
     fn mocha_object_set_value(obj: *mut c_void, name: *const c_char, value: *const c_char);
     fn mocha_object_set_int(obj: *mut c_void, name: *const c_char, value: i32);
     fn mocha_object_set_bool(obj: *mut c_void, name: *const c_char, value: i32);
     fn mocha_object_get_value(obj: *mut c_void, name: *const c_char) -> *const c_char;
-    fn mocha_object_drain_pending_call(obj: *mut c_void) -> *const c_char;
+    fn mocha_object_has_pending_calls(obj: *mut c_void) -> i32;
+    fn mocha_object_drain_pending_calls(obj: *mut c_void, buf: *mut c_char, max: i32) -> i32;
+    fn mocha_set_call_handler(cb: Option<unsafe extern "C" fn(proxy_id: i32, method: *const c_char)>);
     fn qml_engine_set_context_property(engine: *mut c_void, name: *const c_char, obj: *mut c_void);
 }
 
@@ -38,20 +40,10 @@ struct NativeState {
     objects: HashMap<u32, *mut c_void>,
 }
 
-// SAFETY: All Qt objects are only accessed from the main thread (Node.js event loop).
-// The Mutex is used for borrow-checking, not for actual multi-threading.
 unsafe impl Send for NativeState {}
 unsafe impl Sync for NativeState {}
 
 impl NativeState {
-    fn new() -> Self {
-        NativeState {
-            next_id: 1,
-            app: std::ptr::null_mut(),
-            objects: HashMap::new(),
-        }
-    }
-
     fn alloc_id(&mut self, ptr: *mut c_void) -> u32 {
         let id = self.next_id;
         self.next_id += 1;
@@ -64,7 +56,6 @@ impl NativeState {
     }
 }
 
-// LazyLock provides Sync automatically for the Mutex
 static STATE: LazyLock<Mutex<NativeState>> = LazyLock::new(|| Mutex::new(NativeState {
     next_id: 1,
     app: std::ptr::null_mut(),
@@ -224,12 +215,16 @@ pub fn native_app_quit() -> Result<()> {
 #[napi]
 pub fn native_engine_create_proxy(engine_id: u32) -> Result<u32> {
     unsafe {
-        let proxy = mocha_object_create();
+        let mut state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+        let id = state.next_id;
+        state.next_id += 1;
+
+        let proxy = mocha_object_create(id as i32);
         if proxy.is_null() {
             return Err(Error::new(Status::GenericFailure, "Failed to create MochaDynamicObject"));
         }
-        let mut state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
-        Ok(state.alloc_id(proxy))
+        state.objects.insert(id, proxy);
+        Ok(id)
     }
 }
 
@@ -284,23 +279,29 @@ pub fn native_proxy_get_value(proxy_id: u32, name: String) -> Result<String> {
 }
 
 #[napi]
-pub fn native_proxy_drain_pending_call(proxy_id: u32) -> Result<Option<String>> {
+pub fn native_proxy_has_pending_calls(proxy_id: u32) -> Result<bool> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let proxy = state.get_ptr(proxy_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
+    unsafe { Ok(mocha_object_has_pending_calls(proxy) != 0) }
+}
+
+#[napi]
+pub fn native_proxy_drain_pending_calls(proxy_id: u32) -> Result<Vec<String>> {
+    let mut calls = Vec::new();
     let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
     let proxy = state.get_ptr(proxy_id)
         .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid proxy handle"))?;
     unsafe {
-        let result = mocha_object_drain_pending_call(proxy);
-        if result.is_null() {
-            return Ok(None);
-        }
-        let c_str = CStr::from_ptr(result);
-        let method = c_str.to_string_lossy().into_owned();
-        if method.is_empty() {
-            Ok(None)
-        } else {
-            Ok(Some(method))
+        let mut buf = [0i8; 4096];
+        loop {
+            let n = mocha_object_drain_pending_calls(proxy, buf.as_mut_ptr(), 4096);
+            if n <= 0 { break; }
+            let s = CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned();
+            if !s.is_empty() { calls.push(s); }
         }
     }
+    Ok(calls)
 }
 
 #[napi]

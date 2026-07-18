@@ -55,7 +55,8 @@ export const {
   nativeProxySetInt,
   nativeProxySetBool,
   nativeProxyGetValue,
-  nativeProxyDrainPendingCall,
+  nativeProxyHasPendingCalls,
+  nativeProxyDrainPendingCalls,
   nativeEngineSetContext,
 } = native;
 
@@ -131,8 +132,12 @@ class NativeApp {
     return nativeProxyGetValue(proxyId, name);
   }
 
-  proxyDrainPendingCall(proxyId) {
-    return nativeProxyDrainPendingCall(proxyId);
+  proxyHasPendingCalls(proxyId) {
+    return nativeProxyHasPendingCalls(proxyId);
+  }
+
+  proxyDrainPendingCalls(proxyId) {
+    return nativeProxyDrainPendingCalls(proxyId);
   }
 
   setContextProperty(name, proxyId) {

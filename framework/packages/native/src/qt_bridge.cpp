@@ -25,6 +25,8 @@ class MochaDynamicObject : public QObject {
     int _seq = 0;
 
 public:
+    int proxyId = 0;
+
     MochaDynamicObject(QObject* parent = nullptr) : QObject(parent) {}
 
     int seq() const { return _seq; }
@@ -57,12 +59,11 @@ public:
         _seq++; emit seqChanged();
     }
 
-    void setAny(const char* name, const QVariant& v) {
-        _values[QString::fromUtf8(name)] = v;
-        _seq++; emit seqChanged();
+    bool hasPendingCalls() const {
+        return !_pendingCalls.isEmpty();
     }
 
-    QString drainPendingCall() {
+    QString drainOneCall() {
         if (_pendingCalls.isEmpty()) return QString();
         return _pendingCalls.takeFirst();
     }
@@ -211,8 +212,9 @@ void qt_app_quit(void* app) {
 
 // MochaDynamicObject
 
-void* mocha_object_create() {
+void* mocha_object_create(int proxyId) {
     auto* obj = new MochaDynamicObject();
+    obj->proxyId = proxyId;
     QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
     return obj;
 }
@@ -241,11 +243,19 @@ const char* mocha_object_get_value(void* obj, const char* name) {
     return result.constData();
 }
 
-const char* mocha_object_drain_pending_call(void* obj) {
+int mocha_object_has_pending_calls(void* obj) {
+    return static_cast<MochaDynamicObject*>(obj)->hasPendingCalls() ? 1 : 0;
+}
+
+int mocha_object_drain_pending_calls(void* obj, char* buf, int max) {
     auto* mo = static_cast<MochaDynamicObject*>(obj);
-    static thread_local QByteArray result;
-    result = mo->drainPendingCall().toUtf8();
-    return result.constData();
+    QString call = mo->drainOneCall();
+    if (call.isEmpty()) return 0;
+    QByteArray utf8 = call.toUtf8();
+    int len = qMin(utf8.size(), max - 1);
+    memcpy(buf, utf8.constData(), len);
+    buf[len] = '\0';
+    return len;
 }
 
 void qml_engine_set_context_property(void* engine, const char* name, void* obj) {
