@@ -67,11 +67,12 @@ export async function runApp<T extends QObject>(
 
   // ── Create main controller and register as context property ──
   const controller = new componentClass();
+  const CONTEXT_NAME = "controller"; // const name used in QML templates
   const mainProxyId = nativeApp.createProxy();
   proxyEntries.push({
     proxyId: mainProxyId,
     instance: controller,
-    componentName: meta.componentName,
+    componentName: CONTEXT_NAME,
   });
 
   const mainProps = scanProperties(controller);
@@ -81,7 +82,7 @@ export async function runApp<T extends QObject>(
       nativeApp.proxySetValue(mainProxyId, name, val);
     });
   }
-  nativeApp.setContextProperty(meta.componentName, mainProxyId);
+  nativeApp.setContextProperty(CONTEXT_NAME, mainProxyId);
 
   // ── Generate and load QML ──
   const qmlSource = generateQMLSource(controller, meta, proxyEntries);

@@ -99,7 +99,7 @@ export function generateQMLSource(
   // Transform controller.xxx bindings for root proxies
   if (rootProxies && rootProxies.length > 0) {
     for (const [key, binding] of Object.entries(metadata.bindings)) {
-      const contextName = metadata.componentName;
+      const contextName = "controller";
       const transformed = transformExpression(binding.expression, contextName);
       if (transformed !== binding.expression) {
         qml = qml.replace(binding.expression, transformed);
