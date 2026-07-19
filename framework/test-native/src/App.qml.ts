@@ -3,6 +3,7 @@ import {
   QProperty,
   qproperty,
   Injectable,
+  inject,
 } from "@mocha/core";
 import { QMLComponent, qml, runApp } from "@mocha/qml";
 
@@ -37,7 +38,7 @@ export class CounterState extends QObject {
     Window {
       id: root
       width: 500
-      height: 400
+      height: 420
       visible: true
       title: "Bridge Test"
       color: Theme.colors.base
@@ -80,21 +81,21 @@ export class CounterState extends QObject {
                 Button {
                   text: "App +1"
                   color: "mauve"
-                  onClicked: controller.__call("increment")
+                  onClicked: controller.bridgeCall("increment")
                 }
 
                 Button {
                   text: "Global +1"
                   color: "green"
-                  onClicked: CounterState.__call("increment")
+                  onClicked: CounterState.bridgeCall("increment")
                 }
 
                 Button {
                   text: "Reset"
                   variant: "secondary"
                   onClicked: {
-                    controller.__call("reset")
-                    CounterState.__call("reset")
+                    controller.bridgeCall("reset")
+                    CounterState.bridgeCall("reset")
                   }
                 }
               }
@@ -103,6 +104,27 @@ export class CounterState extends QObject {
                 to: "/about"
                 text: "About"
                 icon: "info"
+              }
+
+              HStack {
+                spacing: Theme.spacing.md
+
+                TextField {
+                  id: echoedText
+                  placeholder: "Digite algo..."
+                }
+
+                Button {
+                  text: "Echo"
+                  variant: "secondary"
+                  onClicked: controller.echo()
+                }
+              }
+
+              Text {
+                text: "Echo: " + controller.echoedText.value
+                font.pixelSize: Theme.typography.sizeMd
+                color: Theme.colors.yellow
               }
             }
           }
@@ -124,7 +146,6 @@ export class CounterState extends QObject {
               }
 
               Text {
-                // Global count persists across routes!
                 text: "Global count still: " + CounterState.get("count")
                 font.pixelSize: Theme.typography.sizeLg
                 color: Theme.colors.green
@@ -144,6 +165,9 @@ export class CounterState extends QObject {
 })
 export class AppController extends QObject {
   @qproperty count = new QProperty(0);
+  @qproperty echoedText = new QProperty("");
+
+  counter = inject(CounterState);
 
   increment() {
     this.count.value += 1;
@@ -151,6 +175,21 @@ export class AppController extends QObject {
 
   reset() {
     this.count.value = 0;
+  }
+
+  echo() {
+    console.log("[MOCHA ECHO]", this.echoedText.value);
+  }
+
+  routeLeave(path: string) {
+    console.log("[MOCHA ROUTER] leaving:", path);
+    if (path === "/home") {
+      this.count.value = 0;
+    }
+  }
+
+  routeEnter(path: string) {
+    console.log("[MOCHA ROUTER] entering:", path);
   }
 }
 
