@@ -12,7 +12,8 @@
   "dependencies": {
     "@mocha/core": "file:../packages/core",
     "@mocha/native": "file:../packages/native",
-    "@mocha/qml": "file:../packages/qml"
+    "@mocha/qml": "file:../packages/qml",
+    "@mocha/shared": "file:../packages/shared"
   },
   "devDependencies": {
     "@mocha/cli": "file:../packages/cli",

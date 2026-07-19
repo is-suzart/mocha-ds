@@ -1,8 +1,8 @@
-import QtQuick
-import QtQuick.Window
-import QtQuick.Layouts
-import QtQuick.Controls
-import ".." as DS
+import QtQuick 2.15
+import QtQuick.Window 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
+import MochaDS as DS
 
 Window {
     id: window
@@ -56,10 +56,9 @@ Window {
                 anchors.rightMargin: DS.Theme.spacing.xl
                 spacing: DS.Theme.spacing.lg
 
-                DS.LucideIcon {
-                    name: "coffee"
+                DS.MochaLogo {
                     size: 28
-                    color: DS.Theme.colors.mauve
+                    color: DS.Theme.colors.primary
                 }
 
                 Text {
