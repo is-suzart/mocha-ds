@@ -11,6 +11,9 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+
+let _out: vscode.OutputChannel;
+
 import {
   COMPONENTS,
   COMPONENT_NAMES,
@@ -514,7 +517,8 @@ function randomPort(): number {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-  console.log("Mocha-DS QML IntelliSense ativado!");
+  _out = vscode.window.createOutputChannel("Mocha Framework");
+  _out.appendLine("[Mocha] Extension activated v0.3.0");
 
   // Track the last active .ts file (so debug focus steal doesn't break entry detection)
   _trackActiveEditor(context);

@@ -1,31 +1,36 @@
 {
-  "name": "mocha-ds-qml",
-  "displayName": "Mocha-DS QML IntelliSense",
-  "description": "Autocomplete, hover docs e snippets para o design system MochaDS em QML",
-  "version": "0.1.0",
-  "publisher": "mocha-ds",
+  "name": "mocha-framework",
+  "displayName": "Mocha Framework",
+  "description": "Qt TypeScript Framework — QML IntelliSense, QObject Inspector, Debug Adapter",
+  "version": "0.3.0",
+  "publisher": "mocha-framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mocha-framework/mocha"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Snippets",
+    "Debuggers",
     "Other"
   ],
-  "icon": "assets/icon.png",
+  "icon": "assets/icon-128.png",
   "keywords": [
     "qml",
     "qt",
     "mocha",
-    "catppuccin",
-    "design-system",
+    "typescript",
     "intellisense"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mocha-ds/vscode-extension"
-  },
   "activationEvents": [
-    "onLanguage:qml"
+    "onStartupFinished",
+    "onLanguage:qml",
+    "onLanguage:typescript",
+    "onCommand:mocha.run",
+    "onCommand:mocha.inspect",
+    "onDebug"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -37,10 +42,24 @@
           "qml"
         ],
         "extensions": [
-          ".qml",
-          ".qml.ts"
+          ".qml"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "typescript",
+        "extensions": [
+          ".qml.ts"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "scopeName": "source.qml.injection",
+        "path": "./qml-template.injection.json",
+        "injectTo": [
+          "source.ts"
+        ]
       }
     ],
     "snippets": [
@@ -49,13 +68,118 @@
         "path": "./snippets/snippets.json"
       }
     ],
+    "commands": [
+      {
+        "command": "mocha.run",
+        "title": "Mocha: Run App",
+        "category": "Mocha"
+      },
+      {
+        "command": "mocha.inspect",
+        "title": "Mocha: Connect Inspector",
+        "category": "Mocha"
+      },
+      {
+        "command": "mocha.disconnect",
+        "title": "Mocha: Disconnect Inspector",
+        "category": "Mocha"
+      }
+    ],
+    "views": {
+      "mocha-explorer": [
+        {
+          "type": "webview",
+          "id": "mocha.inspector",
+          "name": "QObject Inspector",
+          "when": "true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mocha-explorer",
+          "title": "Mocha",
+          "icon": "$(bug)"
+        }
+      ]
+    },
+    "debuggers": [
+      {
+        "type": "mocha",
+        "label": "Mocha Framework",
+        "languages": ["typescript", "qml"],
+        "program": "./out/debug-adapter.js",
+        "runtime": "node",
+        "configurationAttributes": {
+          "launch": {
+            "required": ["program"],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Path to the main .ts file (e.g. examples/counter/index.ts)"
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory",
+                "default": "${workspaceFolder}"
+              },
+              "port": {
+                "type": "number",
+                "description": "Debug server port",
+                "default": 9229
+              },
+              "args": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Arguments passed to the program"
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "mocha",
+            "request": "launch",
+            "name": "Mocha: Run App",
+            "program": "${workspaceFolder}/src/index.ts",
+            "cwd": "${workspaceFolder}",
+            "port": 9229
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Mocha: Launch",
+            "description": "Launch a Mocha app with debug server",
+            "body": {
+              "type": "mocha",
+              "request": "launch",
+              "name": "Mocha: Run App",
+              "program": "^\"\\${workspaceFolder}/src/index.ts\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "port": 9229
+            }
+          }
+        ]
+      }
+    ],
     "configuration": {
-      "title": "Mocha-DS",
+      "title": "Mocha Framework",
       "properties": {
+        "mocha.debugPort": {
+          "type": "number",
+          "default": 9229,
+          "description": "Port for the Mocha debug server"
+        },
+        "mocha.debugHost": {
+          "type": "string",
+          "default": "localhost",
+          "description": "Host for the Mocha debug server"
+        },
         "mochads.importAlias": {
           "type": "string",
           "default": "DS",
-          "description": "Alias padrão usado ao importar o módulo MochaDS (ex: import \"..\" as DS)"
+          "description": "Alias usado ao importar o módulo MochaDS"
         },
         "mochads.moduleStyle": {
           "type": "string",
@@ -64,23 +188,28 @@
             "relative"
           ],
           "default": "relative",
-          "description": "Estilo de import: 'module' (import MochaDS 1.0) ou 'relative' (import \"..\" as DS)"
+          "description": "Estilo de import: 'module' ou 'relative'"
         }
       }
     }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "./node_modules/.bin/tsc -p ./",
-    "watch": "./node_modules/.bin/tsc -watch -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "package": "./node_modules/.bin/vsce package"
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^2.22.0",
     "typescript": "^5.3.0"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "@vscode/debugadapter": "^1.68.0",
+    "@vscode/debugprotocol": "^1.68.0"
   }
 }
