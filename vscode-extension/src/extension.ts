@@ -9,6 +9,8 @@
 // ============================================================
 
 import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
 import {
   COMPONENTS,
   COMPONENT_NAMES,
@@ -417,22 +419,114 @@ function findEnclosingComponent(
 // ACTIVATION
 // ────────────────────────────────────────────────────────────
 
+// Track the last .ts file the user had open, so we don't lose it when debug steals focus
+let _lastActiveTsFile: string | null = null;
+
+function _isValidTsEntry(filePath: string): boolean {
+  return (
+    filePath.endsWith(".ts") &&
+    !filePath.includes("__tests__") &&
+    !filePath.includes(".test.") &&
+    !filePath.includes(".spec.") &&
+    !filePath.includes("node_modules")
+  );
+}
+
+function _trackActiveEditor(context: vscode.ExtensionContext): void {
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor && _isValidTsEntry(editor.document.uri.fsPath)) {
+        _lastActiveTsFile = editor.document.uri.fsPath;
+      }
+    })
+  );
+  // Capture current editor immediately on activation
+  const current = vscode.window.activeTextEditor;
+  if (current && _isValidTsEntry(current.document.uri.fsPath)) {
+    _lastActiveTsFile = current.document.uri.fsPath;
+  }
+}
+
+function detectEntryPoint(workspaceFolder: string): string | null {
+  // 1. package.json "main" — only if it's a .ts file
+  try {
+    const pkgPath = path.join(workspaceFolder, "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+    if (pkg.main && pkg.main.endsWith(".ts")) {
+      const resolved = path.resolve(workspaceFolder, pkg.main);
+      if (fs.existsSync(resolved)) return resolved;
+    }
+  } catch {}
+
+  // 2. Common fixed paths
+  for (const rel of ["src/index.ts", "index.ts", "app/index.ts", "src/main.ts", "main.ts"]) {
+    const p = path.join(workspaceFolder, rel);
+    if (fs.existsSync(p)) return p;
+  }
+
+  // 3. Last active editor file tracked before debug stole focus
+  if (_lastActiveTsFile && _lastActiveTsFile.startsWith(workspaceFolder) && fs.existsSync(_lastActiveTsFile)) {
+    return _lastActiveTsFile;
+  }
+
+  // 4. Current active editor (may still work if focus wasn't lost)
+  const editor = vscode.window.activeTextEditor;
+  if (editor) {
+    const filePath = editor.document.uri.fsPath;
+    if (filePath.startsWith(workspaceFolder) && _isValidTsEntry(filePath)) {
+      return filePath;
+    }
+  }
+
+  return null;
+}
+
+/** Async variant: shows a file picker if auto-detection fails */
+async function detectEntryPointOrPick(workspaceFolder: string): Promise<string | null> {
+  const auto = detectEntryPoint(workspaceFolder);
+  if (auto) return auto;
+
+  // Glob for all .ts files under the workspace (excluding node_modules/dist)
+  const uris = await vscode.workspace.findFiles(
+    "**/*.ts",
+    "{**/node_modules/**,**/dist/**,**/__tests__/**,**/*.test.ts,**/*.spec.ts}",
+    50
+  );
+
+  if (uris.length === 0) return null;
+
+  const items = uris.map((u) => ({
+    label: path.relative(workspaceFolder, u.fsPath),
+    detail: u.fsPath,
+    uri: u,
+  }));
+
+  const picked = await vscode.window.showQuickPick(items, {
+    title: "Mocha: Select entry point",
+    placeHolder: "Choose the .ts file to run",
+  });
+
+  return picked?.detail ?? null;
+}
+
+function randomPort(): number {
+  return 50000 + Math.floor(Math.random() * 10000);
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   console.log("Mocha-DS QML IntelliSense ativado!");
+
+  // Track the last active .ts file (so debug focus steal doesn't break entry detection)
+  _trackActiveEditor(context);
 
   // Linguagem alvo
   const QML: vscode.DocumentSelector = { language: "qml" };
 
   // 1. Completion Provider
-  // Trigger characters: espaço, nova linha, ponto, aspas
   const completionDisposable = vscode.languages.registerCompletionItemProvider(
     QML,
     completionProvider,
-    " ",  // espaço — prop na nova linha
-    "\n", // nova linha
-    ".",  // Theme.colors. etc.
-    '"',  // início de valor string
-    "'"
+    " ", "\n", ".", '"', "'"
   );
 
   // 2. Hover Provider
@@ -445,19 +539,80 @@ export function activate(context: vscode.ExtensionContext): void {
   const codeActionDisposable = vscode.languages.registerCodeActionsProvider(
     QML,
     importActionProvider,
+    { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] }
+  );
+
+  // 4. QObject Inspector (WebviewView)
+  const config = vscode.workspace.getConfiguration("mocha");
+  const host = config.get<string>("debugHost") || "localhost";
+  const port = config.get<number>("debugPort") || randomPort();
+  const { InspectorProvider } = require("./inspector");
+  const inspectorProvider = new InspectorProvider(host, port);
+  const inspectorDisposable = vscode.window.registerWebviewViewProvider(
+    "mocha.inspector",
+    inspectorProvider
+  );
+
+  // 5. Debug configuration resolver (auto-detect entry point + random port)
+  const debugConfigProvider = vscode.debug.registerDebugConfigurationProvider(
+    "mocha",
     {
-      providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+      resolveDebugConfiguration(
+        _folder: vscode.WorkspaceFolder | undefined,
+        debugConfig: vscode.DebugConfiguration
+      ): vscode.ProviderResult<vscode.DebugConfiguration> {
+        const wsFolder = _folder?.uri.fsPath || process.cwd();
+
+        if (!debugConfig.type)    debugConfig.type    = "mocha";
+        if (!debugConfig.request) debugConfig.request = "launch";
+        if (!debugConfig.name)    debugConfig.name    = "Mocha: Debug";
+        if (!debugConfig.cwd)     debugConfig.cwd     = wsFolder;
+        if (!debugConfig.port)    debugConfig.port    = randomPort();
+
+        if (!debugConfig.program) {
+          // Use async pick — return a Promise so VS Code awaits it
+          return detectEntryPointOrPick(wsFolder).then((entry) => {
+            if (!entry) {
+              vscode.window.showErrorMessage("Mocha: No entry point selected. Open a .ts file and try again.");
+              return undefined;
+            }
+            debugConfig.program = entry;
+            return debugConfig;
+          });
+        }
+
+        return debugConfig;
+      }
     }
   );
 
-  // Registra todos os disposables no contexto
+  // 6. Commands
+  const runCmd = vscode.commands.registerCommand("mocha.run", async () => {
+    const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!ws) { vscode.window.showErrorMessage("No workspace folder open"); return; }
+    const entry = await detectEntryPointOrPick(ws);
+    if (!entry) { vscode.window.showErrorMessage("No entry point selected."); return; }
+    const port = randomPort();
+    const terminal = vscode.window.createTerminal("Mocha Dev");
+    terminal.sendText(`MOCHA_DEVTOOLS=1 MOCHA_DEVTOOLS_PORT=${port} npx tsx "${entry}"`);
+    terminal.show();
+  });
+
+  const inspectCmd = vscode.commands.registerCommand("mocha.inspect", async () => {
+    vscode.commands.executeCommand("mocha.inspector.focus");
+  });
+
   context.subscriptions.push(
     completionDisposable,
     hoverDisposable,
-    codeActionDisposable
+    codeActionDisposable,
+    inspectorDisposable,
+    debugConfigProvider,
+    runCmd,
+    inspectCmd
   );
 }
 
 export function deactivate(): void {
-  console.log("Mocha-DS QML IntelliSense desativado.");
+  console.log("Mocha Framework desativado.");
 }
