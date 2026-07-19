@@ -138,12 +138,14 @@ Window {
 
                 ButtonGroup {
                     id: themeToggle
-                    currentIndex: Theme.flavor === "mocha" ? 0 : (Theme.flavor === "macchiato" ? 1 : (Theme.flavor === "frappe" ? 2 : 3))
+                    currentIndex: Theme.flavor === "mocha" ? 0 : (Theme.flavor === "macchiato" ? 1 : (Theme.flavor === "frappe" ? 2 : (Theme.flavor === "latte" ? 3 : (Theme.flavor === "vercel" ? 4 : 5))))
                     expand: false
                     ButtonGroupItem { text: "Mocha"; onClicked: Theme.flavor = "mocha" }
                     ButtonGroupItem { text: "Macchiato"; onClicked: Theme.flavor = "macchiato" }
                     ButtonGroupItem { text: "Frappé"; onClicked: Theme.flavor = "frappe" }
                     ButtonGroupItem { text: "Latte"; onClicked: Theme.flavor = "latte" }
+                    ButtonGroupItem { text: "Vercel"; onClicked: Theme.flavor = "vercel" }
+                    ButtonGroupItem { text: "Vercel Light"; onClicked: Theme.flavor = "vercel-light" }
                 }
             }
 

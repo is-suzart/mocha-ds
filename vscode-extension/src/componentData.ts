@@ -3047,7 +3047,7 @@ export const COMPONENTS: ComponentDefinition[] = [
   {
     "name": "Theme",
     "category": "Singletons",
-    "description": "Singleton de design tokens. Cores, tipografia, espaçamento e geometria. 4 flavors Catppuccin.",
+    "description": "Singleton de design tokens. Cores, tipografia, espaçamento e geometria. 6 flavors (4 Catppuccin + 2 Vercel b&w).",
     "props": [
       {
         "name": "flavor",
@@ -3057,9 +3057,11 @@ export const COMPONENTS: ComponentDefinition[] = [
           "mocha",
           "macchiato",
           "frappe",
-          "latte"
+          "latte",
+          "vercel",
+          "vercel-light"
         ],
-        "description": "Flavor Catppuccin"
+        "description": "Flavor do tema (Catppuccin ou Vercel black & white)"
       },
       {
         "name": "useSystemTheme",

@@ -21,7 +21,7 @@ Window {
         { id: "text", label: "Texto", icon: "file-text", components: ["TextEditor", "AdvancedTextEditor", "FormField", "DynamicForm", "I18n"] },
         { id: "display", label: "Display", icon: "eye", components: ["HeroCarousel", "Badge", "Avatar", "ProgressBar", "Spinner", "Skeleton", "Tooltip", "Toast", "StripedFill", "SteppedProgress", "Stepper"] },
         { id: "layout", label: "Layout", icon: "layout", components: ["HStack", "VStack", "Box", "Card", "Tile", "Accordion", "Modal", "AlertDialog", "Popover", "Drawer", "EmptyState", "Separator", "Shell", "CozyGrid"] },
-        { id: "data", label: "Dados", icon: "database", components: ["Table", "TreeTable", "Paginator", "InteractiveListCell", "CozyList"] },
+        { id: "data", label: "Dados", icon: "database", components: ["Table", "TreeTable", "Paginator", "InteractiveListCell", "CozyList", "DataGrid"] },
         { id: "charts", label: "Gráficos", icon: "pie-chart", components: ["Charts", "PieChart", "BarChart", "LineChart"] },
         { id: "navigation", label: "Navegação", icon: "navigation", components: ["Navigation", "NavigationBar", "Sidebar", "Breadcrumb", "Router"] },
         { id: "interactivity", label: "Interatividade", icon: "move", components: ["SortableTabs", "Draggable", "DropZone", "SortableList", "Kanban", "SortableTable"] },
@@ -79,13 +79,15 @@ Window {
                 }
 
                 DS.ButtonGroup {
-                    currentIndex: DS.Theme.flavor === "mocha" ? 0 : (DS.Theme.flavor === "macchiato" ? 1 : (DS.Theme.flavor === "frappe" ? 2 : 3))
+                    currentIndex: DS.Theme.flavor === "mocha" ? 0 : (DS.Theme.flavor === "macchiato" ? 1 : (DS.Theme.flavor === "frappe" ? 2 : (DS.Theme.flavor === "latte" ? 3 : (DS.Theme.flavor === "vercel" ? 4 : 5))))
                     expand: false
                     Layout.preferredHeight: 32
                     DS.ButtonGroupItem { text: "Mocha"; onClicked: DS.Theme.flavor = "mocha" }
                     DS.ButtonGroupItem { text: "Macchiato"; onClicked: DS.Theme.flavor = "macchiato" }
                     DS.ButtonGroupItem { text: "Frappé"; onClicked: DS.Theme.flavor = "frappe" }
                     DS.ButtonGroupItem { text: "Latte"; onClicked: DS.Theme.flavor = "latte" }
+                    DS.ButtonGroupItem { text: "Vercel"; onClicked: DS.Theme.flavor = "vercel" }
+                    DS.ButtonGroupItem { text: "Vercel Light"; onClicked: DS.Theme.flavor = "vercel-light" }
                 }
             }
 

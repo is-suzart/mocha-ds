@@ -2,6 +2,7 @@ module MochaDS
 singleton Theme Theme.qml
 singleton MediaQuery MediaQuery.qml
 singleton MochaI18n MochaI18n.qml
+singleton Pipes Pipes.qml
 FadeIn FadeIn.qml
 FadeOut FadeOut.qml
 SlideUp SlideUp.qml
@@ -17,15 +18,17 @@ Spin Spin.qml
 AnimatedPresence AnimatedPresence.qml
 AnimateList AnimateList.qml
 AnimatedNumber AnimatedNumber.qml
+Animation Animation.qml
 GlowPulse GlowPulse.qml
 Particles Particles.qml
 FocusRing FocusRing.qml
 HStack HStack.qml
 VStack VStack.qml
-Box Box.qml
+Div Div.qml
 AdaptiveStack AdaptiveStack.qml
 MochaMap MochaMap.qml
 FormController FormController.qml
+Form Form.qml
 LucideIcon LucideIcon.qml
 Button Button.qml
 ButtonGroup ButtonGroup.qml
@@ -36,6 +39,7 @@ Modal Modal.qml
 Drawer Drawer.qml
 Select Select.qml
 Card Card.qml
+Case Case.qml
 Tile Tile.qml
 FormField FormField.qml
 DynamicForm DynamicForm.qml
@@ -48,8 +52,10 @@ Accordion Accordion.qml
 Toast Toast.qml
 ToastManager ToastManager.qml
 ToggleButton ToggleButton.qml
+Transition Transition.qml
 SelectTree SelectTree.qml
 DatePicker DatePicker.qml
+DataGrid DataGrid.qml
 RangeSelector RangeSelector.qml
 ColorPicker ColorPicker.qml
 Tooltip Tooltip.qml
@@ -90,6 +96,7 @@ Separator Separator.qml
 RadioButton RadioButton.qml
 RadioGroup RadioGroup.qml
 Switch Switch.qml
+Switcher Switcher.qml
 Avatar Avatar.qml
 Breadcrumb Breadcrumb.qml
 Tag Tag.qml
