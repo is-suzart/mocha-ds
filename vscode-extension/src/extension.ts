@@ -2,7 +2,7 @@
 // src/extension.ts
 // Ponto de entrada principal da extensão Mocha-DS QML IntelliSense.
 //
-// Registra três providers para arquivos .qml:
+// Registra três providers para arquivos .qml e .qml.ts:
 //   1. CompletionItemProvider — sugere componentes e props
 //   2. HoverProvider          — documentação Markdown ao passar o mouse
 //   3. SignatureHelpProvider  — (futuro) assinatura de funções

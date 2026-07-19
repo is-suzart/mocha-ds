@@ -37,7 +37,8 @@
           "qml"
         ],
         "extensions": [
-          ".qml"
+          ".qml",
+          ".qml.ts"
         ],
         "configuration": "./language-configuration.json"
       }

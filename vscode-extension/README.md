@@ -1,6 +1,6 @@
 # Mocha-DS QML IntelliSense — VS Code Extension
 
-Extensão do VS Code com **autocomplete**, **hover docs** e **snippets** para o design system [Mocha-DS](../) em QML.
+Extensão do VS Code com **autocomplete**, **hover docs** e **snippets** para o design system [Mocha-DS](../) em QML (`.qml` e `.qml.ts`).
 
 ---
 
@@ -53,7 +53,7 @@ npm run compile
 1. Abra a pasta `vscode-extension/` no VS Code
 2. Pressione **`F5`** (ou `Run > Start Debugging`)
 3. Uma nova janela do VS Code abre — **Extension Development Host**
-4. Abra qualquer arquivo `.qml` do projeto
+4. Abra qualquer arquivo `.qml` ou `.qml.ts` do projeto
 5. Digite `Button` ou `Modal` e veja o autocomplete aparecer
 
 ### Atalhos úteis durante o desenvolvimento
@@ -102,13 +102,14 @@ Adicione ao seu `settings.json`:
 | **Inputs** | TextField, Checkbox, Switch, RadioButton, RadioGroup, Select, AdvancedSelect, Slider, PinInput, DatePicker, ColorPicker, CozyColorPicker |
 | **Feedback** | Badge, Toast, ToastManager, ProgressBar, CozySpinner, CozySkeleton, EmptyState |
 | **Overlay** | Modal, Drawer, AlertDialog, Tooltip, ContextMenu, Dropdown |
-| **Layout** | Card, Accordion, Tabs, Separator, HStack, VStack, CozyGrid, CozyGridCol, CozyList |
-| **Navegação** | Sidebar, SidebarItem, NavigationBar, Breadcrumb |
+| **Layout** | Card, Accordion, Tabs, Separator, HStack, VStack, CozyGrid, CozyGridCol, CozyList, Div |
+| **Navegação** | Sidebar, SidebarItem, NavigationBar, Breadcrumb, Router, Route, RouterLink |
 | **Dados** | Paginator, Avatar, Tag |
-| **Texto** | TextEditor, FormField, DynamicForm |
+| **Texto** | TextEditor, FormField, DynamicForm, Form |
 | **Drag & Drop** | Draggable, DropZone |
-| **Animações** | FadeIn, SlideUp, AnimatedPresence, AnimatedNumber |
-| **Singletons** | Theme, MochaI18n, LucideIcon |
+| **Animações** | FadeIn, SlideUp, AnimatedPresence, AnimatedNumber, Div, Transition, Animation |
+| **Fluxo** | Switcher, Case |
+| **Singletons** | Theme (6 flavors: mocha, macchiato, frappe, latte, vercel, vercel-light), MochaI18n, LucideIcon, Pipes |
 
 ---
 
