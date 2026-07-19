@@ -5,6 +5,7 @@ export class QComputedProperty<T> {
   private _value!: T;
   private _eff: { destroy: () => void } | null = null;
   private _initialized = false;
+  private _firstRun = true;
 
   readonly changed = new Signal<(value: T) => void>();
 
@@ -13,15 +14,19 @@ export class QComputedProperty<T> {
   get value(): T {
     if (!this._initialized) {
       this._initialized = true;
-      this._value = this._compute();
       const prev = activeEffectRef();
+
       this._eff = effect(() => {
         const v = this._compute();
-        if (v !== this._value) {
+        if (this._firstRun) {
+          this._value = v;
+          this._firstRun = false;
+        } else if (v !== this._value) {
           this._value = v;
           this.changed.emit(v);
         }
       });
+
       if (prev) {
         prev.addDep(this as any);
       }

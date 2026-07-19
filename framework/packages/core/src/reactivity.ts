@@ -5,8 +5,19 @@ let activeEffect: ReactiveEffect | null = null;
 export class ReactiveEffect {
   private _deps = new Set<QProperty<any>>();
   private _cleanups: (() => void)[] = [];
+  private _scheduled = false;
 
   constructor(private _fn: () => void) {}
+
+  private _schedule(): void {
+    if (!this._scheduled) {
+      this._scheduled = true;
+      queueMicrotask(() => {
+        this._scheduled = false;
+        this.run();
+      });
+    }
+  }
 
   run(): void {
     this._cleanups.forEach((c) => c());
@@ -26,7 +37,7 @@ export class ReactiveEffect {
     if (!this._deps.has(prop)) {
       this._deps.add(prop);
       this._cleanups.push(
-        prop.changed.connect(() => this.run()).disconnect
+        prop.changed.connect(() => this._schedule()).disconnect
       );
     }
   }
