@@ -65,7 +65,7 @@ Item {
     // ==========================================
     // Theme & Palette Setup
     // ==========================================
-    property string flavor: "mocha" // "mocha" | "macchiato" | "frappe" | "latte"
+    property string flavor: "mocha" // "mocha" | "macchiato" | "frappe" | "latte" | "vercel" | "vercel-light"
     property bool useSystemTheme: false
 
     SystemPalette {
@@ -82,7 +82,7 @@ Item {
         if (useSystemTheme) {
             return isDarkColor(sysPalette.window)
         }
-        return flavor !== "latte"
+        return flavor !== "latte" && flavor !== "vercel-light"
     }
 
     function getColor(name) {
@@ -271,6 +271,66 @@ Item {
                 "crust": "#dce0e8",
                 "contrastDark": "#4c4f69",
                 "contrastLight": "#eff1f5"
+            },
+            "vercel": {
+                "rosewater": "#a1a1a1",
+                "flamingo": "#a1a1a1",
+                "pink": "#a1a1a1",
+                "mauve": "#ffffff",
+                "red": "#ee0000",
+                "maroon": "#ee0000",
+                "peach": "#f5a623",
+                "yellow": "#f5a623",
+                "green": "#50e3c2",
+                "teal": "#50e3c2",
+                "sky": "#50e3c2",
+                "sapphire": "#777777",
+                "blue": "#444444",
+                "lavender": "#777777",
+                "text": "#ffffff",
+                "subtext1": "#a1a1a1",
+                "subtext0": "#888888",
+                "overlay2": "#777777",
+                "overlay1": "#666666",
+                "overlay0": "#555555",
+                "surface2": "#444444",
+                "surface1": "#333333",
+                "surface0": "#222222",
+                "base": "#000000",
+                "mantle": "#111111",
+                "crust": "#1a1a1a",
+                "contrastDark": "#000000",
+                "contrastLight": "#ffffff"
+            },
+            "vercel-light": {
+                "rosewater": "#666666",
+                "flamingo": "#666666",
+                "pink": "#666666",
+                "mauve": "#000000",
+                "red": "#ee0000",
+                "maroon": "#ee0000",
+                "peach": "#f5a623",
+                "yellow": "#f5a623",
+                "green": "#007a22",
+                "teal": "#007a22",
+                "sky": "#007a22",
+                "sapphire": "#555555",
+                "blue": "#999999",
+                "lavender": "#555555",
+                "text": "#000000",
+                "subtext1": "#666666",
+                "subtext0": "#888888",
+                "overlay2": "#555555",
+                "overlay1": "#666666",
+                "overlay0": "#888888",
+                "surface2": "#999999",
+                "surface1": "#cccccc",
+                "surface0": "#eaeaea",
+                "base": "#ffffff",
+                "mantle": "#fafafa",
+                "crust": "#f5f5f5",
+                "contrastDark": "#000000",
+                "contrastLight": "#ffffff"
             }
         };
     }
