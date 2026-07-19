@@ -1,8 +1,8 @@
 // ============================================================
 // src/componentData.ts
-// AUTO-GERADO por cli/sync-docs.mjs — NÃO EDITE MANUALMENTE
-// Para atualizar, edite cli/sync-docs.mjs e rode:
-//   node cli/sync-docs.mjs
+// AUTO-GERADO por scripts/sync-docs.mjs — NÃO EDITE MANUALMENTE
+// Para atualizar, edite scripts/sync-docs.mjs e rode:
+//   node scripts/sync-docs.mjs
 // ============================================================
 
 export interface PropDefinition {

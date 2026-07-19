@@ -5,7 +5,7 @@ import { writeFile, readFile, appendFile } from 'fs/promises';
 import chalk from 'chalk';
 import ora from 'ora';
 
-const MOCHA_DS_REPO = 'https://raw.githubusercontent.com/is-suzart/mocha-ds/main';
+const MOCHA_DS_REPO = 'https://raw.githubusercontent.com/is-suzart/mocha-framework/main/design-system/MochaDS';
 
 const KNOWN_COMPONENTS = [
   'Button', 'TextField', 'Checkbox', 'Switch', 'RadioButton', 'RadioGroup',

@@ -264,7 +264,7 @@ async function generateProject(
     spinner.text = "Cloning MochaDS design system from Git...";
     const { execSync } = await import("child_process");
     execSync(
-      "git clone --depth 1 https://github.com/is-suzart/mocha-ds.git .",
+      "git clone --depth 1 https://github.com/is-suzart/mocha-framework.git .",
       {
         cwd: mochaDsDir,
         stdio: "ignore",

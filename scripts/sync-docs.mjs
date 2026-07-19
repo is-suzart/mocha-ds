@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // ============================================================
-// cli/sync-docs.mjs
+// scripts/sync-docs.mjs
 //
 // Fonte única de verdade para metadados dos componentes.
 // Gera automaticamente:
@@ -8,7 +8,7 @@
 //   2. .ai/knowledge/components.md            (knowledge base)
 //
 // USO:
-//   node cli/sync-docs.mjs
+//   node scripts/sync-docs.mjs
 //
 // Execute sempre que adicionar/modificar um componente.
 // ============================================================

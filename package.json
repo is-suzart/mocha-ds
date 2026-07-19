@@ -1,5 +1,5 @@
 {
-  "name": "mocha-monorepo",
+  "name": "mocha-framework",
   "version": "0.1.0",
   "private": true,
   "description": "Mocha - The Qt TypeScript Framework (The bear that tames the Qt)",
