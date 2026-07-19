@@ -14,5 +14,5 @@ export { qproperty, qapp } from "./decorators.js";
 export { ConnectionType } from "./types.js";
 export type { QMetaProperty, QMetaMethod, QMetaObjectData, QObjectPointer, QThreadAffinity } from "./types.js";
 export { effect, ReactiveEffect } from "./reactivity.js";
-export { Container, globalContainer, Injectable } from "./di.js";
+export { Container, globalContainer, Injectable, inject } from "./di.js";
 export type { QmlInit, QmlDestroy } from "./lifecycle.js";

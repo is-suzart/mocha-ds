@@ -59,3 +59,7 @@ export function Injectable(): ClassDecorator {
     globalContainer.register(target as any);
   };
 }
+
+export function inject<T>(serviceClass: new (...args: any[]) => T): T {
+  return globalContainer.resolve(serviceClass);
+}
