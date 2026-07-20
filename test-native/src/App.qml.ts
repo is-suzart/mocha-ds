@@ -183,7 +183,7 @@ export class AppController extends QObject {
 
   echo() {
     console.log("[MOCHA ECHO]", this.echoedText.value);
-    this.echoedText.value = "";
+    this.textField.text = "";
   }
 
   routeLeave(path: string) {
