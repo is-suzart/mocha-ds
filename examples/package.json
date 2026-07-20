@@ -4,13 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "hello": "tsx examples/hello-world/index.ts",
-    "counter": "tsx examples/counter/index.ts",
-    "dashboard": "tsx examples/dashboard/index.ts"
+    "start": "tsx examples/mocha-ds/index.ts"
   },
   "dependencies": {
     "@mocha/core": "*",
-    "@mocha/qml": "*",
-    "@mocha/devtools": "*"
+    "@mocha/qml": "*"
   }
 }
