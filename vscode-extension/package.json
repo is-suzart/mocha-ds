@@ -2,7 +2,7 @@
   "name": "mocha-framework",
   "displayName": "Mocha Framework",
   "description": "Qt TypeScript Framework — QML IntelliSense, QObject Inspector, Debug Adapter",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publisher": "mocha-framework",
   "repository": {
     "type": "git",
@@ -54,6 +54,11 @@
       }
     ],
     "grammars": [
+      {
+        "language": "qml",
+        "scopeName": "source.qml",
+        "path": "./grammars/qml.tmLanguage.json"
+      },
       {
         "scopeName": "source.qml.injection",
         "path": "./qml-template.injection.json",

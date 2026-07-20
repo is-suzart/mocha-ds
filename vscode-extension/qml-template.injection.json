@@ -1,6 +1,6 @@
 {
   "scopeName": "source.qml.injection",
-  "injectionSelector": "L:source.ts",
+  "injectionSelector": "source.ts",
   "patterns": [
     {
       "name": "meta.embedded.block.qml",

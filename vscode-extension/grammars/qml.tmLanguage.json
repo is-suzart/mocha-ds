@@ -1,0 +1,203 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "QML (Embedded)",
+  "scopeName": "source.qml",
+  "patterns": [
+    { "include": "#import" },
+    { "include": "#pragma" },
+    { "include": "#object" },
+    { "include": "#signal" },
+    { "include": "#property" },
+    { "include": "#method" },
+    { "include": "#comment" }
+  ],
+  "repository": {
+    "import": {
+      "begin": "\\b(import)\\b",
+      "beginCaptures": { "1": { "name": "keyword.control.import.qml" } },
+      "end": "$",
+      "patterns": [
+        { "match": "\\b([A-Z][\\w\\.]*)\\s+(\\d+\\.\\d+)?", "captures": { "1": { "name": "entity.name.section.import.module.qml" }, "2": { "name": "constant.numeric.import.version.qml" } } },
+        { "match": "\\b(as)\\s+([A-Z]\\w*)", "captures": { "1": { "name": "keyword.control.import.as.qml" }, "2": { "name": "entity.name.type.import.type.qml" } } },
+        { "include": "#string" },
+        { "include": "#comment" }
+      ]
+    },
+    "pragma": {
+      "begin": "\\b(pragma)\\s+([A-Z]\\w*)(\\s*:\\s*[a-zA-Z]+)?\\b",
+      "beginCaptures": { "1": { "name": "keyword.control.pragma.qml" }, "2": { "name": "variable.parameter.pragma.qml" }, "3": { "name": "entity.name.pragma.qml" } },
+      "end": "$",
+      "patterns": [
+        { "include": "#string" },
+        { "include": "#comment" }
+      ]
+    },
+    "object": {
+      "begin": "\\b([A-Z][\\w\\.]*)\\s*(\\{|$)",
+      "beginCaptures": { "1": { "name": "entity.name.type.object.qml" } },
+      "end": "\\}",
+      "patterns": [
+        { "include": "#object-contents" }
+      ]
+    },
+    "object-contents": {
+      "patterns": [
+        { "include": "$self" },
+        { "include": "#id-assignment" },
+        { "include": "#binding" },
+        { "include": "#signal" },
+        { "include": "#property" },
+        { "include": "#on-prop" },
+        { "include": "#comp-inline" },
+        { "include": "#enums" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#boolean" },
+        { "include": "#comment" },
+        { "include": "#js-expression" }
+      ]
+    },
+    "id-assignment": {
+      "match": "\\b(id)\\s*:\\s*(\\w+)",
+      "captures": { "1": { "name": "keyword.other.property.qml" }, "2": { "name": "variable.other.id.qml" } }
+    },
+    "binding": {
+      "begin": "\\b([A-Z]?\\w+(\\.\\w+)*)\\s*:\\s*(?=\\S)",
+      "beginCaptures": { "1": { "name": "variable.parameter.qml" } },
+      "end": "$",
+      "patterns": [
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#boolean" },
+        { "include": "#comment" },
+        { "include": "#js-expression" }
+      ]
+    },
+    "property": {
+      "patterns": [
+        {
+          "begin": "\\b(property)\\s+(\\w+)\\s+(\\w+)\\s*",
+          "beginCaptures": { "1": { "name": "keyword.other.property.qml" }, "2": { "name": "storage.type.qml" }, "3": { "name": "variable.parameter.qml" } },
+          "end": "$",
+          "patterns": [
+            { "include": "#string" },
+            { "include": "#number" },
+            { "include": "#js-expression" }
+          ]
+        }
+      ]
+    },
+    "signal": {
+      "patterns": [
+        {
+          "match": "\\b(signal)\\s+(\\w+)\\s*\\((.*?)\\)",
+          "captures": { "1": { "name": "storage.type.signal.qml" }, "2": { "name": "entity.name.function.signal.name.qml" }, "3": { "name": "variable.parameter.signal.params.qml" } }
+        },
+        {
+          "match": "\\b(signal)\\s+(\\w+)",
+          "captures": { "1": { "name": "storage.type.signal.qml" }, "2": { "name": "entity.name.function.signal.name.qml" } }
+        }
+      ]
+    },
+    "on-prop": {
+      "begin": "\\b(on)(\\w+)\\s*:",
+      "beginCaptures": { "1": { "name": "keyword.control.on-prop.qml" }, "2": { "name": "variable.parameter.on-prop.name.qml" } },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#js-block" }
+      ]
+    },
+    "comp-inline": {
+      "begin": "\\b(component)\\s+([A-Z]\\w*)\\s*:",
+      "beginCaptures": { "1": { "name": "keyword.other.comp-inline.qml" }, "2": { "name": "entity.name.type.comp-line.name.qml" } },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#object" }
+      ]
+    },
+    "method": {
+      "begin": "\\b(function)\\s+(\\w+)\\s*\\(",
+      "beginCaptures": { "1": { "name": "storage.type.function.qml" }, "2": { "name": "entity.name.function.qml" } },
+      "end": "(?<=\\})",
+      "patterns": [
+        { "include": "#js-block" }
+      ]
+    },
+    "enums": {
+      "match": "\\b(enum)\\s+(\\w+)",
+      "captures": { "1": { "name": "keyword.other.enum.qml" }, "2": { "name": "entity.name.type.enum.qml" } }
+    },
+    "string": {
+      "patterns": [
+        { "name": "string.quoted.single.qml", "begin": "'", "end": "'" },
+        { "name": "string.quoted.double.qml", "begin": "\"", "end": "\"" },
+        { "name": "string.quoted.template.qml", "begin": "`", "end": "`" }
+      ]
+    },
+    "number": {
+      "match": "\\b(\\d+\\.?\\d*)\\b",
+      "captures": { "1": { "name": "constant.numeric.qml" } }
+    },
+    "boolean": {
+      "match": "\\b(true|false)\\b",
+      "name": "constant.language.boolean.qml"
+    },
+    "null": {
+      "match": "\\b(null|undefined)\\b",
+      "name": "constant.language.null.qml"
+    },
+    "js-expression": {
+      "patterns": [
+        { "name": "keyword.control.js.qml", "match": "\\b(if|else|for|while|return|var|let|const|function|new|this|typeof|instanceof|import|export)\\b" },
+        { "name": "support.function.console.qml", "match": "\\b(console)\\s*(\\.)\\s*(log|warn|error|info|debug|trace)\\b" },
+        { "name": "support.function.qml", "match": "\\b(print|parseInt|parseFloat|isNaN|isFinite|JSON|Math|Date|Array|Object|String|Number|Boolean)\\b" },
+        { "include": "#js-operator" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#boolean" },
+        { "include": "#null" }
+      ]
+    },
+    "js-operator": {
+      "patterns": [
+        { "name": "keyword.operator.arithmetic.js", "match": "[+\\-*/%]" },
+        { "name": "keyword.operator.comparison.js", "match": "===|!==|==|!=|<=|>=|<|>" },
+        { "name": "keyword.operator.logical.js", "match": "&&|\\|\\||!" },
+        { "name": "keyword.operator.assignment.js", "match": "=" },
+        { "name": "keyword.operator.ternary.js", "match": "\\?|:" },
+        { "name": "punctuation.accessor.js", "match": "\\." }
+      ]
+    },
+    "js-block": {
+      "begin": "\\{",
+      "end": "\\}",
+      "patterns": [
+        { "include": "#js-expression" },
+        { "include": "#js-block" },
+        { "include": "#comment" },
+        { "include": "#string" },
+        { "match": "[{}();,]", "name": "punctuation.qml" }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.block.qml",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            { "name": "constant.language.qml", "match": "\\b(NOTE|TODO|FIXME|HACK|XXX)\\b" }
+          ]
+        },
+        {
+          "name": "comment.line.double-slash.qml",
+          "begin": "//",
+          "end": "$",
+          "patterns": [
+            { "name": "constant.language.qml", "match": "\\b(NOTE|TODO|FIXME|HACK|XXX)\\b" }
+          ]
+        }
+      ]
+    }
+  }
+}

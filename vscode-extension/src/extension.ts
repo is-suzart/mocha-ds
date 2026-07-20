@@ -603,7 +603,12 @@ export function activate(context: vscode.ExtensionContext): void {
     if (!entry) { vscode.window.showErrorMessage("No entry point selected."); return; }
     const port = randomPort();
     const terminal = vscode.window.createTerminal("Mocha Dev");
-    terminal.sendText(`MOCHA_DEVTOOLS=1 MOCHA_DEVTOOLS_PORT=${port} npx tsx "${entry}"`);
+    if (process.platform === "win32") {
+      const sanitizedEntry = entry.replace(/\\/g, "/");
+      terminal.sendText(`node -e "process.env.MOCHA_DEVTOOLS='1'; process.env.MOCHA_DEVTOOLS_PORT='${port}'; require('child_process').spawn('npx.cmd', ['tsx', '${sanitizedEntry}'], { stdio: 'inherit', shell: true })"`);
+    } else {
+      terminal.sendText(`MOCHA_DEVTOOLS=1 MOCHA_DEVTOOLS_PORT=${port} npx tsx "${entry}"`);
+    }
     terminal.show();
   });
 
