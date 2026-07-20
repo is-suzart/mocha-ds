@@ -4,8 +4,9 @@ import {
   qproperty,
   Injectable,
   inject,
+  effect
 } from "@mocha/core";
-import { QMLComponent, qml, runApp } from "@mocha/qml";
+import { QMLComponent, qml, runApp, QMLTextField, viewChild } from "@mocha/qml";
 
 // ── Global state (persists across routes) ──
 
@@ -35,13 +36,14 @@ export class CounterState extends QObject {
     import MochaDS
     import QtQuick.Window 2.15
 
-    Window {
+    ApplicationWindow {
       id: root
       width: 500
       height: 420
       visible: true
       title: "Bridge Test"
       color: Theme.colors.base
+      
 
       Router {
         id: router
@@ -122,6 +124,7 @@ export class CounterState extends QObject {
               }
 
               Text {
+                id: echoText
                 text: "Echo: " + controller.echoedText.value
                 font.pixelSize: Theme.typography.sizeMd
                 color: Theme.colors.yellow
@@ -168,6 +171,7 @@ export class AppController extends QObject {
   @qproperty echoedText = new QProperty("");
 
   counter = inject(CounterState);
+  textField = viewChild("echoedText", QMLTextField);
 
   increment() {
     this.count.value += 1;
@@ -179,6 +183,7 @@ export class AppController extends QObject {
 
   echo() {
     console.log("[MOCHA ECHO]", this.echoedText.value);
+    this.echoedText.value = "";
   }
 
   routeLeave(path: string) {
