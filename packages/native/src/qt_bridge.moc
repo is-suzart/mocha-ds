@@ -30,14 +30,14 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
-struct qt_meta_tag_ZN18MochaDynamicObjectE_t {};
+struct qt_meta_tag_ZN16MochaPropertyMapE_t {};
 } // unnamed namespace
 
-template <> constexpr inline auto MochaDynamicObject::qt_create_metaobjectdata<qt_meta_tag_ZN18MochaDynamicObjectE_t>()
+template <> constexpr inline auto MochaPropertyMap::qt_create_metaobjectdata<qt_meta_tag_ZN16MochaPropertyMapE_t>()
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "MochaDynamicObject",
+        "MochaPropertyMap",
         "seqChanged",
         "",
         "setValue",
@@ -87,22 +87,22 @@ template <> constexpr inline auto MochaDynamicObject::qt_create_metaobjectdata<q
     };
     QtMocHelpers::UintData qt_enums {
     };
-    return QtMocHelpers::metaObjectData<MochaDynamicObject, qt_meta_tag_ZN18MochaDynamicObjectE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+    return QtMocHelpers::metaObjectData<MochaPropertyMap, qt_meta_tag_ZN16MochaPropertyMapE_t>(QMC::MetaObjectFlag{}, qt_stringData,
             qt_methods, qt_properties, qt_enums);
 }
-Q_CONSTINIT const QMetaObject MochaDynamicObject::staticMetaObject = { {
-    QMetaObject::SuperData::link<QObject::staticMetaObject>(),
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN18MochaDynamicObjectE_t>.stringdata,
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN18MochaDynamicObjectE_t>.data,
+Q_CONSTINIT const QMetaObject MochaPropertyMap::staticMetaObject = { {
+    QMetaObject::SuperData::link<QQmlPropertyMap::staticMetaObject>(),
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN16MochaPropertyMapE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN16MochaPropertyMapE_t>.data,
     qt_static_metacall,
     nullptr,
-    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN18MochaDynamicObjectE_t>.metaTypes,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN16MochaPropertyMapE_t>.metaTypes,
     nullptr
 } };
 
-void MochaDynamicObject::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void MochaPropertyMap::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    auto *_t = static_cast<MochaDynamicObject *>(_o);
+    auto *_t = static_cast<MochaPropertyMap *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: _t->seqChanged(); break;
@@ -118,7 +118,7 @@ void MochaDynamicObject::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         }
     }
     if (_c == QMetaObject::IndexOfMethod) {
-        if (QtMocHelpers::indexOfMethod<void (MochaDynamicObject::*)()>(_a, &MochaDynamicObject::seqChanged, 0))
+        if (QtMocHelpers::indexOfMethod<void (MochaPropertyMap::*)()>(_a, &MochaPropertyMap::seqChanged, 0))
             return;
     }
     if (_c == QMetaObject::ReadProperty) {
@@ -130,22 +130,22 @@ void MochaDynamicObject::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
     }
 }
 
-const QMetaObject *MochaDynamicObject::metaObject() const
+const QMetaObject *MochaPropertyMap::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *MochaDynamicObject::qt_metacast(const char *_clname)
+void *MochaPropertyMap::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN18MochaDynamicObjectE_t>.strings))
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN16MochaPropertyMapE_t>.strings))
         return static_cast<void*>(this);
-    return QObject::qt_metacast(_clname);
+    return QQmlPropertyMap::qt_metacast(_clname);
 }
 
-int MochaDynamicObject::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int MochaPropertyMap::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QObject::qt_metacall(_c, _id, _a);
+    _id = QQmlPropertyMap::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
@@ -168,7 +168,7 @@ int MochaDynamicObject::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void MochaDynamicObject::seqChanged()
+void MochaPropertyMap::seqChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }

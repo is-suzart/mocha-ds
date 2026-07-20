@@ -4,7 +4,7 @@
   "description": "Mocha Native - napi-rs + Qt real bindings. The bear that tames the Qt.",
   "type": "module",
   "main": "./index.js",
-  "types": "./index.d.ts",
+  "types": "./native.d.ts",
   "napi": {
     "binaryName": "mocha-native",
     "triples": {}

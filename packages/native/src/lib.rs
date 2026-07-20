@@ -33,6 +33,16 @@ extern "C" {
     fn mocha_set_call_handler(cb: Option<unsafe extern "C" fn(proxy_id: i32, method: *const c_char)>);
     fn qml_engine_set_context_property(engine: *mut c_void, name: *const c_char, obj: *mut c_void);
     fn qml_find_child_by_name(parent: *mut c_void, name: *const c_char) -> *mut c_void;
+
+    // QML Native Tree Inspector
+    fn native_qml_register_app_objects(engine: *mut c_void);
+    fn native_qml_list_root_objects(ids: *mut i32, max: i32) -> i32;
+    fn native_qml_list_children(obj_id: i32, ids: *mut i32, max: i32) -> i32;
+    fn native_qml_get_property(obj_id: i32, name: *const c_char) -> *const c_char;
+    fn native_qml_get_type_name(obj_id: i32) -> *const c_char;
+    fn native_qml_get_object_name(obj_id: i32) -> *const c_char;
+    fn native_qml_set_property(obj_id: i32, name: *const c_char, value: *const c_char);
+    fn native_qml_get_all_properties(obj_id: i32, buf: *mut c_char, max: i32);
 }
 
 struct NativeState {
@@ -332,4 +342,71 @@ pub fn native_find_child_by_name(parent_id: u32, name: String) -> Result<u32> {
         }
         Ok(state.alloc_id(child))
     }
+}
+
+// ── QML Native Tree Inspector ──
+
+#[napi]
+pub fn qml_register_app_objects(engine_id: u32) -> Result<()> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let engine = state.get_ptr(engine_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid engine handle"))?;
+    unsafe { native_qml_register_app_objects(engine); }
+    Ok(())
+}
+
+#[napi]
+pub fn qml_list_root_objects() -> Vec<i32> {
+    let mut buf = vec![0i32; 512];
+    let n = unsafe { native_qml_list_root_objects(buf.as_mut_ptr(), buf.len() as i32) };
+    buf.truncate(n as usize);
+    buf
+}
+
+#[napi]
+pub fn qml_list_children(obj_id: i32) -> Vec<i32> {
+    let mut buf = vec![0i32; 256];
+    let n = unsafe { native_qml_list_children(obj_id, buf.as_mut_ptr(), buf.len() as i32) };
+    buf.truncate(n as usize);
+    buf
+}
+
+#[napi]
+pub fn qml_get_property(obj_id: i32, name: String) -> Option<String> {
+    let c_name = CString::new(name).unwrap();
+    let ptr = unsafe { native_qml_get_property(obj_id, c_name.as_ptr()) };
+    if ptr.is_null() { return None; }
+    let s = unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() };
+    if s.is_empty() { None } else { Some(s) }
+}
+
+#[napi]
+pub fn qml_get_type_name(obj_id: i32) -> String {
+    let ptr = unsafe { native_qml_get_type_name(obj_id) };
+    if ptr.is_null() { return String::new(); }
+    unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() }
+}
+
+#[napi]
+pub fn qml_get_object_name(obj_id: i32) -> String {
+    let ptr = unsafe { native_qml_get_object_name(obj_id) };
+    if ptr.is_null() { return String::new(); }
+    unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() }
+}
+
+#[napi]
+pub fn qml_set_property(obj_id: i32, name: String, value: String) -> Result<()> {
+    let c_name = CString::new(name).unwrap();
+    let c_value = CString::new(value).unwrap();
+    unsafe { native_qml_set_property(obj_id, c_name.as_ptr(), c_value.as_ptr()); }
+    Ok(())
+}
+
+#[napi]
+pub fn qml_get_all_properties(obj_id: i32) -> Result<String> {
+    let mut buf = vec![0u8; 8192];
+    unsafe { native_qml_get_all_properties(obj_id, buf.as_mut_ptr() as *mut c_char, buf.len() as i32); }
+    let s = String::from_utf8_lossy(&buf);
+    let nul = s.find('\0').unwrap_or(s.len());
+    Ok(s[..nul].to_string())
 }

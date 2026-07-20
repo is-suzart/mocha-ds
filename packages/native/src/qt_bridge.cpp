@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQmlPropertyMap>
 #include <QObject>
 #include <QTimer>
 #include <QThread>
@@ -11,52 +12,72 @@
 #include <QDebug>
 
 #include <QMap>
+#include <QHash>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QColor>
 #include <functional>
 #include <cstdio>
 
-// ── MochaDynamicObject: TS ↔ QML proxy ──
+// ── MochaPropertyMap: TS ↔ QML proxy via QQmlPropertyMap ──
+//
+// QQmlPropertyMap exposes dynamic properties to QML with automatic
+// change notification.  Calling insert(key, value) emits
+// valueChanged(key), which QML's binding engine tracks natively —
+// no comma-operator tricks needed.
 
-class MochaDynamicObject : public QObject {
+class MochaPropertyMap : public QQmlPropertyMap {
     Q_OBJECT
     Q_PROPERTY(int bridgeSeq READ seq NOTIFY seqChanged)
 
-    QMap<QString, QVariant> _values;
     QStringList _pendingCalls;
     int _seq = 0;
 
 public:
     int proxyId = 0;
 
-    MochaDynamicObject(QObject* parent = nullptr) : QObject(parent) {}
+    MochaPropertyMap(QObject* parent = nullptr) : QQmlPropertyMap(this, parent) {}
 
     int seq() const { return _seq; }
 
     Q_INVOKABLE void setValue(QString name, QString value) {
-        _values[name] = QVariant(value);
-        _seq++; emit seqChanged();
+        insert(name, QVariant(value));
+        _seq++;
+        fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', '%s'), _seq=%d\n",
+            name.toUtf8().constData(), value.toUtf8().constData(), _seq);
+        emit seqChanged();
     }
 
     Q_INVOKABLE void setInt(QString name, int value) {
-        _values[name] = QVariant(value);
-        _seq++; emit seqChanged();
+        insert(name, QVariant(value));
+        _seq++;
+        fprintf(stderr, "[C++ MochaPropertyMap] setInt('%s', %d), _seq=%d\n",
+            name.toUtf8().constData(), value, _seq);
+        emit seqChanged();
     }
 
     Q_INVOKABLE void setBool(QString name, bool value) {
-        _values[name] = QVariant(value);
-        _seq++; emit seqChanged();
+        insert(name, QVariant(value));
+        _seq++;
+        fprintf(stderr, "[C++ MochaPropertyMap] setBool('%s', %d), _seq=%d\n",
+            name.toUtf8().constData(), value ? 1 : 0, _seq);
+        emit seqChanged();
     }
 
     Q_INVOKABLE QVariant getValue(QString name) const {
-        return _values.value(name);
+        return value(name);
     }
 
     Q_INVOKABLE QVariant get(QString name) const {
-        return _values.value(name);
+        return value(name);
     }
 
     Q_INVOKABLE void bridgeCall(QString method) {
         _pendingCalls.append(method);
-        _seq++; emit seqChanged();
+        _seq++;
+        fprintf(stderr, "[C++ MochaPropertyMap] bridgeCall('%s'), _seq=%d, pending=%d\n",
+            method.toUtf8().constData(), _seq, _pendingCalls.size());
+        emit seqChanged();
     }
 
     bool hasPendingCalls() const {
@@ -87,6 +108,8 @@ extern "C" {
 // QApplication
 
 void* qt_app_create(int /*argc*/, char** /*argv*/) {
+    qputenv("QT_QML_DEBUG", "1");
+    qputenv("QML_DEBUGGER_PORT", "3768");
     qInstallMessageHandler(mochaMessageHandler);
     fprintf(stderr, "[MOCHA DEBUG] Creating QGuiApplication...\n");
     static int dummy_argc = 1;
@@ -210,45 +233,45 @@ void qt_app_quit(void* app) {
     static_cast<QGuiApplication*>(app)->quit();
 }
 
-// MochaDynamicObject
+// MochaPropertyMap
 
 void* mocha_object_create(int proxyId) {
-    auto* obj = new MochaDynamicObject();
+    auto* obj = new MochaPropertyMap();
     obj->proxyId = proxyId;
     QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
     return obj;
 }
 
 void mocha_object_destroy(void* obj) {
-    delete static_cast<MochaDynamicObject*>(obj);
+    delete static_cast<MochaPropertyMap*>(obj);
 }
 
 void mocha_object_set_value(void* obj, const char* name, const char* value) {
-    static_cast<MochaDynamicObject*>(obj)->setValue(
+    static_cast<MochaPropertyMap*>(obj)->setValue(
         QString::fromUtf8(name), QString::fromUtf8(value));
 }
 
 void mocha_object_set_int(void* obj, const char* name, int value) {
-    static_cast<MochaDynamicObject*>(obj)->setInt(QString::fromUtf8(name), value);
+    static_cast<MochaPropertyMap*>(obj)->setInt(QString::fromUtf8(name), value);
 }
 
 void mocha_object_set_bool(void* obj, const char* name, int value) {
-    static_cast<MochaDynamicObject*>(obj)->setBool(QString::fromUtf8(name), value != 0);
+    static_cast<MochaPropertyMap*>(obj)->setBool(QString::fromUtf8(name), value != 0);
 }
 
 const char* mocha_object_get_value(void* obj, const char* name) {
-    auto* mo = static_cast<MochaDynamicObject*>(obj);
+    auto* mo = static_cast<MochaPropertyMap*>(obj);
     static thread_local QByteArray result;
     result = mo->getValue(QString::fromUtf8(name)).toString().toUtf8();
     return result.constData();
 }
 
 int mocha_object_has_pending_calls(void* obj) {
-    return static_cast<MochaDynamicObject*>(obj)->hasPendingCalls() ? 1 : 0;
+    return static_cast<MochaPropertyMap*>(obj)->hasPendingCalls() ? 1 : 0;
 }
 
 int mocha_object_drain_pending_calls(void* obj, char* buf, int max) {
-    auto* mo = static_cast<MochaDynamicObject*>(obj);
+    auto* mo = static_cast<MochaPropertyMap*>(obj);
     QString call = mo->drainOneCall();
     if (call.isEmpty()) return 0;
     QByteArray utf8 = call.toUtf8();
@@ -274,7 +297,178 @@ void* qml_find_child_by_name(void* parent, const char* name) {
     return child;
 }
 
+// ── QML Native Tree Inspector ──
+
+static QMutex g_objMutex;
+static int g_nextObjId = 1;
+static QHash<int, QObject*> g_idToObj;
+static QHash<QObject*, int> g_objToId;
+
+static int registerQmlObj(QObject* obj) {
+    if (!obj) return 0;
+    QMutexLocker lock(&g_objMutex);
+    auto it = g_objToId.find(obj);
+    if (it != g_objToId.end()) return it.value();
+    int id = g_nextObjId++;
+    g_idToObj[id] = obj;
+    g_objToId[obj] = id;
+    return id;
+}
+
+static void unregisterQmlObj(QObject* obj) {
+    if (!obj) return;
+    QMutexLocker lock(&g_objMutex);
+    auto it = g_objToId.find(obj);
+    if (it != g_objToId.end()) {
+        g_idToObj.remove(it.value());
+        g_objToId.erase(it);
+    }
+}
+
+static void collectAllQmlObjects(QObject* root, QList<QObject*>& out) {
+    if (!root) return;
+    out.append(root);
+    const auto children = root->children();
+    for (QObject* child : children) {
+        collectAllQmlObjects(child, out);
+    }
+}
+
+void native_qml_register_app_objects(void* enginePtr) {
+    auto* e = static_cast<QQmlApplicationEngine*>(enginePtr);
+    if (!e) return;
+
+    QMutexLocker lock(&g_objMutex);
+    const auto roots = e->rootObjects();
+    for (QObject* root : roots) {
+        QList<QObject*> all;
+        collectAllQmlObjects(root, all);
+        for (QObject* obj : all) {
+            registerQmlObj(obj);
+        }
+    }
+}
+
+int native_qml_list_root_objects(int* ids, int max) {
+    QMutexLocker lock(&g_objMutex);
+    int n = qMin(g_idToObj.size(), max);
+    int i = 0;
+    for (auto it = g_idToObj.begin(); it != g_idToObj.end() && i < n; ++it, ++i) {
+        ids[i] = it.key();
+    }
+    return i; // count
+}
+
+int native_qml_list_children(int objId, int* ids, int max) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) return 0;
+
+    const auto children = obj->children();
+    int n = qMin(children.size(), max);
+    for (int i = 0; i < n; i++) {
+        ids[i] = registerQmlObj(children[i]);
+    }
+    return n;
+}
+
+const char* native_qml_get_property(int objId, const char* name) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) return "";
+
+    QVariant val = obj->property(name);
+    static thread_local QByteArray result;
+    result = val.toString().toUtf8();
+    return result.constData();
+}
+
+const char* native_qml_get_type_name(int objId) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) return "";
+    return obj->metaObject()->className();
+}
+
+const char* native_qml_get_object_name(int objId) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) return "";
+    static thread_local QByteArray result;
+    result = obj->objectName().toUtf8();
+    return result.constData();
+}
+
+void native_qml_set_property(int objId, const char* name, const char* value) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) return;
+
+    QByteArray propName(name);
+    QVariant current = obj->property(propName);
+    QVariant newVal;
+
+    if (!current.isValid() || current.type() == QVariant::String) {
+        newVal = QVariant(QString::fromUtf8(value));
+    } else if (current.type() == QVariant::Int) {
+        bool ok;
+        int v = QString::fromUtf8(value).toInt(&ok);
+        if (ok) newVal = QVariant(v); else newVal = QVariant(QString::fromUtf8(value));
+    } else if (current.type() == QVariant::Double) {
+        bool ok;
+        double v = QString::fromUtf8(value).toDouble(&ok);
+        if (ok) newVal = QVariant(v); else newVal = QVariant(QString::fromUtf8(value));
+    } else if (current.type() == QVariant::Bool) {
+        QString sv = QString::fromUtf8(value).toLower();
+        newVal = QVariant(sv == "true" || sv == "1");
+    } else if (current.type() == QVariant::Color) {
+        newVal = QVariant(QColor(QString::fromUtf8(value)));
+    } else {
+        newVal = QVariant(QString::fromUtf8(value));
+    }
+
+    obj->setProperty(propName, newVal);
+}
+
+void native_qml_get_all_properties(int objId, char* buf, int max) {
+    QMutexLocker lock(&g_objMutex);
+    QObject* obj = g_idToObj.value(objId);
+    if (!obj) { buf[0] = '\0'; return; }
+
+    const QMetaObject* meta = obj->metaObject();
+    QByteArray result = QByteArray("[");
+
+    for (int i = meta->propertyOffset(); i < meta->propertyCount(); i++) {
+        QMetaProperty prop = meta->property(i);
+        if (!prop.isReadable()) continue;
+        if (result.size() > 1) result.append(',');
+        QVariant val = prop.read(obj);
+
+        QByteArray entry;
+        entry.append("{\"n\":\"");
+        entry.append(prop.name());
+        entry.append("\",\"t\":\"");
+        entry.append(val.typeName());
+        entry.append("\",\"v\":\"");
+        QByteArray escaped = val.toString().toUtf8();
+        escaped.replace('\\', "\\\\");
+        escaped.replace('"', "\\\"");
+        entry.append(escaped);
+        entry.append("\",\"r\":");
+        entry.append(prop.isReadable() ? "true" : "false");
+        entry.append(",\"w\":");
+        entry.append(prop.isWritable() ? "true" : "false");
+        entry.append('}');
+        result.append(entry);
+    }
+    result.append(']');
+
+    int len = qMin(result.size(), max - 1);
+    memcpy(buf, result.constData(), len);
+    buf[len] = '\0';
+}
+
 } // extern "C"
 
-// Include moc-generated code for MochaDynamicObject
+// Include moc-generated code for MochaPropertyMap
 #include "qt_bridge.moc"

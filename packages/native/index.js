@@ -59,6 +59,14 @@ export const {
   nativeProxyDrainPendingCalls,
   nativeEngineSetContext,
   nativeFindChildByName,
+  qmlRegisterAppObjects,
+  qmlListRootObjects,
+  qmlListChildren,
+  qmlGetProperty,
+  qmlGetTypeName,
+  qmlGetObjectName,
+  qmlSetProperty,
+  qmlGetAllProperties,
 } = native;
 
 // High-level API
@@ -84,6 +92,7 @@ class NativeApp {
     const candidates = [
       join(basePath, "ui"),
       join(basePath, "..", "ui"),
+      join(basePath, "design-system"),
     ];
     for (const c of candidates) {
       if (existsSync(join(c, "MochaDS", "qmldir"))) {
@@ -120,11 +129,15 @@ class NativeApp {
   }
 
   proxySetValue(proxyId, name, value) {
+    console.log(`[native] proxySetValue(${proxyId}, ${name}, ${JSON.stringify(value)}) typeof=${typeof value}`);
     if (typeof value === "number" && Number.isInteger(value)) {
+      console.log(`  → nativeProxySetInt`);
       nativeProxySetInt(proxyId, name, value);
     } else if (typeof value === "boolean") {
+      console.log(`  → nativeProxySetBool`);
       nativeProxySetBool(proxyId, name, value);
     } else {
+      console.log(`  → nativeProxySetValue`);
       nativeProxySetValue(proxyId, name, String(value));
     }
   }
@@ -166,6 +179,46 @@ class NativeApp {
 
   processEvents() {
     nativeProcessEvents();
+  }
+
+  registerAppObjects() {
+    if (!this._engine || this._engine <= 0) return;
+    try { qmlRegisterAppObjects(this._engine); } catch(e) { /* Qt objects may not be available */ }
+  }
+
+  listRootObjects() {
+    const ids = qmlListRootObjects();
+    return ids.map((id) => this._buildQmlNode(id));
+  }
+
+  listChildren(objId) {
+    const ids = qmlListChildren(objId);
+    return ids.map((id) => this._buildQmlNode(id));
+  }
+
+  getQmlProperty(objId, name) {
+    return qmlGetProperty(objId, name) ?? "";
+  }
+
+  getQmlProperties(objId) {
+    const json = qmlGetAllProperties(objId);
+    try { return JSON.parse(json); } catch { return []; }
+  }
+
+  setQmlProperty(objId, name, value) {
+    qmlSetProperty(objId, name, String(value));
+  }
+
+  _buildQmlNode(id) {
+    const className = qmlGetTypeName(id) ?? "Unknown";
+    const objectName = qmlGetObjectName(id) ?? "";
+    const childIds = qmlListChildren(id) ?? [];
+    return {
+      id,
+      className,
+      objectName,
+      children: childIds.map((cid) => this._buildQmlNode(cid)),
+    };
   }
 
   exec() {

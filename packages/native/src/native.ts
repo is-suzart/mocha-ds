@@ -18,6 +18,21 @@ async function loadNative(): Promise<any> {
   }
 }
 
+export interface QmlNode {
+  id: number;
+  className: string;
+  objectName: string;
+  children: QmlNode[];
+}
+
+export interface QmlProperty {
+  name: string;
+  type: string;
+  value: string;
+  readable: boolean;
+  writable: boolean;
+}
+
 export interface NativeApp {
   loadQML(qml: string, basePath?: string): void;
   setProperty(obj: string, property: string, value: string | number | boolean): void;
@@ -26,6 +41,15 @@ export interface NativeApp {
   quit(): void;
   poll(): boolean;
   processEvents(): void;
+
+  // QML Native Tree Inspector
+  registerAppObjects(): void;
+  listRootObjects(): QmlNode[];
+  listChildren(objId: number): QmlNode[];
+  getQmlProperty(objId: number, name: string): string;
+  getQmlProperties(objId: number): QmlProperty[];
+  setQmlProperty(objId: number, name: string, value: string): void;
+  get typeName(): string;
 }
 
 class NativeAppImpl implements NativeApp {
@@ -96,6 +120,54 @@ class NativeAppImpl implements NativeApp {
 
   processEvents(): void {
     native.nativeProcessEvents();
+  }
+
+  // ── QML Native Tree Inspector ──
+
+  registerAppObjects(): void {
+    if (!this._initialized) return;
+    native.qmlRegisterAppObjects(this._engine);
+  }
+
+  listRootObjects(): QmlNode[] {
+    if (!this._initialized) return [];
+    const ids: number[] = native.qmlListRootObjects();
+    return ids.map((id) => this._buildQmlNode(id));
+  }
+
+  listChildren(objId: number): QmlNode[] {
+    if (!this._initialized) return [];
+    const ids: number[] = native.qmlListChildren(objId);
+    return ids.map((id) => this._buildQmlNode(id));
+  }
+
+  getQmlProperty(objId: number, name: string): string {
+    return native.qmlGetProperty(objId, name) ?? "";
+  }
+
+  getQmlProperties(objId: number): QmlProperty[] {
+    const json = native.qmlGetAllProperties(objId);
+    try { return JSON.parse(json); } catch { return []; }
+  }
+
+  setQmlProperty(objId: number, name: string, value: string): void {
+    native.qmlSetProperty(objId, name, value);
+  }
+
+  get typeName(): string {
+    return "";
+  }
+
+  private _buildQmlNode(id: number): QmlNode {
+    const className = native.qmlGetTypeName(id) ?? "Unknown";
+    const objectName = native.qmlGetObjectName(id) ?? "";
+    const childIds: number[] = native.qmlListChildren(id) ?? [];
+    return {
+      id,
+      className,
+      objectName,
+      children: childIds.map((cid) => this._buildQmlNode(cid)),
+    };
   }
 }
 
