@@ -1,5 +1,11 @@
 # macOS Quickstart
 
+> **Recomendado:** Use o bootstrap automático:
+> ```bash
+> node scripts/bootstrap.mjs --fix
+> ```
+> Ele detecta e instala todas as dependências (Node, Rust, Qt6 via Homebrew, Xcode CLI Tools) em um só comando. Depois continue na seção **Setup** abaixo.
+
 ## Pré-requisitos
 
 ### Node.js 20+
