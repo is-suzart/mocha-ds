@@ -1,0 +1,26 @@
+{
+  "scopeName": "source.qml.injection",
+  "injectionSelector": "L:source.ts",
+  "patterns": [
+    {
+      "name": "meta.embedded.block.qml",
+      "begin": "qml`",
+      "end": "`",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword.other.template.begin.ts"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "keyword.other.template.end.ts"
+        }
+      },
+      "patterns": [
+        {
+          "include": "source.qml"
+        }
+      ]
+    }
+  ]
+}

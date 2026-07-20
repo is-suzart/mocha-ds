@@ -518,7 +518,7 @@ function randomPort(): number {
 
 export function activate(context: vscode.ExtensionContext): void {
   _out = vscode.window.createOutputChannel("Mocha Framework");
-  _out.appendLine("[Mocha] Extension activated v0.3.0");
+  _out.appendLine("[Mocha] Extension activated v0.3.1");
 
   // Track the last active .ts file (so debug focus steal doesn't break entry detection)
   _trackActiveEditor(context);
@@ -566,6 +566,9 @@ export function activate(context: vscode.ExtensionContext): void {
         debugConfig: vscode.DebugConfiguration
       ): vscode.ProviderResult<vscode.DebugConfiguration> {
         const wsFolder = _folder?.uri.fsPath || process.cwd();
+        _out.appendLine(`[Mocha] resolveDebugConfiguration — wsFolder: ${wsFolder}`);
+        _out.appendLine(`[Mocha] lastActiveTsFile: ${_lastActiveTsFile ?? "(none)"}`);
+        _out.show(false); // show without stealing focus
 
         if (!debugConfig.type)    debugConfig.type    = "mocha";
         if (!debugConfig.request) debugConfig.request = "launch";
@@ -574,17 +577,19 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!debugConfig.port)    debugConfig.port    = randomPort();
 
         if (!debugConfig.program) {
-          // Use async pick — return a Promise so VS Code awaits it
           return detectEntryPointOrPick(wsFolder).then((entry) => {
             if (!entry) {
+              _out.appendLine("[Mocha] ERROR: No entry point selected — debug cancelled");
               vscode.window.showErrorMessage("Mocha: No entry point selected. Open a .ts file and try again.");
               return undefined;
             }
+            _out.appendLine(`[Mocha] Entry point resolved: ${entry}`);
             debugConfig.program = entry;
             return debugConfig;
           });
         }
 
+        _out.appendLine(`[Mocha] Entry point (from config): ${debugConfig.program}`);
         return debugConfig;
       }
     }

@@ -1,0 +1,10 @@
+.yarn/
+.pnp.cjs
+.pnp.loader.mjs
+.yarn.lock
+package-lock.json
+tsconfig.json
+.vscode/
+src/
+*.qml
+.gitignore

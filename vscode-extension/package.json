@@ -2,7 +2,7 @@
   "name": "mocha-framework",
   "displayName": "Mocha Framework",
   "description": "Qt TypeScript Framework — QML IntelliSense, QObject Inspector, Debug Adapter",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "mocha-framework",
   "repository": {
     "type": "git",

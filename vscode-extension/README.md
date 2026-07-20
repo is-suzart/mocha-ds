@@ -1,6 +1,6 @@
 # Mocha-DS QML IntelliSense — VS Code Extension
 
-Extensão do VS Code com **autocomplete**, **hover docs** e **snippets** para o design system [Mocha-DS](../) em QML (`.qml` e `.qml.ts`).
+Extensão do VS Code com **autocomplete**, **hover docs** e **snippets** para o design system Mocha-DS em QML (`.qml` e `.qml.ts`).
 
 ---
 
