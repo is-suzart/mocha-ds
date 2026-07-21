@@ -136,3 +136,5 @@ export interface Size {
   width: number;
   height: number;
 }
+
+export { safeStringify } from "./safe-stringify.js";

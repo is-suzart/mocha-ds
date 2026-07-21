@@ -29,16 +29,11 @@ program.addCommand(addCommand);
 
 function registerDevCommand() {
   return new Command('dev')
-    .argument('[entry]', 'entry file (default: src/App.qml.ts)', 'src/App.qml.ts')
-    .option('-p, --port <port>', 'dev server port (random if omitted)')
-    .option('-w, --watch', 'watch for changes', true)
-    .description('start development server with hot reload')
-    .action(async (entry: string, opts: { port?: string; watch: boolean }) => {
+    .argument('[entry]', 'entry file (default: auto-detect)', 'src/App.qml.ts')
+    .description('start dev server with HMR (hot module reload)')
+    .action(async (entry: string) => {
       const { run } = await import('../../kit/dist/commands/dev.js');
-      const args = [entry];
-      if (opts.port) args.push('--port', opts.port);
-      if (opts.watch) args.push('--watch');
-      await run(args);
+      await run([entry]);
     });
 }
 

@@ -1,4 +1,5 @@
 import { Logger } from "@mocha/shared";
+import * as esbuild from "esbuild";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -25,51 +26,153 @@ export async function run(args: string[]): Promise<void> {
 
   if (!entry) {
     logger.error("No entry file specified and no default found");
-    logger.info("Usage: ursa build <entry.qml.ts> [--output dist] [--minify]");
+    logger.info("Usage: mocha build <entry.qml.ts> [--output dist] [--minify]");
     process.exit(1);
   }
 
-  const options: BuildOptions = {
-    entry,
-    output,
-    minify,
-    sourceMap,
-  };
+  const entryPath = path.resolve(process.cwd(), entry);
+  const outputDir = path.resolve(process.cwd(), output);
+  const targetPlatform = detectTarget(args);
 
-  logger.info(`Building Mocha application...`);
-  logger.info(`  Entry:   ${entry}`);
-  logger.info(`  Output:  ${output}`);
-  logger.info(`  Minify:  ${minify}`);
-  logger.info(`  SourceMap: ${sourceMap}`);
+  logger.info("Building Mocha application...");
+  logger.info(`  Entry:    ${entry}`);
+  logger.info(`  Output:   ${outputDir}`);
+  logger.info(`  Minify:   ${minify}`);
+  logger.info(`  Target:   ${targetPlatform}`);
 
   const startTime = performance.now();
 
   try {
-    await buildProject(options);
+    await buildProject({ entry: entryPath, output: outputDir, minify, sourceMap }, targetPlatform);
     const elapsed = (performance.now() - startTime).toFixed(0);
     logger.info(`Build completed in ${elapsed}ms`);
+    logger.info(`Run with: node ${path.join(output, "run.js")}`);
   } catch (err) {
     logger.error("Build failed:", err);
     process.exit(1);
   }
 }
 
-async function buildProject(options: BuildOptions): Promise<void> {
-  const outputDir = path.resolve(process.cwd(), options.output!);
-  const entryPath = path.resolve(process.cwd(), options.entry!);
+async function buildProject(
+  options: { entry: string; output: string; minify: boolean; sourceMap: boolean },
+  targetPlatform: string
+): Promise<void> {
+  const { entry, output, minify, sourceMap } = options;
+  const outputDir = output;
 
-  if (!fs.existsSync(entryPath)) {
-    throw new Error(`Entry file not found: ${entryPath}`);
+  if (!fs.existsSync(entry)) {
+    throw new Error(`Entry file not found: ${entry}`);
   }
 
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const stats = await analyzeProject();
-  logger.info(`  Files:   ${stats.fileCount}`);
-  logger.info(`  Components: ${stats.componentCount}`);
-  logger.info(`  QML templates: ${stats.qmlCount}`);
+  const outfile = path.join(outputDir, "app.js");
 
-  logger.info("  Output written to:", outputDir);
+  await esbuild.build({
+    entryPoints: [entry],
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    outfile,
+    minify,
+    sourcemap: sourceMap,
+    external: ["@mocha/native"],
+    banner: {
+      js: [
+        "import { createRequire } from 'module';",
+        "const require = createRequire(import.meta.url);",
+      ].join("\n"),
+    },
+  });
+
+  logger.info(`  Bundled JS: ${outfile}`);
+
+  copyNativeBinary(outputDir, targetPlatform);
+
+  writePackageJson(outputDir);
+  writeRunScript(outputDir);
+
+  logger.info(`  Output: ${outputDir}/`);
+}
+
+function copyNativeBinary(outputDir: string, targetPlatform: string): void {
+  const me = detectMyPlatform();
+  if (targetPlatform !== me) {
+    logger.warn(
+      `Cross-compilation requested (${me} → ${targetPlatform}). ` +
+      "Native binary for target platform must be placed manually at: " +
+      `${outputDir}/mocha-native.${targetPlatform}.node`
+    );
+    return;
+  }
+
+  const nativeDir = findNativePackageDir();
+  if (!nativeDir) {
+    logger.warn("@mocha/native not found — native binary will not be bundled");
+    return;
+  }
+
+  const triples: Record<string, string> = {
+    "linux-x64": "mocha-native.linux-x64-gnu.node",
+    "linux-arm64": "mocha-native.linux-arm64-gnu.node",
+    "darwin-x64": "mocha-native.darwin-x64.node",
+    "darwin-arm64": "mocha-native.darwin-arm64.node",
+    "win32-x64": "mocha-native.win32-x64-msvc.node",
+  };
+
+  const binaryName = triples[me];
+  if (!binaryName) {
+    logger.warn(`Unsupported platform: ${me}`);
+    return;
+  }
+
+  const srcPath = path.join(nativeDir, binaryName);
+  const destPath = path.join(outputDir, binaryName);
+
+  if (!fs.existsSync(srcPath)) {
+    logger.warn(
+      `Native binary not found: ${srcPath}. Build it first: ` +
+      `cd packages/native && npx napi build --platform --release`
+    );
+    return;
+  }
+
+  fs.copyFileSync(srcPath, destPath);
+  logger.info(`  Native: ${binaryName}`);
+}
+
+function detectMyPlatform(): string {
+  const arch = process.arch === "x64" ? "x64" : process.arch === "arm64" ? "arm64" : process.arch;
+  return `${process.platform}-${arch}`;
+}
+
+function detectTarget(args: string[]): string {
+  const idx = args.indexOf("--target");
+  if (idx >= 0 && args[idx + 1]) return args[idx + 1];
+  return detectMyPlatform();
+}
+
+function findNativePackageDir(): string | null {
+  const candidates = [
+    path.resolve(process.cwd(), "node_modules", "@mocha", "native"),
+    path.resolve(process.cwd(), "..", "packages", "native"),
+    path.resolve(process.cwd(), "packages", "native"),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return null;
+}
+
+function writePackageJson(outputDir: string): void {
+  const pkg = { type: "module" };
+  fs.writeFileSync(path.join(outputDir, "package.json"), JSON.stringify(pkg, null, 2));
+}
+
+function writeRunScript(outputDir: string): void {
+  const runScript = "node app.js";
+  fs.writeFileSync(path.join(outputDir, "run.sh"), `#!/usr/bin/env sh\n${runScript}\n`, { mode: 0o755 });
+  fs.writeFileSync(path.join(outputDir, "run.bat"), `${runScript}\n`);
 }
 
 function findEntry(): string | null {
@@ -81,41 +184,10 @@ function findEntry(): string | null {
     "App.qml.ts",
     "index.qml.ts",
   ];
-
   for (const candidate of candidates) {
     if (fs.existsSync(path.resolve(process.cwd(), candidate))) {
       return candidate;
     }
   }
-
   return null;
-}
-
-async function analyzeProject(): Promise<{
-  fileCount: number;
-  componentCount: number;
-  qmlCount: number;
-}> {
-  let fileCount = 0;
-  let componentCount = 0;
-  let qmlCount = 0;
-
-  const srcDir = path.resolve(process.cwd(), "src");
-  if (fs.existsSync(srcDir)) {
-    const walkDir = (dir: string) => {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) walkDir(fullPath);
-        else if (entry.name.endsWith(".qml.ts")) {
-          fileCount++;
-          const content = fs.readFileSync(fullPath, "utf-8");
-          if (content.includes("@QMLComponent")) componentCount++;
-          if (content.includes("qml`")) qmlCount++;
-        }
-      }
-    };
-    walkDir(srcDir);
-  }
-
-  return { fileCount, componentCount, qmlCount };
 }
