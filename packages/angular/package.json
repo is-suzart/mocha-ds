@@ -1,0 +1,11 @@
+{
+  "name": "@mocha-ds/angular",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "peerDependencies": {
+    "@angular/core": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/forms": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/router": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  }
+}
