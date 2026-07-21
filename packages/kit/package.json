@@ -24,8 +24,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@mocha/core": "*",
-    "@mocha/qml": "*",
-    "@mocha/shared": "*"
+    "@mocha/core": "workspace:*",
+    "@mocha/qml": "workspace:*",
+    "@mocha/shared": "workspace:*",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.15.0"
   }
 }

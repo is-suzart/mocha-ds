@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "mocha": "./dist/index.js"
+    "mocha": "./bin/mocha.js"
   },
   "exports": {
     ".": {
@@ -24,6 +24,7 @@
     "commander": "^12.0.0",
     "ora": "^8.0.0",
     "@inquirer/prompts": "^7.0.0",
-    "@mocha/kit": "*"
+    "@mocha/kit": "workspace:*",
+    "tsx": "^4.15.0"
   }
 }
