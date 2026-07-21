@@ -90,6 +90,13 @@ Item {
             return;
         }
 
+        // Sort by order property (lower = first)
+        cols.sort(function(a, b) {
+            var orderA = a.order !== undefined ? a.order : 0
+            var orderB = b.order !== undefined ? b.order : 0
+            return orderA - orderB
+        })
+
         var gapPx = root.gapPixels;
         var screen = root.currentScreenSize;
 
@@ -200,10 +207,11 @@ Item {
                 targetCol.x = currentX;
                 targetCol.height = maxColHeight; // match tallest item in row
 
-                // Vertical alignment inside row
-                if (valign === "center") {
+                // Vertical alignment inside row — alignSelf overrides grid valign
+                var itemAlign = targetCol.alignSelf !== undefined && targetCol.alignSelf !== "" ? targetCol.alignSelf : valign;
+                if (itemAlign === "center") {
                     targetCol.y = currentY + (maxColHeight - targetCol.height) / 2;
-                } else if (valign === "end") {
+                } else if (itemAlign === "end") {
                     targetCol.y = currentY + (maxColHeight - targetCol.height);
                 } else {
                     targetCol.y = currentY;

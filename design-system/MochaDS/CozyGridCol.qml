@@ -3,9 +3,9 @@ import QtQuick 2.15
 Item {
     id: colRoot
 
-    // ==========================================
+    // ═══════════════════════════════════════════════════
     // Public API (Properties)
-    // ==========================================
+    // ═══════════════════════════════════════════════════
     property int span: 12
     property int sm: -1
     property int md: -1
@@ -15,6 +15,12 @@ Item {
     property int smOffset: -1
     property int mdOffset: -1
     property int lgOffset: -1
+
+    // ═══════════════════════════════════════════════════
+    // Flex / Self alignment (consumed by parent CozyGrid)
+    // ═══════════════════════════════════════════════════
+    property string alignSelf: ""           // start | center | end | stretch — overrides grid valign
+    property int order: 0                   // CSS order — lower first
 
     // Internal properties resolved by parent Grid
     property int _resolvedSpan: 12
@@ -29,7 +35,7 @@ Item {
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
             if (child.visible) {
-                var ch = child.implicitHeight > 0 ? child.implicitHeight : 
+                var ch = child.implicitHeight > 0 ? child.implicitHeight :
                          (child.childrenRect.height > 0 ? child.childrenRect.height : child.height);
                 if (ch > maxH) {
                     maxH = ch;
