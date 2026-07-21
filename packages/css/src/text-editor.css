@@ -1,0 +1,550 @@
+/* ============================================================
+   Catppuccin Text Editor (editor)
+   Based on Tiptap / ProseMirror
+   ============================================================ */
+
+/* ---------------------------
+   Accent variable (default: mauve)
+   --------------------------- */
+:root {
+  --ctp-editor-accent: var(--ctp-mauve);
+}
+
+.editor[data-color="rosewater"] { --ctp-editor-accent: var(--ctp-rosewater); }
+.editor[data-color="flamingo"]  { --ctp-editor-accent: var(--ctp-flamingo);  }
+.editor[data-color="pink"]      { --ctp-editor-accent: var(--ctp-pink);      }
+.editor[data-color="mauve"]     { --ctp-editor-accent: var(--ctp-mauve);     }
+.editor[data-color="red"]       { --ctp-editor-accent: var(--ctp-red);       }
+.editor[data-color="maroon"]    { --ctp-editor-accent: var(--ctp-maroon);    }
+.editor[data-color="peach"]     { --ctp-editor-accent: var(--ctp-peach);     }
+.editor[data-color="yellow"]    { --ctp-editor-accent: var(--ctp-yellow);    }
+.editor[data-color="green"]     { --ctp-editor-accent: var(--ctp-green);     }
+.editor[data-color="teal"]      { --ctp-editor-accent: var(--ctp-teal);      }
+.editor[data-color="sky"]       { --ctp-editor-accent: var(--ctp-sky);       }
+.editor[data-color="sapphire"]  { --ctp-editor-accent: var(--ctp-sapphire);  }
+.editor[data-color="blue"]      { --ctp-editor-accent: var(--ctp-blue);      }
+.editor[data-color="lavender"]  { --ctp-editor-accent: var(--ctp-lavender);  }
+
+/* ---------------------------
+   Wrapper
+   --------------------------- */
+.editor {
+  font-family: var(--ctp-font-family);
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: var(--ctp-radius-rounded);
+  background-color: var(--ctp-base);
+  overflow: hidden;
+  transition: border-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              box-shadow var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.editor:focus-within {
+  border-color: var(--ctp-editor-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-editor-accent) 20%, transparent);
+}
+
+/* Fullscreen */
+.editor[data-state="fullscreen"] {
+  position: fixed;
+  inset: 0;
+  border-radius: 0;
+  z-index: 9999;
+  border: none;
+}
+
+/* ---------------------------
+   Toolbar
+   --------------------------- */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 10px;
+  background-color: var(--ctp-mantle);
+  border-bottom: 1px solid var(--ctp-surface0);
+  user-select: none;
+}
+
+.editor-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.editor-toolbar-separator {
+  width: 1px;
+  height: 22px;
+  background-color: var(--ctp-surface1);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* Toolbar button */
+.editor-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  font-family: var(--ctp-font-family);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background var(--ctp-transition-duration) var(--ctp-transition-timing),
+              color var(--ctp-transition-duration) var(--ctp-transition-timing);
+  padding: 0;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.editor-toolbar-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.editor-toolbar-btn:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 12%, transparent);
+  color: var(--ctp-editor-accent);
+}
+
+.editor-toolbar-btn[data-state="active"] {
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 18%, transparent);
+  color: var(--ctp-editor-accent);
+}
+
+.editor-toolbar-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Heading select */
+.editor-toolbar-select {
+  font-family: var(--ctp-font-family);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ctp-subtext0);
+  background-color: transparent;
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  outline: none;
+  transition: var(--ctp-transition);
+  height: 32px;
+}
+
+.editor-toolbar-select:hover,
+.editor-toolbar-select:focus {
+  border-color: var(--ctp-editor-accent);
+  color: var(--ctp-text);
+}
+
+/* Color input inside toolbar */
+.editor-toolbar-color {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: 6px;
+  padding: 3px;
+  cursor: pointer;
+  background: transparent;
+}
+
+/* ---------------------------
+   Statusbar (bottom)
+   --------------------------- */
+.editor-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px;
+  background-color: var(--ctp-mantle);
+  border-top: 1px solid var(--ctp-surface0);
+  font-size: 0.73rem;
+  color: var(--ctp-subtext0);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.editor-statusbar-left,
+.editor-statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editor-statusbar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--ctp-radius-pill);
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 14%, transparent);
+  color: var(--ctp-editor-accent);
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.editor-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--ctp-radius-pill);
+  border: 1.5px solid var(--ctp-surface1);
+  background: transparent;
+  color: var(--ctp-subtext0);
+  font-family: var(--ctp-font-family);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--ctp-transition);
+}
+
+.editor-mode-btn:hover {
+  border-color: var(--ctp-editor-accent);
+  color: var(--ctp-editor-accent);
+}
+
+.editor-mode-btn[data-state="active"] {
+  border-color: var(--ctp-editor-accent);
+  color: var(--ctp-editor-accent);
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 10%, transparent);
+}
+
+/* ---------------------------
+   Editable area
+   --------------------------- */
+.editor-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-prosemirror-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+/* The actual ProseMirror div */
+.editor-prosemirror-wrapper .ProseMirror {
+  flex: 1;
+  outline: none;
+  padding: 18px 22px;
+  color: var(--ctp-text);
+  font-family: var(--ctp-font-family);
+  font-size: 0.97rem;
+  line-height: 1.75;
+  min-height: 200px;
+  caret-color: var(--ctp-editor-accent);
+}
+
+/* Placeholder */
+.editor-prosemirror-wrapper .ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--ctp-overlay0);
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Selection */
+.editor-prosemirror-wrapper .ProseMirror ::selection {
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 30%, transparent);
+}
+
+/* ---------------------------
+   Typography inside editor
+   --------------------------- */
+.editor-prosemirror-wrapper .ProseMirror h1,
+.editor-prosemirror-wrapper .ProseMirror h2,
+.editor-prosemirror-wrapper .ProseMirror h3,
+.editor-prosemirror-wrapper .ProseMirror h4,
+.editor-prosemirror-wrapper .ProseMirror h5,
+.editor-prosemirror-wrapper .ProseMirror h6 {
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  font-weight: 700;
+  color: var(--ctp-text);
+  line-height: 1.3;
+}
+
+.editor-prosemirror-wrapper .ProseMirror h1 { font-size: 1.9rem; }
+.editor-prosemirror-wrapper .ProseMirror h2 { font-size: 1.5rem; }
+.editor-prosemirror-wrapper .ProseMirror h3 { font-size: 1.25rem; }
+.editor-prosemirror-wrapper .ProseMirror h4 { font-size: 1.1rem; }
+
+.editor-prosemirror-wrapper .ProseMirror p {
+  margin: 0 0 0.7em 0;
+}
+
+.editor-prosemirror-wrapper .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Bold / Italic / Underline / Strike */
+.editor-prosemirror-wrapper .ProseMirror strong { color: var(--ctp-text); font-weight: 700; }
+.editor-prosemirror-wrapper .ProseMirror em { color: var(--ctp-subtext1); }
+.editor-prosemirror-wrapper .ProseMirror u { text-decoration-color: var(--ctp-editor-accent); }
+.editor-prosemirror-wrapper .ProseMirror s { color: var(--ctp-overlay2); }
+
+/* Inline code */
+.editor-prosemirror-wrapper .ProseMirror code {
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-peach);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.88em;
+}
+
+/* Code block */
+.editor-prosemirror-wrapper .ProseMirror pre {
+  background-color: var(--ctp-crust);
+  border-radius: var(--ctp-radius-rounded);
+  border: 1px solid var(--ctp-surface1);
+  padding: 16px 20px;
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.editor-prosemirror-wrapper .ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--ctp-text);
+}
+
+/* Blockquote */
+.editor-prosemirror-wrapper .ProseMirror blockquote {
+  border-left: 3px solid var(--ctp-editor-accent);
+  margin: 1em 0;
+  padding: 8px 16px;
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 7%, transparent);
+  border-radius: 0 var(--ctp-radius-rounded) var(--ctp-radius-rounded) 0;
+  color: var(--ctp-subtext1);
+  font-style: italic;
+}
+
+/* Lists */
+.editor-prosemirror-wrapper .ProseMirror ul,
+.editor-prosemirror-wrapper .ProseMirror ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.editor-prosemirror-wrapper .ProseMirror li {
+  margin: 0.3em 0;
+}
+
+.editor-prosemirror-wrapper .ProseMirror li::marker {
+  color: var(--ctp-editor-accent);
+}
+
+/* Horizontal rule */
+.editor-prosemirror-wrapper .ProseMirror hr {
+  border: none;
+  border-top: 2px solid var(--ctp-surface1);
+  margin: 1.5em 0;
+}
+
+/* Link */
+.editor-prosemirror-wrapper .ProseMirror a {
+  color: var(--ctp-editor-accent);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+
+.editor-prosemirror-wrapper .ProseMirror a:hover {
+  text-decoration-style: solid;
+}
+
+/* Images */
+.editor-prosemirror-wrapper .ProseMirror img {
+  max-width: 100%;
+  border-radius: var(--ctp-radius-rounded);
+  border: 1px solid var(--ctp-surface1);
+  margin: 0.5em 0;
+}
+
+/* Highlight */
+.editor-prosemirror-wrapper .ProseMirror mark {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 30%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Table */
+.editor-prosemirror-wrapper .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.9rem;
+  overflow: hidden;
+  border-radius: var(--ctp-radius-rounded);
+  border: 1px solid var(--ctp-surface1);
+}
+
+.editor-prosemirror-wrapper .ProseMirror th,
+.editor-prosemirror-wrapper .ProseMirror td {
+  border: 1px solid var(--ctp-surface1);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.editor-prosemirror-wrapper .ProseMirror th {
+  background-color: var(--ctp-surface0);
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+
+.editor-prosemirror-wrapper .ProseMirror tr:nth-child(even) td {
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+}
+
+/* Table selection */
+.editor-prosemirror-wrapper .ProseMirror .selectedCell::after {
+  background-color: color-mix(in srgb, var(--ctp-editor-accent) 20%, transparent);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.editor-prosemirror-wrapper .ProseMirror td,
+.editor-prosemirror-wrapper .ProseMirror th {
+  position: relative;
+}
+
+/* Subscript / Superscript */
+.editor-prosemirror-wrapper .ProseMirror sub { vertical-align: sub; font-size: 0.75em; }
+.editor-prosemirror-wrapper .ProseMirror sup { vertical-align: super; font-size: 0.75em; }
+
+/* Drag handle styling (when selected) */
+.editor-prosemirror-wrapper .ProseMirror-focused .ProseMirror-selectednode {
+  outline: 2px solid var(--ctp-editor-accent);
+  border-radius: 4px;
+}
+
+/* ---------------------------
+   Markdown (source) textarea
+   --------------------------- */
+.editor-markdown {
+  flex: 1;
+  padding: 18px 22px;
+  background-color: var(--ctp-base);
+  color: var(--ctp-text);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  border: none;
+  outline: none;
+  resize: none;
+  min-height: 200px;
+  caret-color: var(--ctp-editor-accent);
+}
+
+/* ---------------------------
+   Sizes
+   --------------------------- */
+.editor[data-size="sm"] .editor-prosemirror-wrapper .ProseMirror {
+  font-size: 0.875rem;
+  padding: 12px 16px;
+  min-height: 140px;
+}
+.editor[data-size="sm"] .editor-markdown { font-size: 0.8rem; padding: 12px 16px; }
+
+.editor[data-size="lg"] .editor-prosemirror-wrapper .ProseMirror {
+  font-size: 1.05rem;
+  padding: 24px 28px;
+  min-height: 300px;
+}
+.editor[data-size="lg"] .editor-markdown { font-size: 0.95rem; padding: 24px 28px; }
+
+/* ---------------------------
+   Link popup
+   --------------------------- */
+.editor-link-popup {
+  position: absolute;
+  z-index: 200;
+  background-color: var(--ctp-surface0);
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: var(--ctp-radius-rounded);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--ctp-shadow-lg);
+  min-width: 280px;
+}
+
+.editor-link-input {
+  flex: 1;
+  background: var(--ctp-base);
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--ctp-text);
+  font-family: var(--ctp-font-family);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.editor-link-input:focus {
+  border-color: var(--ctp-editor-accent);
+}
+
+/* ---------------------------
+   Bubble / floating menu base
+   --------------------------- */
+.editor-bubble-menu,
+.editor-floating-menu {
+  background-color: var(--ctp-surface0);
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: var(--ctp-radius-rounded);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: var(--ctp-shadow-lg);
+  backdrop-filter: blur(8px);
+  animation: editor-popup-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes editor-popup-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------------------------
+   Scrollbar styling
+   --------------------------- */
+.editor-content::-webkit-scrollbar {
+  width: 6px;
+}
+.editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.editor-content::-webkit-scrollbar-thumb {
+  background-color: var(--ctp-surface1);
+  border-radius: 99px;
+}
+.editor-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ctp-overlay0);
+}

@@ -1,0 +1,105 @@
+@keyframes alert-fade-in {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-family: var(--ctp-font-family);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border: 1.5px solid;
+  animation: alert-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.alert[data-variant="info"] {
+  background: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-blue) 25%, transparent);
+  color: var(--ctp-text);
+}
+
+.alert[data-variant="success"] {
+  background: color-mix(in srgb, var(--ctp-green) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-green) 25%, transparent);
+  color: var(--ctp-text);
+}
+
+.alert[data-variant="warning"] {
+  background: color-mix(in srgb, var(--ctp-yellow) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-yellow) 25%, transparent);
+  color: var(--ctp-text);
+}
+
+.alert[data-variant="error"] {
+  background: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ctp-red) 25%, transparent);
+  color: var(--ctp-text);
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.alert[data-variant="info"] .alert-icon { color: var(--ctp-blue); }
+.alert[data-variant="success"] .alert-icon { color: var(--ctp-green); }
+.alert[data-variant="warning"] .alert-icon { color: var(--ctp-yellow); }
+.alert[data-variant="error"] .alert-icon { color: var(--ctp-red); }
+
+.alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ctp-text);
+}
+
+.alert-description {
+  font-size: 0.8rem;
+  color: var(--ctp-subtext0);
+  margin-top: 2px;
+}
+
+.alert-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.15s ease,
+              color 0.15s ease,
+              background-color 0.15s ease;
+  opacity: 0.6;
+}
+
+.alert-close:hover {
+  opacity: 1;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  transform: scale(1.15) rotate(90deg);
+}
+
+.alert[data-dismissible="true"] {
+  padding-right: 10px;
+}

@@ -1,0 +1,196 @@
+/* Catppuccin Drawer Stylesheet */
+
+/* Default Accent is Mauve */
+:root {
+  --ctp-drawer-accent: var(--ctp-mauve);
+}
+
+/* Color Mappings */
+.drawer[data-color="rosewater"] { --ctp-drawer-accent: var(--ctp-rosewater); }
+.drawer[data-color="flamingo"]  { --ctp-drawer-accent: var(--ctp-flamingo); }
+.drawer[data-color="pink"]      { --ctp-drawer-accent: var(--ctp-pink); }
+.drawer[data-color="mauve"]     { --ctp-drawer-accent: var(--ctp-mauve); }
+.drawer[data-color="red"]       { --ctp-drawer-accent: var(--ctp-red); }
+.drawer[data-color="maroon"]    { --ctp-drawer-accent: var(--ctp-maroon); }
+.drawer[data-color="peach"]     { --ctp-drawer-accent: var(--ctp-peach); }
+.drawer[data-color="yellow"]    { --ctp-drawer-accent: var(--ctp-yellow); }
+.drawer[data-color="green"]     { --ctp-drawer-accent: var(--ctp-green); }
+.drawer[data-color="teal"]      { --ctp-drawer-accent: var(--ctp-teal); }
+.drawer[data-color="sky"]       { --ctp-drawer-accent: var(--ctp-sky); }
+.drawer[data-color="sapphire"]  { --ctp-drawer-accent: var(--ctp-sapphire); }
+.drawer[data-color="blue"]      { --ctp-drawer-accent: var(--ctp-blue); }
+.drawer[data-color="lavender"]  { --ctp-drawer-accent: var(--ctp-lavender); }
+
+/* Overlay Position Helpers for Drawer Alignment */
+.overlay[data-placement="drawer-right"] {
+  justify-content: flex-end !important;
+  align-items: stretch !important;
+}
+
+.overlay[data-placement="drawer-left"] {
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+}
+
+.overlay[data-placement="drawer-top"] {
+  justify-content: center !important;
+  align-items: flex-start !important;
+}
+
+.overlay[data-placement="drawer-bottom"] {
+  justify-content: center !important;
+  align-items: flex-end !important;
+}
+
+/* Main Drawer Container */
+.drawer {
+  background-color: var(--ctp-mantle);
+  box-shadow: var(--ctp-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing);
+  position: relative;
+  outline: none;
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 5%, transparent);
+}
+
+/* 1. Horizontal Drawer Positions (Left / Right) */
+.drawer[data-placement="right"] {
+  height: 100vh;
+  border-left: 3px solid var(--ctp-drawer-accent);
+  transform: translateX(100%);
+}
+
+.drawer[data-placement="left"] {
+  height: 100vh;
+  border-right: 3px solid var(--ctp-drawer-accent);
+  transform: translateX(-100%);
+}
+
+/* Horizontal Drawer Sizing width mappings */
+.drawer[data-placement="right"].drawer[data-size="sm"],
+.drawer[data-placement="left"].drawer[data-size="sm"] {
+  width: 320px;
+  max-width: 90vw;
+}
+
+.drawer[data-placement="right"].drawer[data-size="md"],
+.drawer[data-placement="left"].drawer[data-size="md"] {
+  width: 480px;
+  max-width: 90vw;
+}
+
+.drawer[data-placement="right"].drawer[data-size="lg"],
+.drawer[data-placement="left"].drawer[data-size="lg"] {
+  width: 680px;
+  max-width: 90vw;
+}
+
+.drawer[data-placement="right"].drawer[data-size="full"],
+.drawer[data-placement="left"].drawer[data-size="full"] {
+  width: 100vw;
+}
+
+/* 2. Vertical Drawer Positions (Top / Bottom) */
+.drawer[data-placement="top"] {
+  width: 100vw;
+  border-bottom: 3px solid var(--ctp-drawer-accent);
+  transform: translateY(-100%);
+}
+
+.drawer[data-placement="bottom"] {
+  width: 100vw;
+  border-top: 3px solid var(--ctp-drawer-accent);
+  transform: translateY(100%);
+}
+
+/* Vertical Drawer Sizing height mappings */
+.drawer[data-placement="top"].drawer[data-size="sm"],
+.drawer[data-placement="bottom"].drawer[data-size="sm"] {
+  height: 260px;
+  max-height: 90vh;
+}
+
+.drawer[data-placement="top"].drawer[data-size="md"],
+.drawer[data-placement="bottom"].drawer[data-size="md"] {
+  height: 380px;
+  max-height: 90vh;
+}
+
+.drawer[data-placement="top"].drawer[data-size="lg"],
+.drawer[data-placement="bottom"].drawer[data-size="lg"] {
+  height: 520px;
+  max-height: 90vh;
+}
+
+.drawer[data-placement="top"].drawer[data-size="full"],
+.drawer[data-placement="bottom"].drawer[data-size="full"] {
+  height: 100vh;
+}
+
+/* Slide in triggers on open */
+.overlay[data-state="open"] .drawer {
+  transform: translate(0) !important;
+}
+
+/* Sub components inside Drawer */
+.drawer-header {
+  padding: 1.2rem 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1.5px solid var(--ctp-surface0);
+  background-color: color-mix(in srgb, var(--ctp-crust) 30%, transparent);
+}
+
+.drawer-title {
+  font-family: var(--ctp-font-family);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ctp-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ctp-subtext0);
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--ctp-transition);
+  outline: none;
+}
+
+.drawer-close-btn:hover {
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-red);
+}
+
+.drawer-close-btn:focus-visible {
+  outline: 2px solid var(--ctp-drawer-accent);
+}
+
+.drawer-body {
+  padding: 1.6rem;
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--ctp-font-family);
+  color: var(--ctp-subtext1);
+  line-height: 1.6;
+}
+
+.drawer-footer {
+  padding: 1.2rem 1.6rem;
+  border-top: 1.5px solid var(--ctp-surface0);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: var(--ctp-crust);
+}

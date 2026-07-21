@@ -1,0 +1,131 @@
+/* Core Badge Stylesheet */
+
+.badge {
+  --ctp-badge-color-token: var(--ctp-mauve); /* default color */
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ctp-font-family);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  box-sizing: border-box;
+  animation: badge-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+.badge:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--ctp-badge-color-token) 15%, transparent);
+}
+
+/* Shapes */
+.badge[data-shape="square"] {
+  border-radius: var(--ctp-radius-square);
+}
+.badge[data-shape="rounded"] {
+  border-radius: 4px;
+}
+.badge[data-shape="pill"] {
+  border-radius: var(--ctp-radius-pill);
+}
+
+/* Sizes */
+.badge[data-size="sm"] {
+  padding: 3px 6px;
+  font-size: 0.75rem;
+  gap: 4px;
+}
+.badge[data-size="md"] {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  gap: 6px;
+}
+.badge[data-size="lg"] {
+  padding: 7px 14px;
+  font-size: 0.95rem;
+  gap: 8px;
+}
+
+/* Colors Mapping */
+.badge[data-color="rosewater"] { --ctp-badge-color-token: var(--ctp-rosewater); }
+.badge[data-color="flamingo"]  { --ctp-badge-color-token: var(--ctp-flamingo); }
+.badge[data-color="pink"]      { --ctp-badge-color-token: var(--ctp-pink); }
+.badge[data-color="mauve"]     { --ctp-badge-color-token: var(--ctp-mauve); }
+.badge[data-color="red"]       { --ctp-badge-color-token: var(--ctp-red); }
+.badge[data-color="maroon"]    { --ctp-badge-color-token: var(--ctp-maroon); }
+.badge[data-color="peach"]     { --ctp-badge-color-token: var(--ctp-peach); }
+.badge[data-color="yellow"]    { --ctp-badge-color-token: var(--ctp-yellow); }
+.badge[data-color="green"]     { --ctp-badge-color-token: var(--ctp-green); }
+.badge[data-color="teal"]      { --ctp-badge-color-token: var(--ctp-teal); }
+.badge[data-color="sky"]       { --ctp-badge-color-token: var(--ctp-sky); }
+.badge[data-color="sapphire"]  { --ctp-badge-color-token: var(--ctp-sapphire); }
+.badge[data-color="blue"]      { --ctp-badge-color-token: var(--ctp-blue); }
+.badge[data-color="lavender"]  { --ctp-badge-color-token: var(--ctp-lavender); }
+
+/* Semantic Color Mappings */
+.badge[data-color="primary"]   { --ctp-badge-color-token: var(--ctp-primary); }
+.badge[data-color="secondary"] { --ctp-badge-color-token: var(--ctp-secondary); }
+.badge[data-color="success"]   { --ctp-badge-color-token: var(--ctp-success); }
+.badge[data-color="warning"]   { --ctp-badge-color-token: var(--ctp-warning); }
+.badge[data-color="danger"]    { --ctp-badge-color-token: var(--ctp-danger); }
+.badge[data-color="info"]      { --ctp-badge-color-token: var(--ctp-info); }
+
+/* Variants */
+.badge[data-variant="filled"] {
+  background-color: var(--ctp-badge-color-token);
+  color: var(--ctp-base);
+  border: 1px solid transparent;
+}
+
+.badge[data-variant="tonal"] {
+  background-color: color-mix(in srgb, var(--ctp-badge-color-token) 12%, transparent);
+  color: var(--ctp-badge-color-token);
+  border: 1px solid transparent;
+}
+
+.badge[data-variant="outline"] {
+  background-color: transparent;
+  border: 1.5px solid var(--ctp-badge-color-token);
+  color: var(--ctp-badge-color-token);
+}
+
+.badge[data-variant="flat"] {
+  background-color: var(--ctp-surface0);
+  border: 1px solid transparent;
+  color: var(--ctp-text);
+}
+
+.badge-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+  transition: opacity 0.15s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 50%;
+}
+.badge-close-btn:hover {
+  opacity: 1;
+  transform: scale(1.2) rotate(90deg);
+}
+.badge[data-variant="filled"] .badge-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.badge:not([data-variant="filled"]) .badge-close-btn:hover {
+  background-color: color-mix(in srgb, var(--ctp-badge-color-token) 15%, transparent);
+}

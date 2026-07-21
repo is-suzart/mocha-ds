@@ -1,0 +1,71 @@
+/* SVG Icons design tokens and transitions */
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  transition: stroke var(--ctp-transition-duration) var(--ctp-transition-timing),
+              transform var(--ctp-transition-duration) var(--ctp-transition-timing),
+              filter var(--ctp-transition-duration) var(--ctp-transition-timing);
+  flex-shrink: 0;
+}
+
+/* Animations & Hover States */
+
+/* Hover: Spin (e.g., Settings/Gear icon) */
+.icon-hover-spin:hover {
+  transform: rotate(45deg);
+}
+
+/* Hover: Scale (e.g., Heart, Star, Sparkles) */
+.icon-hover-scale {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.icon-hover-scale:hover {
+  transform: scale(1.15);
+}
+
+/* Hover: Bounce (e.g., Bell, Home) */
+.icon-hover-bounce {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.icon-hover-bounce:hover {
+  transform: translateY(-3px);
+}
+
+/* Hover: Shake/Wiggle (e.g., Fish, Chat) */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+.icon-hover-wiggle:hover {
+  animation: wiggle 0.3s ease-in-out infinite alternate;
+}
+
+/* Pulse/Glow animation (continuous or hover) */
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.icon-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Color Modifier Utilities for raw SVGs */
+.icon-rosewater { stroke: var(--ctp-rosewater); }
+.icon-flamingo  { stroke: var(--ctp-flamingo); }
+.icon-pink      { stroke: var(--ctp-pink); }
+.icon-mauve     { stroke: var(--ctp-mauve); }
+.icon-red       { stroke: var(--ctp-red); }
+.icon-maroon    { stroke: var(--ctp-maroon); }
+.icon-peach     { stroke: var(--ctp-peach); }
+.icon-yellow    { stroke: var(--ctp-yellow); }
+.icon-green     { stroke: var(--ctp-green); }
+.icon-teal      { stroke: var(--ctp-teal); }
+.icon-sky       { stroke: var(--ctp-sky); }
+.icon-sapphire  { stroke: var(--ctp-sapphire); }
+.icon-blue      { stroke: var(--ctp-blue); }
+.icon-lavender  { stroke: var(--ctp-lavender); }
+.icon-text      { stroke: var(--ctp-text); }
+.icon-subtext1  { stroke: var(--ctp-subtext1); }
+.icon-subtext0  { stroke: var(--ctp-subtext0); }

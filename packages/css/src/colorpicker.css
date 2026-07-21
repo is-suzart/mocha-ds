@@ -1,0 +1,317 @@
+/* Color Picker Component Stylesheet */
+
+.colorpicker {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--ctp-font-family);
+}
+
+.colorpicker-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 14 chips, 7 per row grid */
+.colorpicker-swatches {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  user-select: none;
+}
+
+/* Individual Swatch Chip styling */
+.colorpicker-chip {
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid var(--ctp-base);
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  box-shadow: var(--ctp-shadow-sm);
+}
+
+.colorpicker-chip:hover {
+  transform: scale(1.15);
+  z-index: 2;
+}
+
+/* Active Selected Swatch border highlight */
+.colorpicker-chip[data-state="active"] {
+  transform: scale(1.12);
+  border-color: var(--ctp-text) !important;
+  box-shadow: var(--ctp-shadow-md), 0 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+/* Size modifiers for swatches */
+.colorpicker[data-size="sm"] .colorpicker-chip {
+  width: 22px;
+  height: 22px;
+}
+
+.colorpicker[data-size="md"] .colorpicker-chip {
+  width: 28px;
+  height: 28px;
+}
+
+.colorpicker[data-size="lg"] .colorpicker-chip {
+  width: 34px;
+  height: 34px;
+}
+
+/* Custom Color Spectrum Trigger */
+.colorpicker-custom-trigger {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--ctp-surface2);
+  cursor: pointer;
+  box-shadow: var(--ctp-shadow-sm);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  background-image: linear-gradient(135deg, red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.colorpicker-custom-trigger:hover {
+  transform: scale(1.08);
+  border-color: var(--ctp-mauve);
+}
+
+.colorpicker-custom-trigger input[type="color"] {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 200%;
+  height: 200%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: 0; /* Cover trigger and let click open native dialog */
+}
+
+/* Size modifiers for custom trigger */
+.colorpicker[data-size="sm"] .colorpicker-custom-trigger {
+  width: 22px;
+  height: 22px;
+}
+
+.colorpicker[data-size="md"] .colorpicker-custom-trigger {
+  width: 28px;
+  height: 28px;
+}
+
+.colorpicker[data-size="lg"] .colorpicker-custom-trigger {
+  width: 34px;
+  height: 34px;
+}
+
+/* Swatches + Custom Row layout */
+.colorpicker-divider {
+  width: 1px;
+  align-self: stretch;
+  background-color: var(--ctp-surface1);
+  margin: 0 4px;
+}
+
+/* Hex input text box */
+.colorpicker-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colorpicker-input-prefix {
+  font-family: monospace;
+  font-weight: bold;
+  color: var(--ctp-subtext0);
+  font-size: 0.9rem;
+}
+
+.colorpicker-input {
+  background-color: var(--ctp-crust);
+  border: 1px solid var(--ctp-surface2);
+  color: var(--ctp-text);
+  font-family: monospace;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.85rem;
+  transition: border-color 0.2s ease;
+}
+
+.colorpicker-input:focus {
+  border-color: var(--ctp-mauve);
+}
+
+/* Hex input sizes */
+.colorpicker[data-size="sm"] .colorpicker-input {
+  padding: 4px 8px;
+  width: 72px;
+}
+
+.colorpicker[data-size="md"] .colorpicker-input {
+  padding: 6px 10px;
+  width: 80px;
+}
+
+.colorpicker[data-size="lg"] .colorpicker-input {
+  padding: 8px 12px;
+  width: 88px;
+}
+
+/* Custom Popover Container */
+.colorpicker-popover-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.colorpicker-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background-color: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface2);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--ctp-shadow-lg), 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+  animation: popover-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Saturation/Value Pad */
+.colorpicker-sv-pad {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  border-radius: 6px;
+  cursor: crosshair;
+  background-color: red; /* Dynamically set in inline style (Hue) */
+}
+
+.colorpicker-sv-gradient-s {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, #fff, transparent);
+  border-radius: 6px;
+}
+
+.colorpicker-sv-gradient-v {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, #000, transparent);
+  border-radius: 6px;
+}
+
+.colorpicker-sv-marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Hue Slider */
+.colorpicker-hue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.colorpicker-hue-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Webkit thumb styling */
+.colorpicker-hue-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--ctp-crust);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.colorpicker-hue-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Firefox thumb styling */
+.colorpicker-hue-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--ctp-crust);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.colorpicker-hue-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Footer details inside popover */
+.colorpicker-popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--ctp-surface0);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.colorpicker-popover-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--ctp-surface1);
+}
+
+.colorpicker-popover-value {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--ctp-text);
+  font-weight: bold;
+}
+

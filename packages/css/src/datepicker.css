@@ -1,0 +1,385 @@
+/* datepicker.css - Catppuccin DatePicker Component */
+
+/* ──────────────────────────────────────────────
+   Root wrapper
+   ────────────────────────────────────────────── */
+.datepicker {
+  display: inline-block;
+  position: relative;
+}
+
+/* ──────────────────────────────────────────────
+   Trigger Button
+   ────────────────────────────────────────────── */
+.datepicker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 0.875rem;
+  min-width: 200px;
+  font-family: var(--ctp-font-family);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ctp-text);
+  background-color: var(--ctp-surface0);
+  border: 1.5px solid var(--ctp-surface1);
+  border-radius: var(--ctp-radius-rounded);
+  cursor: pointer;
+  transition:
+    border-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+    box-shadow var(--ctp-transition-duration) var(--ctp-transition-timing),
+    background-color var(--ctp-transition-duration) var(--ctp-transition-timing);
+  outline: none;
+}
+
+.datepicker-trigger:hover:not(:disabled) {
+  border-color: var(--ctp-overlay0);
+  background-color: var(--ctp-surface1);
+}
+
+.datepicker-trigger[data-state="open"] {
+  border-color: var(--ctp-mauve) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
+}
+
+/* Per-color focus rings for trigger */
+.datepicker-trigger[data-color="rosewater"].datepicker-trigger[data-state="open"] { border-color: var(--ctp-rosewater) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-rosewater) 20%, transparent); }
+.datepicker-trigger[data-color="flamingo"].datepicker-trigger[data-state="open"]  { border-color: var(--ctp-flamingo) !important;  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-flamingo) 20%, transparent);  }
+.datepicker-trigger[data-color="pink"].datepicker-trigger[data-state="open"]      { border-color: var(--ctp-pink) !important;      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-pink) 20%, transparent);      }
+.datepicker-trigger[data-color="mauve"].datepicker-trigger[data-state="open"]     { border-color: var(--ctp-mauve) !important;     box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-mauve) 20%, transparent);     }
+.datepicker-trigger[data-color="red"].datepicker-trigger[data-state="open"]       { border-color: var(--ctp-red) !important;       box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-red) 20%, transparent);       }
+.datepicker-trigger[data-color="maroon"].datepicker-trigger[data-state="open"]    { border-color: var(--ctp-maroon) !important;    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-maroon) 20%, transparent);    }
+.datepicker-trigger[data-color="peach"].datepicker-trigger[data-state="open"]     { border-color: var(--ctp-peach) !important;     box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-peach) 20%, transparent);     }
+.datepicker-trigger[data-color="yellow"].datepicker-trigger[data-state="open"]    { border-color: var(--ctp-yellow) !important;    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-yellow) 20%, transparent);    }
+.datepicker-trigger[data-color="green"].datepicker-trigger[data-state="open"]     { border-color: var(--ctp-green) !important;     box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-green) 20%, transparent);     }
+.datepicker-trigger[data-color="teal"].datepicker-trigger[data-state="open"]      { border-color: var(--ctp-teal) !important;      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-teal) 20%, transparent);      }
+.datepicker-trigger[data-color="sky"].datepicker-trigger[data-state="open"]       { border-color: var(--ctp-sky) !important;       box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-sky) 20%, transparent);       }
+.datepicker-trigger[data-color="sapphire"].datepicker-trigger[data-state="open"]  { border-color: var(--ctp-sapphire) !important;  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-sapphire) 20%, transparent);  }
+.datepicker-trigger[data-color="blue"].datepicker-trigger[data-state="open"]      { border-color: var(--ctp-blue) !important;      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-blue) 20%, transparent);      }
+.datepicker-trigger[data-color="lavender"].datepicker-trigger[data-state="open"]  { border-color: var(--ctp-lavender) !important;  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-lavender) 20%, transparent);  }
+
+.datepicker-trigger[data-state="disabled"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.datepicker-icon {
+  color: var(--ctp-subtext0);
+  flex-shrink: 0;
+}
+
+.datepicker-placeholder {
+  flex: 1;
+  text-align: left;
+  color: var(--ctp-subtext0);
+}
+
+.datepicker-value {
+  flex: 1;
+  text-align: left;
+  color: var(--ctp-text);
+}
+
+.datepicker-chevron {
+  color: var(--ctp-subtext0);
+  flex-shrink: 0;
+  transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.datepicker-chevron[data-state="open"] {
+  transform: rotate(180deg);
+}
+
+/* ──────────────────────────────────────────────
+   Popover (rendered in portal)
+   ────────────────────────────────────────────── */
+.datepicker-popover {
+  width: 300px;
+  background-color: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: 12px;
+  box-shadow: var(--ctp-shadow-lg);
+  overflow: hidden;
+  animation: dp-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@keyframes dp-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Header (Month + Year navigation)
+   ────────────────────────────────────────────── */
+.datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.875rem 0.5rem;
+  border-bottom: 1px solid var(--ctp-surface0);
+  gap: 4px;
+}
+
+.datepicker-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition:
+    background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+    color var(--ctp-transition-duration) var(--ctp-transition-timing);
+  flex-shrink: 0;
+}
+
+.datepicker-nav-btn:hover {
+  background-color: var(--ctp-surface1);
+  color: var(--ctp-text);
+}
+
+.datepicker-header-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.datepicker-month-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ctp-text);
+  line-height: 1.2;
+}
+
+.datepicker-year-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ctp-subtext0);
+  line-height: 1;
+}
+
+/* ──────────────────────────────────────────────
+   Calendar Grid
+   ────────────────────────────────────────────── */
+.datepicker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0.5rem 0.625rem;
+  gap: 2px;
+}
+
+.datepicker-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ctp-subtext1);
+  user-select: none;
+}
+
+.datepicker-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 100%;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ctp-text);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
+  outline: none;
+  font-family: var(--ctp-font-family);
+}
+
+.datepicker-cell[data-state="empty"] {
+  pointer-events: none;
+}
+
+.datepicker-cell[data-state="disabled"] {
+  color: var(--ctp-surface2);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.datepicker-cell[data-state="today"] {
+  font-weight: 800;
+  color: var(--ctp-text);
+  position: relative;
+}
+
+.datepicker-cell[data-state="today"]::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--ctp-mauve);
+}
+
+/* Selected day (single mode) */
+.datepicker-cell[data-state="selected"] {
+  color: var(--ctp-base);
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* Range edges */
+.datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-state="range-end"] {
+  color: var(--ctp-base);
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+/* In-range cells */
+.datepicker-cell[data-state="in-range"],
+.datepicker-cell[data-state^="in-range-"] {
+  border-radius: 0;
+}
+
+/* Accent colors for selected / range */
+.datepicker-cell[data-color="rosewater"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="rosewater"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="rosewater"].datepicker-cell[data-state="range-end"]   { background-color: var(--ctp-rosewater); }
+.datepicker-cell[data-color="flamingo"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="flamingo"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="flamingo"].datepicker-cell[data-state="range-end"]    { background-color: var(--ctp-flamingo); }
+.datepicker-cell[data-color="pink"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="pink"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="pink"].datepicker-cell[data-state="range-end"]        { background-color: var(--ctp-pink); }
+.datepicker-cell[data-color="mauve"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="mauve"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="mauve"].datepicker-cell[data-state="range-end"]       { background-color: var(--ctp-mauve); }
+.datepicker-cell[data-color="red"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="red"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="red"].datepicker-cell[data-state="range-end"]         { background-color: var(--ctp-red); }
+.datepicker-cell[data-color="maroon"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="maroon"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="maroon"].datepicker-cell[data-state="range-end"]      { background-color: var(--ctp-maroon); }
+.datepicker-cell[data-color="peach"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="peach"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="peach"].datepicker-cell[data-state="range-end"]       { background-color: var(--ctp-peach); }
+.datepicker-cell[data-color="yellow"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="yellow"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="yellow"].datepicker-cell[data-state="range-end"]      { background-color: var(--ctp-yellow); }
+.datepicker-cell[data-color="green"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="green"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="green"].datepicker-cell[data-state="range-end"]       { background-color: var(--ctp-green); }
+.datepicker-cell[data-color="teal"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="teal"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="teal"].datepicker-cell[data-state="range-end"]        { background-color: var(--ctp-teal); }
+.datepicker-cell[data-color="sky"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="sky"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="sky"].datepicker-cell[data-state="range-end"]         { background-color: var(--ctp-sky); }
+.datepicker-cell[data-color="sapphire"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="sapphire"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="sapphire"].datepicker-cell[data-state="range-end"]    { background-color: var(--ctp-sapphire); }
+.datepicker-cell[data-color="blue"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="blue"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="blue"].datepicker-cell[data-state="range-end"]        { background-color: var(--ctp-blue); }
+.datepicker-cell[data-color="lavender"].datepicker-cell[data-state="selected"],
+.datepicker-cell[data-color="lavender"].datepicker-cell[data-state="range-start"],
+.datepicker-cell[data-color="lavender"].datepicker-cell[data-state="range-end"]    { background-color: var(--ctp-lavender); }
+
+/* In-range background colors */
+.datepicker-cell[data-state="in-range-rosewater"] { background-color: color-mix(in srgb, var(--ctp-rosewater) 18%, transparent); color: var(--ctp-rosewater); }
+.datepicker-cell[data-state="in-range-flamingo"]  { background-color: color-mix(in srgb, var(--ctp-flamingo) 18%, transparent);  color: var(--ctp-flamingo);  }
+.datepicker-cell[data-state="in-range-pink"]      { background-color: color-mix(in srgb, var(--ctp-pink) 18%, transparent);      color: var(--ctp-pink);      }
+.datepicker-cell[data-state="in-range-mauve"]     { background-color: color-mix(in srgb, var(--ctp-mauve) 18%, transparent);     color: var(--ctp-mauve);     }
+.datepicker-cell[data-state="in-range-red"]       { background-color: color-mix(in srgb, var(--ctp-red) 18%, transparent);       color: var(--ctp-red);       }
+.datepicker-cell[data-state="in-range-maroon"]    { background-color: color-mix(in srgb, var(--ctp-maroon) 18%, transparent);    color: var(--ctp-maroon);    }
+.datepicker-cell[data-state="in-range-peach"]     { background-color: color-mix(in srgb, var(--ctp-peach) 18%, transparent);     color: var(--ctp-peach);     }
+.datepicker-cell[data-state="in-range-yellow"]    { background-color: color-mix(in srgb, var(--ctp-yellow) 18%, transparent);    color: var(--ctp-yellow);    }
+.datepicker-cell[data-state="in-range-green"]     { background-color: color-mix(in srgb, var(--ctp-green) 18%, transparent);     color: var(--ctp-green);     }
+.datepicker-cell[data-state="in-range-teal"]      { background-color: color-mix(in srgb, var(--ctp-teal) 18%, transparent);      color: var(--ctp-teal);      }
+.datepicker-cell[data-state="in-range-sky"]       { background-color: color-mix(in srgb, var(--ctp-sky) 18%, transparent);       color: var(--ctp-sky);       }
+.datepicker-cell[data-state="in-range-sapphire"]  { background-color: color-mix(in srgb, var(--ctp-sapphire) 18%, transparent);  color: var(--ctp-sapphire);  }
+.datepicker-cell[data-state="in-range-blue"]      { background-color: color-mix(in srgb, var(--ctp-blue) 18%, transparent);      color: var(--ctp-blue);      }
+.datepicker-cell[data-state="in-range-lavender"]  { background-color: color-mix(in srgb, var(--ctp-lavender) 18%, transparent);  color: var(--ctp-lavender);  }
+
+/* Hover on non-selected cells */
+.datepicker-cell[data-state="hover-rosewater"]:hover { background-color: color-mix(in srgb, var(--ctp-rosewater) 14%, transparent); color: var(--ctp-rosewater); }
+.datepicker-cell[data-state="hover-flamingo"]:hover  { background-color: color-mix(in srgb, var(--ctp-flamingo) 14%, transparent);  color: var(--ctp-flamingo);  }
+.datepicker-cell[data-state="hover-pink"]:hover      { background-color: color-mix(in srgb, var(--ctp-pink) 14%, transparent);      color: var(--ctp-pink);      }
+.datepicker-cell[data-state="hover-mauve"]:hover     { background-color: color-mix(in srgb, var(--ctp-mauve) 14%, transparent);     color: var(--ctp-mauve);     }
+.datepicker-cell[data-state="hover-red"]:hover       { background-color: color-mix(in srgb, var(--ctp-red) 14%, transparent);       color: var(--ctp-red);       }
+.datepicker-cell[data-state="hover-maroon"]:hover    { background-color: color-mix(in srgb, var(--ctp-maroon) 14%, transparent);    color: var(--ctp-maroon);    }
+.datepicker-cell[data-state="hover-peach"]:hover     { background-color: color-mix(in srgb, var(--ctp-peach) 14%, transparent);     color: var(--ctp-peach);     }
+.datepicker-cell[data-state="hover-yellow"]:hover    { background-color: color-mix(in srgb, var(--ctp-yellow) 14%, transparent);    color: var(--ctp-yellow);    }
+.datepicker-cell[data-state="hover-green"]:hover     { background-color: color-mix(in srgb, var(--ctp-green) 14%, transparent);     color: var(--ctp-green);     }
+.datepicker-cell[data-state="hover-teal"]:hover      { background-color: color-mix(in srgb, var(--ctp-teal) 14%, transparent);      color: var(--ctp-teal);      }
+.datepicker-cell[data-state="hover-sky"]:hover       { background-color: color-mix(in srgb, var(--ctp-sky) 14%, transparent);       color: var(--ctp-sky);       }
+.datepicker-cell[data-state="hover-sapphire"]:hover  { background-color: color-mix(in srgb, var(--ctp-sapphire) 14%, transparent);  color: var(--ctp-sapphire);  }
+.datepicker-cell[data-state="hover-blue"]:hover      { background-color: color-mix(in srgb, var(--ctp-blue) 14%, transparent);      color: var(--ctp-blue);      }
+.datepicker-cell[data-state="hover-lavender"]:hover  { background-color: color-mix(in srgb, var(--ctp-lavender) 14%, transparent);  color: var(--ctp-lavender);  }
+
+/* ──────────────────────────────────────────────
+   Footer
+   ────────────────────────────────────────────── */
+.datepicker-footer {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0.875rem 0.75rem;
+  border-top: 1px solid var(--ctp-surface0);
+}
+
+.datepicker-today-btn {
+  font-family: var(--ctp-font-family);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+    color var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+/* Today button accent colors */
+.datepicker-today-btn[data-color="rosewater"] { background-color: color-mix(in srgb, var(--ctp-rosewater) 15%, transparent); color: var(--ctp-rosewater); }
+.datepicker-today-btn[data-color="flamingo"]  { background-color: color-mix(in srgb, var(--ctp-flamingo) 15%, transparent);  color: var(--ctp-flamingo);  }
+.datepicker-today-btn[data-color="pink"]      { background-color: color-mix(in srgb, var(--ctp-pink) 15%, transparent);      color: var(--ctp-pink);      }
+.datepicker-today-btn[data-color="mauve"]     { background-color: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);     color: var(--ctp-mauve);     }
+.datepicker-today-btn[data-color="red"]       { background-color: color-mix(in srgb, var(--ctp-red) 15%, transparent);       color: var(--ctp-red);       }
+.datepicker-today-btn[data-color="maroon"]    { background-color: color-mix(in srgb, var(--ctp-maroon) 15%, transparent);    color: var(--ctp-maroon);    }
+.datepicker-today-btn[data-color="peach"]     { background-color: color-mix(in srgb, var(--ctp-peach) 15%, transparent);     color: var(--ctp-peach);     }
+.datepicker-today-btn[data-color="yellow"]    { background-color: color-mix(in srgb, var(--ctp-yellow) 15%, transparent);    color: var(--ctp-yellow);    }
+.datepicker-today-btn[data-color="green"]     { background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);     color: var(--ctp-green);     }
+.datepicker-today-btn[data-color="teal"]      { background-color: color-mix(in srgb, var(--ctp-teal) 15%, transparent);      color: var(--ctp-teal);      }
+.datepicker-today-btn[data-color="sky"]       { background-color: color-mix(in srgb, var(--ctp-sky) 15%, transparent);       color: var(--ctp-sky);       }
+.datepicker-today-btn[data-color="sapphire"]  { background-color: color-mix(in srgb, var(--ctp-sapphire) 15%, transparent);  color: var(--ctp-sapphire);  }
+.datepicker-today-btn[data-color="blue"]      { background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);      color: var(--ctp-blue);      }
+.datepicker-today-btn[data-color="lavender"]  { background-color: color-mix(in srgb, var(--ctp-lavender) 15%, transparent);  color: var(--ctp-lavender);  }
+
+.datepicker-today-btn:hover {
+  filter: brightness(1.15);
+}

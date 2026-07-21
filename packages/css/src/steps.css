@@ -1,0 +1,278 @@
+/* Core Steps & Slider Stylesheet */
+
+/* Timeline stepper (dots connected by lines) */
+.steps-timeline {
+  display: flex;
+  position: relative;
+  width: 100%;
+  font-family: var(--ctp-font-family);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.steps-timeline * {
+  box-sizing: border-box;
+}
+
+/* Horizontal orientation styling */
+.steps-timeline[data-orientation="horizontal"] {
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+}
+
+.steps-timeline[data-orientation="horizontal"] .steps-track {
+  position: absolute;
+  top: calc(1.25rem + 9px);
+  left: 40px;
+  right: 40px;
+  height: 4px;
+  background-color: var(--ctp-surface0);
+  transform: translateY(-50%);
+  z-index: 1;
+  border-radius: 9999px;
+}
+
+.steps-timeline[data-orientation="horizontal"] .steps-progress {
+  height: 100%;
+  background-color: var(--ctp-mauve);
+  border-radius: 9999px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.steps-timeline[data-orientation="horizontal"] .steps-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+/* Vertical orientation styling */
+.steps-timeline[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.6rem;
+  padding: 0 1.25rem;
+}
+
+.steps-timeline[data-orientation="vertical"] .steps-track {
+  position: absolute;
+  left: calc(1.25rem + 9px);
+  top: 9px;
+  bottom: 9px;
+  width: 4px;
+  background-color: var(--ctp-surface0);
+  transform: translateX(-50%);
+  z-index: 1;
+  border-radius: 9999px;
+}
+
+.steps-timeline[data-orientation="vertical"] .steps-progress {
+  width: 100%;
+  background-color: var(--ctp-mauve);
+  border-radius: 9999px;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 0%;
+}
+
+.steps-timeline[data-orientation="vertical"] .steps-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  outline: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.steps-timeline[data-orientation="vertical"] .steps-label {
+  margin-top: 0;
+}
+
+.steps-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--ctp-surface0);
+  border: 3.5px solid var(--ctp-base);
+  transition: var(--ctp-transition);
+  box-shadow: var(--ctp-shadow-sm);
+  box-sizing: border-box;
+}
+
+/* Hover dot decoration */
+.steps-item:hover .steps-dot {
+  background-color: var(--ctp-surface2);
+  transform: scale(1.18);
+}
+
+/* Active State indicator */
+.steps-item[data-state="active"] .steps-dot {
+  background-color: var(--ctp-base);
+  border-color: var(--ctp-mauve);
+  box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-mauve) 32%, transparent), var(--ctp-shadow-md);
+  transform: scale(1.22);
+}
+
+/* Completed State indicator */
+.steps-item[data-state="completed"] .steps-dot {
+  background-color: var(--ctp-green);
+  border-color: var(--ctp-base);
+  transform: scale(1);
+  box-shadow: var(--ctp-shadow-sm);
+}
+
+/* Text label */
+.steps-label {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ctp-subtext0);
+  transition: var(--ctp-transition);
+}
+
+.steps-item[data-state="active"] .steps-label {
+  color: var(--ctp-mauve);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+}
+
+.steps-item[data-state="completed"] .steps-label {
+  color: var(--ctp-text);
+}
+
+
+/* Carousel style (simple expanding dots) */
+.steps-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.75rem 0;
+}
+
+.steps-carousel-dot {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background-color: var(--ctp-surface0);
+  cursor: pointer;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.2s ease;
+  outline: none;
+}
+
+.steps-carousel-dot:hover {
+  background-color: var(--ctp-surface2);
+  transform: scale(1.2);
+}
+
+.steps-carousel-dot[data-state="active"] {
+  width: 28px;
+  background-color: var(--ctp-mauve);
+}
+
+
+/* Color accents helper definitions */
+.steps[data-color="rosewater"] .steps-progress { background-color: var(--ctp-rosewater); }
+.steps[data-color="rosewater"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-rosewater); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-rosewater) 32%, transparent); }
+.steps[data-color="rosewater"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-rosewater); }
+.steps[data-color="rosewater"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-rosewater); }
+
+.steps[data-color="flamingo"] .steps-progress { background-color: var(--ctp-flamingo); }
+.steps[data-color="flamingo"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-flamingo); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-flamingo) 32%, transparent); }
+.steps[data-color="flamingo"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-flamingo); }
+.steps[data-color="flamingo"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-flamingo); }
+
+.steps[data-color="pink"] .steps-progress { background-color: var(--ctp-pink); }
+.steps[data-color="pink"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-pink); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-pink) 32%, transparent); }
+.steps[data-color="pink"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-pink); }
+.steps[data-color="pink"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-pink); }
+
+.steps[data-color="mauve"] .steps-progress { background-color: var(--ctp-mauve); }
+.steps[data-color="mauve"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-mauve); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-mauve) 32%, transparent); }
+.steps[data-color="mauve"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-mauve); }
+.steps[data-color="mauve"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-mauve); }
+
+.steps[data-color="red"] .steps-progress { background-color: var(--ctp-red); }
+.steps[data-color="red"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-red); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-red) 32%, transparent); }
+.steps[data-color="red"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-red); }
+.steps[data-color="red"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-red); }
+
+.steps[data-color="peach"] .steps-progress { background-color: var(--ctp-peach); }
+.steps[data-color="peach"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-peach); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-peach) 32%, transparent); }
+.steps[data-color="peach"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-peach); }
+.steps[data-color="peach"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-peach); }
+
+.steps[data-color="yellow"] .steps-progress { background-color: var(--ctp-yellow); }
+.steps[data-color="yellow"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-yellow); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-yellow) 32%, transparent); }
+.steps[data-color="yellow"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-yellow); }
+.steps[data-color="yellow"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-yellow); }
+
+.steps[data-color="green"] .steps-progress { background-color: var(--ctp-green); }
+.steps[data-color="green"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-green); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-green) 32%, transparent); }
+.steps[data-color="green"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-green); }
+.steps[data-color="green"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-green); }
+
+.steps[data-color="teal"] .steps-progress { background-color: var(--ctp-teal); }
+.steps[data-color="teal"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-teal); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-teal) 32%, transparent); }
+.steps[data-color="teal"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-teal); }
+.steps[data-color="teal"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-teal); }
+
+.steps[data-color="blue"] .steps-progress { background-color: var(--ctp-blue); }
+.steps[data-color="blue"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-blue); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-blue) 32%, transparent); }
+.steps[data-color="blue"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-blue); }
+.steps[data-color="blue"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-blue); }
+
+.steps[data-color="lavender"] .steps-progress { background-color: var(--ctp-lavender); }
+.steps[data-color="lavender"] .steps-item[data-state="active"] .steps-dot { border-color: var(--ctp-lavender); box-shadow: 0 0 0 4.5px color-mix(in srgb, var(--ctp-lavender) 32%, transparent); }
+.steps[data-color="lavender"] .steps-item[data-state="active"] .steps-label { color: var(--ctp-lavender); }
+.steps[data-color="lavender"] .steps-carousel-dot[data-state="active"] { background-color: var(--ctp-lavender); }
+
+
+/* Content Stage Sliding animations */
+.steps-content-wrapper {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.steps-content-stage {
+  display: flex;
+  width: 100%;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.steps-content-slide {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0.25;
+  filter: blur(4px);
+  transform: scale(0.98);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.steps-content-slide[data-state="active"] {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}

@@ -1,0 +1,207 @@
+/* Core Tile Stylesheet */
+
+.tile {
+  --ctp-tile-color-token: var(--ctp-mauve); /* default status/accent color */
+  
+  display: flex;
+  align-items: center;
+  position: relative;
+  font-family: var(--ctp-font-family);
+  transition: var(--ctp-transition);
+  box-sizing: border-box;
+  text-decoration: none;
+  color: var(--ctp-text);
+  background-color: var(--ctp-surface0);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 6%, transparent);
+}
+
+/* Accent Color Mappings */
+.tile[data-color="rosewater"] { --ctp-tile-color-token: var(--ctp-rosewater); }
+.tile[data-color="flamingo"]  { --ctp-tile-color-token: var(--ctp-flamingo); }
+.tile[data-color="pink"]      { --ctp-tile-color-token: var(--ctp-pink); }
+.tile[data-color="mauve"]     { --ctp-tile-color-token: var(--ctp-mauve); }
+.tile[data-color="red"]       { --ctp-tile-color-token: var(--ctp-red); }
+.tile[data-color="maroon"]    { --ctp-tile-color-token: var(--ctp-maroon); }
+.tile[data-color="peach"]     { --ctp-tile-color-token: var(--ctp-peach); }
+.tile[data-color="yellow"]    { --ctp-tile-color-token: var(--ctp-yellow); }
+.tile[data-color="green"]     { --ctp-tile-color-token: var(--ctp-green); }
+.tile[data-color="teal"]      { --ctp-tile-color-token: var(--ctp-teal); }
+.tile[data-color="sky"]       { --ctp-tile-color-token: var(--ctp-sky); }
+.tile[data-color="sapphire"]  { --ctp-tile-color-token: var(--ctp-sapphire); }
+.tile[data-color="blue"]      { --ctp-tile-color-token: var(--ctp-blue); }
+.tile[data-color="lavender"]  { --ctp-tile-color-token: var(--ctp-lavender); }
+
+/* Shapes */
+.tile[data-shape="square"] {
+  border-radius: var(--ctp-radius-square);
+}
+.tile[data-shape="rounded"] {
+  border-radius: 8px;
+}
+.tile[data-shape="pill"] {
+  border-radius: 9999px;
+}
+
+/* Sizes */
+.tile[data-size="sm"] {
+  padding: 8px 12px;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+.tile[data-size="md"] {
+  padding: 14px 18px;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+.tile[data-size="lg"] {
+  padding: 20px 24px;
+  gap: 16px;
+  font-size: 1.05rem;
+}
+
+/* Orientations */
+.tile[data-orientation="horizontal"] {
+  flex-direction: row;
+}
+.tile[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+.tile[data-orientation="vertical-center"] {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Variants */
+.tile[data-variant="flat"] {
+  box-shadow: none;
+}
+.tile[data-variant="elevated"] {
+  box-shadow: var(--ctp-shadow-md);
+}
+.tile[data-variant="outline"] {
+  background-color: transparent;
+  border-width: 1.5px;
+  border-color: color-mix(in srgb, var(--ctp-text) 12%, transparent);
+}
+.tile[data-variant="tonal"] {
+  background-color: color-mix(in srgb, var(--ctp-tile-color-token) 8%, var(--ctp-surface0));
+  border-color: color-mix(in srgb, var(--ctp-tile-color-token) 15%, transparent);
+}
+.tile[data-state="colored"] {
+  background-color: var(--ctp-tile-color-token, var(--ctp-mauve));
+  color: var(--ctp-base);
+  border: none;
+}
+.tile[data-state="colored"] .tile-title {
+  color: var(--ctp-base);
+}
+.tile[data-state="colored"] .tile-subtitle {
+  color: color-mix(in srgb, var(--ctp-base) 72%, transparent);
+}
+.tile[data-state="colored"] .tile-icon {
+  color: var(--ctp-base);
+}
+
+/* Status / Indicator Options */
+.tile[data-state="indicator-left"] {
+  border-left: 4px solid var(--ctp-tile-color-token) !important;
+}
+.tile[data-state="indicator-right"] {
+  border-right: 4px solid var(--ctp-tile-color-token) !important;
+}
+.tile[data-state="indicator-top"] {
+  border-top: 4px solid var(--ctp-tile-color-token) !important;
+}
+.tile[data-state="indicator-bottom"] {
+  border-bottom: 4px solid var(--ctp-tile-color-token) !important;
+}
+
+/* Interactive States */
+.tile[data-state="interactive"] {
+  cursor: pointer;
+}
+.tile[data-state="interactive"]:hover:not(.tile[data-state="disabled"]) {
+  transform: translateY(-2px);
+  box-shadow: var(--ctp-shadow-md);
+}
+.tile[data-state="interactive"]:hover:not(.tile[data-state="disabled"]):not(.tile[data-state="colored"]) {
+  border-color: var(--ctp-tile-color-token);
+  background-color: color-mix(in srgb, var(--ctp-tile-color-token) 6%, var(--ctp-surface0));
+}
+.tile[data-state="colored"].tile[data-state="interactive"]:hover:not(.tile[data-state="disabled"]) {
+  filter: brightness(1.05);
+}
+.tile[data-state="interactive"]:active:not(.tile[data-state="disabled"]) {
+  transform: translateY(0);
+}
+.tile[data-state="interactive"]:active:not(.tile[data-state="disabled"]):not(.tile[data-state="colored"]) {
+  background-color: color-mix(in srgb, var(--ctp-tile-color-token) 12%, var(--ctp-surface0));
+}
+
+/* Selected State */
+.tile[data-state="selected"] {
+  border-color: var(--ctp-tile-color-token) !important;
+  background-color: color-mix(in srgb, var(--ctp-tile-color-token) 12%, var(--ctp-surface0)) !important;
+  outline: 2px solid var(--ctp-tile-color-token);
+  outline-offset: -1px;
+}
+
+/* Disabled State */
+.tile[data-state="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Sub-elements */
+.tile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ctp-tile-color-token);
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+.tile[data-size="sm"] .tile-icon { font-size: 1.1rem; }
+.tile[data-size="lg"] .tile-icon { font-size: 1.5rem; }
+
+.tile-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.tile-title {
+  font-weight: 600;
+  color: var(--ctp-text);
+  line-height: 1.2;
+}
+
+.tile-subtitle {
+  font-size: 0.82em;
+  color: var(--ctp-subtext0);
+  line-height: 1.2;
+}
+
+.tile-meta {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.tile[data-orientation="vertical"] .tile-meta,
+.tile[data-orientation="vertical-center"] .tile-meta {
+  margin-left: 0;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: flex-end;
+}
+.tile[data-orientation="vertical-center"] .tile-meta {
+  justify-content: center;
+}

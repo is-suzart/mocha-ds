@@ -1,0 +1,198 @@
+/* shell.css - Catppuccin BEM Application Shell layout system */
+
+.shell {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--ctp-base);
+  color: var(--ctp-text);
+  font-family: var(--ctp-font-family);
+  --ctp-shell-header-height: 60px;
+  --ctp-shell-sidebar-width: 260px;
+}
+
+/* Fullscreen mode (takes over window view and disables body scroll) */
+.shell[data-state="full-screen"] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────
+   Layout templates using CSS Grid Areas
+   ────────────────────────────────────────────── */
+
+/* Header on top, Sidebar and Content below */
+.shell[data-state="header-first"] {
+  grid-template-rows: var(--ctp-shell-header-height) 1fr;
+  grid-template-columns: var(--ctp-shell-sidebar-width) 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+}
+
+/* Sidebar full height on left, Header and Content on right */
+.shell[data-state="sidebar-first"] {
+  grid-template-rows: var(--ctp-shell-header-height) 1fr;
+  grid-template-columns: var(--ctp-shell-sidebar-width) 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+}
+
+/* Only Header and Content, no Sidebar */
+.shell[data-variant="simple"] {
+  grid-template-rows: var(--ctp-shell-header-height) 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main";
+}
+
+/* Custom Grid: developer specifies layouts using custom CSS classes/inline styles */
+.shell[data-variant="custom"] {
+  display: block;
+}
+
+/* ──────────────────────────────────────────────
+   Sidebar state modifiers
+   ────────────────────────────────────────────── */
+
+/* Collapse sidebar completely (0px width) */
+.shell[data-state="sidebar-collapsed"] {
+  --ctp-shell-sidebar-width: 0px;
+}
+
+/* Mini sidebar layout (icons-only) */
+.shell[data-state="sidebar-mini"] {
+  --ctp-shell-sidebar-width: 64px;
+}
+
+/* ──────────────────────────────────────────────
+   Sub-elements
+   ────────────────────────────────────────────── */
+
+/* Top bar navigation */
+.shell-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  background-color: var(--ctp-mantle);
+  border-bottom: 1px solid var(--ctp-surface0);
+  box-sizing: border-box;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Left/Right side drawer navigation */
+.shell-sidebar {
+  grid-area: sidebar;
+  background-color: var(--ctp-crust);
+  border-right: 1px solid var(--ctp-surface0);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: width var(--ctp-transition-duration) var(--ctp-transition-timing);
+  z-index: 9;
+}
+
+/* Main wrapper of the body */
+.shell-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Ensures inner overflow scrolls work correctly */
+  min-width: 0;
+  box-sizing: border-box;
+  background-color: var(--ctp-base);
+}
+
+/* Main content view within main wrapper */
+.shell-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.shell-content[data-state="scrollable"] {
+  overflow-y: auto;
+}
+
+/* Sidebar Backdrop (dim overlay on mobile viewports) */
+.shell-backdrop {
+  display: none;
+}
+
+/* ──────────────────────────────────────────────
+   Responsive design (tablet and mobile viewports)
+   ────────────────────────────────────────────── */
+
+@media screen and (max-width: 768px) {
+  /* Enforce single-column layout on mobile, overlaying sidebar */
+  .shell[data-state="header-first"],
+  .shell[data-state="sidebar-first"] {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+  }
+
+  /* Translate sidebar off-screen */
+  .shell-sidebar {
+    position: fixed;
+    top: var(--ctp-shell-header-height);
+    left: 0;
+    bottom: 0;
+    width: var(--ctp-shell-sidebar-width);
+    transform: translateX(-100%);
+    transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing);
+    z-index: 1001;
+    border-right: 1px solid var(--ctp-surface0);
+    box-shadow: var(--ctp-shadow-lg);
+  }
+
+  /* When mobile sidebar is actively toggled open */
+  .shell[data-state="sidebar-mobile-open"] .shell-sidebar {
+    transform: translateX(0);
+    --ctp-shell-sidebar-width: 260px; /* Force default mobile sidebar width */
+  }
+
+  /* Show backdrop to capture clicks outside the drawer */
+  .shell[data-state="sidebar-mobile-open"] .shell-backdrop {
+    display: block;
+    position: fixed;
+    top: var(--ctp-shell-header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: color-mix(in srgb, var(--ctp-crust) 60%, transparent);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    cursor: pointer;
+    animation: shell-backdrop-fade 0.2s ease-out;
+  }
+}
+
+@keyframes shell-backdrop-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile toggle button helper */
+.shell-mobile-toggle {
+  display: none !important;
+}
+
+@media screen and (max-width: 768px) {
+  .shell-mobile-toggle {
+    display: inline-flex !important;
+  }
+}

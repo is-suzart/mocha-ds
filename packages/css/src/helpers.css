@@ -1,0 +1,866 @@
+/* ==========================================================================
+   helpers.css — Catppuccin BEM Utility Helpers
+   All utility classes follow the BEM modifier pattern:
+     Block:    .{category}
+     Modifier: .{category}--{value}
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. COLOR — Foreground (text) color
+   Usage: <p class="color-mauve">...</p>
+   ========================================================================== */
+
+.color-rosewater { color: var(--ctp-rosewater) !important; }
+.color-flamingo  { color: var(--ctp-flamingo)  !important; }
+.color-pink      { color: var(--ctp-pink)      !important; }
+.color-mauve     { color: var(--ctp-mauve)     !important; }
+.color-red       { color: var(--ctp-red)       !important; }
+.color-maroon    { color: var(--ctp-maroon)    !important; }
+.color-peach     { color: var(--ctp-peach)     !important; }
+.color-yellow    { color: var(--ctp-yellow)    !important; }
+.color-green     { color: var(--ctp-green)     !important; }
+.color-teal      { color: var(--ctp-teal)      !important; }
+.color-sky       { color: var(--ctp-sky)       !important; }
+.color-sapphire  { color: var(--ctp-sapphire)  !important; }
+.color-blue      { color: var(--ctp-blue)      !important; }
+.color-lavender  { color: var(--ctp-lavender)  !important; }
+.color-text      { color: var(--ctp-text)      !important; }
+.color-subtext1  { color: var(--ctp-subtext1)  !important; }
+.color-subtext0  { color: var(--ctp-subtext0)  !important; }
+.color-overlay2  { color: var(--ctp-overlay2)  !important; }
+.color-overlay1  { color: var(--ctp-overlay1)  !important; }
+.color-overlay0  { color: var(--ctp-overlay0)  !important; }
+.color-surface2  { color: var(--ctp-surface2)  !important; }
+.color-surface1  { color: var(--ctp-surface1)  !important; }
+.color-surface0  { color: var(--ctp-surface0)  !important; }
+.color-base      { color: var(--ctp-base)      !important; }
+.color-mantle    { color: var(--ctp-mantle)    !important; }
+.color-crust     { color: var(--ctp-crust)     !important; }
+
+
+/* ==========================================================================
+   2. BACKGROUND — Background fill color
+   Usage: <div class="bg-surface0">...</div>
+   ========================================================================== */
+
+.bg-rosewater { background-color: var(--ctp-rosewater) !important; }
+.bg-flamingo  { background-color: var(--ctp-flamingo)  !important; }
+.bg-pink      { background-color: var(--ctp-pink)      !important; }
+.bg-mauve     { background-color: var(--ctp-mauve)     !important; }
+.bg-red       { background-color: var(--ctp-red)       !important; }
+.bg-maroon    { background-color: var(--ctp-maroon)    !important; }
+.bg-peach     { background-color: var(--ctp-peach)     !important; }
+.bg-yellow    { background-color: var(--ctp-yellow)    !important; }
+.bg-green     { background-color: var(--ctp-green)     !important; }
+.bg-teal      { background-color: var(--ctp-teal)      !important; }
+.bg-sky       { background-color: var(--ctp-sky)       !important; }
+.bg-sapphire  { background-color: var(--ctp-sapphire)  !important; }
+.bg-blue      { background-color: var(--ctp-blue)      !important; }
+.bg-lavender  { background-color: var(--ctp-lavender)  !important; }
+.bg-text      { background-color: var(--ctp-text)      !important; }
+.bg-subtext1  { background-color: var(--ctp-subtext1)  !important; }
+.bg-subtext0  { background-color: var(--ctp-subtext0)  !important; }
+.bg-overlay2  { background-color: var(--ctp-overlay2)  !important; }
+.bg-overlay1  { background-color: var(--ctp-overlay1)  !important; }
+.bg-overlay0  { background-color: var(--ctp-overlay0)  !important; }
+.bg-surface2  { background-color: var(--ctp-surface2)  !important; }
+.bg-surface1  { background-color: var(--ctp-surface1)  !important; }
+.bg-surface0  { background-color: var(--ctp-surface0)  !important; }
+.bg-base      { background-color: var(--ctp-base)      !important; }
+.bg-mantle    { background-color: var(--ctp-mantle)    !important; }
+.bg-crust     { background-color: var(--ctp-crust)     !important; }
+.bg-transparent { background-color: transparent        !important; }
+
+
+/* ==========================================================================
+   3. BORDER COLOR
+   Usage: <div class="border-mauve">...</div>
+   ========================================================================== */
+
+.border-rosewater { border-color: var(--ctp-rosewater) !important; }
+.border-flamingo  { border-color: var(--ctp-flamingo)  !important; }
+.border-pink      { border-color: var(--ctp-pink)      !important; }
+.border-mauve     { border-color: var(--ctp-mauve)     !important; }
+.border-red       { border-color: var(--ctp-red)       !important; }
+.border-maroon    { border-color: var(--ctp-maroon)    !important; }
+.border-peach     { border-color: var(--ctp-peach)     !important; }
+.border-yellow    { border-color: var(--ctp-yellow)    !important; }
+.border-green     { border-color: var(--ctp-green)     !important; }
+.border-teal      { border-color: var(--ctp-teal)      !important; }
+.border-sky       { border-color: var(--ctp-sky)       !important; }
+.border-sapphire  { border-color: var(--ctp-sapphire)  !important; }
+.border-blue      { border-color: var(--ctp-blue)      !important; }
+.border-lavender  { border-color: var(--ctp-lavender)  !important; }
+.border-surface2  { border-color: var(--ctp-surface2)  !important; }
+.border-surface1  { border-color: var(--ctp-surface1)  !important; }
+.border-surface0  { border-color: var(--ctp-surface0)  !important; }
+.border-transparent { border-color: transparent        !important; }
+
+
+/* ==========================================================================
+   4. SPACER — Combined margin + padding scale
+   Scale: 0=0 | 1=0.25rem | 2=0.5rem | 3=0.75rem | 4=1rem | 5=1.25rem
+          6=1.5rem | 7=2rem | 8=2.5rem | 9=3rem | 10=4rem | 11=5rem | 12=6rem
+   ========================================================================== */
+
+:root {
+  --ctp-space-0:  0;
+  --ctp-space-1:  0.25rem;
+  --ctp-space-2:  0.5rem;
+  --ctp-space-3:  0.75rem;
+  --ctp-space-4:  1rem;
+  --ctp-space-5:  1.25rem;
+  --ctp-space-6:  1.5rem;
+  --ctp-space-7:  2rem;
+  --ctp-space-8:  2.5rem;
+  --ctp-space-9:  3rem;
+  --ctp-space-10: 4rem;
+  --ctp-space-11: 5rem;
+  --ctp-space-12: 6rem;
+}
+
+
+/* ==========================================================================
+   5. MARGIN — All sides
+   Usage: <div class="m-4">...</div>  → margin: 1rem
+   ========================================================================== */
+
+.m-0  { margin: var(--ctp-space-0)  !important; }
+.m-1  { margin: var(--ctp-space-1)  !important; }
+.m-2  { margin: var(--ctp-space-2)  !important; }
+.m-3  { margin: var(--ctp-space-3)  !important; }
+.m-4  { margin: var(--ctp-space-4)  !important; }
+.m-5  { margin: var(--ctp-space-5)  !important; }
+.m-6  { margin: var(--ctp-space-6)  !important; }
+.m-7  { margin: var(--ctp-space-7)  !important; }
+.m-8  { margin: var(--ctp-space-8)  !important; }
+.m-9  { margin: var(--ctp-space-9)  !important; }
+.m-10 { margin: var(--ctp-space-10) !important; }
+.m-11 { margin: var(--ctp-space-11) !important; }
+.m-12 { margin: var(--ctp-space-12) !important; }
+.m-auto { margin: auto !important; }
+
+/* Margin Top */
+.mt-0  { margin-top: var(--ctp-space-0)  !important; }
+.mt-1  { margin-top: var(--ctp-space-1)  !important; }
+.mt-2  { margin-top: var(--ctp-space-2)  !important; }
+.mt-3  { margin-top: var(--ctp-space-3)  !important; }
+.mt-4  { margin-top: var(--ctp-space-4)  !important; }
+.mt-5  { margin-top: var(--ctp-space-5)  !important; }
+.mt-6  { margin-top: var(--ctp-space-6)  !important; }
+.mt-7  { margin-top: var(--ctp-space-7)  !important; }
+.mt-8  { margin-top: var(--ctp-space-8)  !important; }
+.mt-9  { margin-top: var(--ctp-space-9)  !important; }
+.mt-10 { margin-top: var(--ctp-space-10) !important; }
+.mt-11 { margin-top: var(--ctp-space-11) !important; }
+.mt-12 { margin-top: var(--ctp-space-12) !important; }
+.mt-auto { margin-top: auto !important; }
+
+/* Margin Bottom */
+.mb-0  { margin-bottom: var(--ctp-space-0)  !important; }
+.mb-1  { margin-bottom: var(--ctp-space-1)  !important; }
+.mb-2  { margin-bottom: var(--ctp-space-2)  !important; }
+.mb-3  { margin-bottom: var(--ctp-space-3)  !important; }
+.mb-4  { margin-bottom: var(--ctp-space-4)  !important; }
+.mb-5  { margin-bottom: var(--ctp-space-5)  !important; }
+.mb-6  { margin-bottom: var(--ctp-space-6)  !important; }
+.mb-7  { margin-bottom: var(--ctp-space-7)  !important; }
+.mb-8  { margin-bottom: var(--ctp-space-8)  !important; }
+.mb-9  { margin-bottom: var(--ctp-space-9)  !important; }
+.mb-10 { margin-bottom: var(--ctp-space-10) !important; }
+.mb-11 { margin-bottom: var(--ctp-space-11) !important; }
+.mb-12 { margin-bottom: var(--ctp-space-12) !important; }
+.mb-auto { margin-bottom: auto !important; }
+
+/* Margin Left */
+.ml-0  { margin-left: var(--ctp-space-0)  !important; }
+.ml-1  { margin-left: var(--ctp-space-1)  !important; }
+.ml-2  { margin-left: var(--ctp-space-2)  !important; }
+.ml-3  { margin-left: var(--ctp-space-3)  !important; }
+.ml-4  { margin-left: var(--ctp-space-4)  !important; }
+.ml-5  { margin-left: var(--ctp-space-5)  !important; }
+.ml-6  { margin-left: var(--ctp-space-6)  !important; }
+.ml-7  { margin-left: var(--ctp-space-7)  !important; }
+.ml-8  { margin-left: var(--ctp-space-8)  !important; }
+.ml-9  { margin-left: var(--ctp-space-9)  !important; }
+.ml-10 { margin-left: var(--ctp-space-10) !important; }
+.ml-11 { margin-left: var(--ctp-space-11) !important; }
+.ml-12 { margin-left: var(--ctp-space-12) !important; }
+.ml-auto { margin-left: auto !important; }
+
+/* Margin Right */
+.mr-0  { margin-right: var(--ctp-space-0)  !important; }
+.mr-1  { margin-right: var(--ctp-space-1)  !important; }
+.mr-2  { margin-right: var(--ctp-space-2)  !important; }
+.mr-3  { margin-right: var(--ctp-space-3)  !important; }
+.mr-4  { margin-right: var(--ctp-space-4)  !important; }
+.mr-5  { margin-right: var(--ctp-space-5)  !important; }
+.mr-6  { margin-right: var(--ctp-space-6)  !important; }
+.mr-7  { margin-right: var(--ctp-space-7)  !important; }
+.mr-8  { margin-right: var(--ctp-space-8)  !important; }
+.mr-9  { margin-right: var(--ctp-space-9)  !important; }
+.mr-10 { margin-right: var(--ctp-space-10) !important; }
+.mr-11 { margin-right: var(--ctp-space-11) !important; }
+.mr-12 { margin-right: var(--ctp-space-12) !important; }
+.mr-auto { margin-right: auto !important; }
+
+/* Margin Horizontal (left + right) */
+.mx-0  { margin-left: var(--ctp-space-0)  !important; margin-right: var(--ctp-space-0)  !important; }
+.mx-1  { margin-left: var(--ctp-space-1)  !important; margin-right: var(--ctp-space-1)  !important; }
+.mx-2  { margin-left: var(--ctp-space-2)  !important; margin-right: var(--ctp-space-2)  !important; }
+.mx-3  { margin-left: var(--ctp-space-3)  !important; margin-right: var(--ctp-space-3)  !important; }
+.mx-4  { margin-left: var(--ctp-space-4)  !important; margin-right: var(--ctp-space-4)  !important; }
+.mx-5  { margin-left: var(--ctp-space-5)  !important; margin-right: var(--ctp-space-5)  !important; }
+.mx-6  { margin-left: var(--ctp-space-6)  !important; margin-right: var(--ctp-space-6)  !important; }
+.mx-7  { margin-left: var(--ctp-space-7)  !important; margin-right: var(--ctp-space-7)  !important; }
+.mx-8  { margin-left: var(--ctp-space-8)  !important; margin-right: var(--ctp-space-8)  !important; }
+.mx-9  { margin-left: var(--ctp-space-9)  !important; margin-right: var(--ctp-space-9)  !important; }
+.mx-10 { margin-left: var(--ctp-space-10) !important; margin-right: var(--ctp-space-10) !important; }
+.mx-11 { margin-left: var(--ctp-space-11) !important; margin-right: var(--ctp-space-11) !important; }
+.mx-12 { margin-left: var(--ctp-space-12) !important; margin-right: var(--ctp-space-12) !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+/* Margin Vertical (top + bottom) */
+.my-0  { margin-top: var(--ctp-space-0)  !important; margin-bottom: var(--ctp-space-0)  !important; }
+.my-1  { margin-top: var(--ctp-space-1)  !important; margin-bottom: var(--ctp-space-1)  !important; }
+.my-2  { margin-top: var(--ctp-space-2)  !important; margin-bottom: var(--ctp-space-2)  !important; }
+.my-3  { margin-top: var(--ctp-space-3)  !important; margin-bottom: var(--ctp-space-3)  !important; }
+.my-4  { margin-top: var(--ctp-space-4)  !important; margin-bottom: var(--ctp-space-4)  !important; }
+.my-5  { margin-top: var(--ctp-space-5)  !important; margin-bottom: var(--ctp-space-5)  !important; }
+.my-6  { margin-top: var(--ctp-space-6)  !important; margin-bottom: var(--ctp-space-6)  !important; }
+.my-7  { margin-top: var(--ctp-space-7)  !important; margin-bottom: var(--ctp-space-7)  !important; }
+.my-8  { margin-top: var(--ctp-space-8)  !important; margin-bottom: var(--ctp-space-8)  !important; }
+.my-9  { margin-top: var(--ctp-space-9)  !important; margin-bottom: var(--ctp-space-9)  !important; }
+.my-10 { margin-top: var(--ctp-space-10) !important; margin-bottom: var(--ctp-space-10) !important; }
+.my-11 { margin-top: var(--ctp-space-11) !important; margin-bottom: var(--ctp-space-11) !important; }
+.my-12 { margin-top: var(--ctp-space-12) !important; margin-bottom: var(--ctp-space-12) !important; }
+
+
+/* ==========================================================================
+   6. PADDING — All sides
+   Usage: <div class="p-4">...</div>  → padding: 1rem
+   ========================================================================== */
+
+.p-0  { padding: var(--ctp-space-0)  !important; }
+.p-1  { padding: var(--ctp-space-1)  !important; }
+.p-2  { padding: var(--ctp-space-2)  !important; }
+.p-3  { padding: var(--ctp-space-3)  !important; }
+.p-4  { padding: var(--ctp-space-4)  !important; }
+.p-5  { padding: var(--ctp-space-5)  !important; }
+.p-6  { padding: var(--ctp-space-6)  !important; }
+.p-7  { padding: var(--ctp-space-7)  !important; }
+.p-8  { padding: var(--ctp-space-8)  !important; }
+.p-9  { padding: var(--ctp-space-9)  !important; }
+.p-10 { padding: var(--ctp-space-10) !important; }
+.p-11 { padding: var(--ctp-space-11) !important; }
+.p-12 { padding: var(--ctp-space-12) !important; }
+
+/* Padding Top */
+.pt-0  { padding-top: var(--ctp-space-0)  !important; }
+.pt-1  { padding-top: var(--ctp-space-1)  !important; }
+.pt-2  { padding-top: var(--ctp-space-2)  !important; }
+.pt-3  { padding-top: var(--ctp-space-3)  !important; }
+.pt-4  { padding-top: var(--ctp-space-4)  !important; }
+.pt-5  { padding-top: var(--ctp-space-5)  !important; }
+.pt-6  { padding-top: var(--ctp-space-6)  !important; }
+.pt-7  { padding-top: var(--ctp-space-7)  !important; }
+.pt-8  { padding-top: var(--ctp-space-8)  !important; }
+.pt-9  { padding-top: var(--ctp-space-9)  !important; }
+.pt-10 { padding-top: var(--ctp-space-10) !important; }
+.pt-11 { padding-top: var(--ctp-space-11) !important; }
+.pt-12 { padding-top: var(--ctp-space-12) !important; }
+
+/* Padding Bottom */
+.pb-0  { padding-bottom: var(--ctp-space-0)  !important; }
+.pb-1  { padding-bottom: var(--ctp-space-1)  !important; }
+.pb-2  { padding-bottom: var(--ctp-space-2)  !important; }
+.pb-3  { padding-bottom: var(--ctp-space-3)  !important; }
+.pb-4  { padding-bottom: var(--ctp-space-4)  !important; }
+.pb-5  { padding-bottom: var(--ctp-space-5)  !important; }
+.pb-6  { padding-bottom: var(--ctp-space-6)  !important; }
+.pb-7  { padding-bottom: var(--ctp-space-7)  !important; }
+.pb-8  { padding-bottom: var(--ctp-space-8)  !important; }
+.pb-9  { padding-bottom: var(--ctp-space-9)  !important; }
+.pb-10 { padding-bottom: var(--ctp-space-10) !important; }
+.pb-11 { padding-bottom: var(--ctp-space-11) !important; }
+.pb-12 { padding-bottom: var(--ctp-space-12) !important; }
+
+/* Padding Left */
+.pl-0  { padding-left: var(--ctp-space-0)  !important; }
+.pl-1  { padding-left: var(--ctp-space-1)  !important; }
+.pl-2  { padding-left: var(--ctp-space-2)  !important; }
+.pl-3  { padding-left: var(--ctp-space-3)  !important; }
+.pl-4  { padding-left: var(--ctp-space-4)  !important; }
+.pl-5  { padding-left: var(--ctp-space-5)  !important; }
+.pl-6  { padding-left: var(--ctp-space-6)  !important; }
+.pl-7  { padding-left: var(--ctp-space-7)  !important; }
+.pl-8  { padding-left: var(--ctp-space-8)  !important; }
+.pl-9  { padding-left: var(--ctp-space-9)  !important; }
+.pl-10 { padding-left: var(--ctp-space-10) !important; }
+.pl-11 { padding-left: var(--ctp-space-11) !important; }
+.pl-12 { padding-left: var(--ctp-space-12) !important; }
+
+/* Padding Right */
+.pr-0  { padding-right: var(--ctp-space-0)  !important; }
+.pr-1  { padding-right: var(--ctp-space-1)  !important; }
+.pr-2  { padding-right: var(--ctp-space-2)  !important; }
+.pr-3  { padding-right: var(--ctp-space-3)  !important; }
+.pr-4  { padding-right: var(--ctp-space-4)  !important; }
+.pr-5  { padding-right: var(--ctp-space-5)  !important; }
+.pr-6  { padding-right: var(--ctp-space-6)  !important; }
+.pr-7  { padding-right: var(--ctp-space-7)  !important; }
+.pr-8  { padding-right: var(--ctp-space-8)  !important; }
+.pr-9  { padding-right: var(--ctp-space-9)  !important; }
+.pr-10 { padding-right: var(--ctp-space-10) !important; }
+.pr-11 { padding-right: var(--ctp-space-11) !important; }
+.pr-12 { padding-right: var(--ctp-space-12) !important; }
+
+/* Padding Horizontal (left + right) */
+.px-0  { padding-left: var(--ctp-space-0)  !important; padding-right: var(--ctp-space-0)  !important; }
+.px-1  { padding-left: var(--ctp-space-1)  !important; padding-right: var(--ctp-space-1)  !important; }
+.px-2  { padding-left: var(--ctp-space-2)  !important; padding-right: var(--ctp-space-2)  !important; }
+.px-3  { padding-left: var(--ctp-space-3)  !important; padding-right: var(--ctp-space-3)  !important; }
+.px-4  { padding-left: var(--ctp-space-4)  !important; padding-right: var(--ctp-space-4)  !important; }
+.px-5  { padding-left: var(--ctp-space-5)  !important; padding-right: var(--ctp-space-5)  !important; }
+.px-6  { padding-left: var(--ctp-space-6)  !important; padding-right: var(--ctp-space-6)  !important; }
+.px-7  { padding-left: var(--ctp-space-7)  !important; padding-right: var(--ctp-space-7)  !important; }
+.px-8  { padding-left: var(--ctp-space-8)  !important; padding-right: var(--ctp-space-8)  !important; }
+.px-9  { padding-left: var(--ctp-space-9)  !important; padding-right: var(--ctp-space-9)  !important; }
+.px-10 { padding-left: var(--ctp-space-10) !important; padding-right: var(--ctp-space-10) !important; }
+.px-11 { padding-left: var(--ctp-space-11) !important; padding-right: var(--ctp-space-11) !important; }
+.px-12 { padding-left: var(--ctp-space-12) !important; padding-right: var(--ctp-space-12) !important; }
+
+/* Padding Vertical (top + bottom) */
+.py-0  { padding-top: var(--ctp-space-0)  !important; padding-bottom: var(--ctp-space-0)  !important; }
+.py-1  { padding-top: var(--ctp-space-1)  !important; padding-bottom: var(--ctp-space-1)  !important; }
+.py-2  { padding-top: var(--ctp-space-2)  !important; padding-bottom: var(--ctp-space-2)  !important; }
+.py-3  { padding-top: var(--ctp-space-3)  !important; padding-bottom: var(--ctp-space-3)  !important; }
+.py-4  { padding-top: var(--ctp-space-4)  !important; padding-bottom: var(--ctp-space-4)  !important; }
+.py-5  { padding-top: var(--ctp-space-5)  !important; padding-bottom: var(--ctp-space-5)  !important; }
+.py-6  { padding-top: var(--ctp-space-6)  !important; padding-bottom: var(--ctp-space-6)  !important; }
+.py-7  { padding-top: var(--ctp-space-7)  !important; padding-bottom: var(--ctp-space-7)  !important; }
+.py-8  { padding-top: var(--ctp-space-8)  !important; padding-bottom: var(--ctp-space-8)  !important; }
+.py-9  { padding-top: var(--ctp-space-9)  !important; padding-bottom: var(--ctp-space-9)  !important; }
+.py-10 { padding-top: var(--ctp-space-10) !important; padding-bottom: var(--ctp-space-10) !important; }
+.py-11 { padding-top: var(--ctp-space-11) !important; padding-bottom: var(--ctp-space-11) !important; }
+.py-12 { padding-top: var(--ctp-space-12) !important; padding-bottom: var(--ctp-space-12) !important; }
+
+
+/* ==========================================================================
+   7. GAP — For flex/grid containers
+   Usage: <div class="flex gap-4">...</div>
+   ========================================================================== */
+
+.gap-0  { gap: var(--ctp-space-0)  !important; }
+.gap-1  { gap: var(--ctp-space-1)  !important; }
+.gap-2  { gap: var(--ctp-space-2)  !important; }
+.gap-3  { gap: var(--ctp-space-3)  !important; }
+.gap-4  { gap: var(--ctp-space-4)  !important; }
+.gap-5  { gap: var(--ctp-space-5)  !important; }
+.gap-6  { gap: var(--ctp-space-6)  !important; }
+.gap-7  { gap: var(--ctp-space-7)  !important; }
+.gap-8  { gap: var(--ctp-space-8)  !important; }
+.gap-9  { gap: var(--ctp-space-9)  !important; }
+.gap-10 { gap: var(--ctp-space-10) !important; }
+.gap-11 { gap: var(--ctp-space-11) !important; }
+.gap-12 { gap: var(--ctp-space-12) !important; }
+
+.gap-x-0  { column-gap: var(--ctp-space-0)  !important; }
+.gap-x-1  { column-gap: var(--ctp-space-1)  !important; }
+.gap-x-2  { column-gap: var(--ctp-space-2)  !important; }
+.gap-x-3  { column-gap: var(--ctp-space-3)  !important; }
+.gap-x-4  { column-gap: var(--ctp-space-4)  !important; }
+.gap-x-5  { column-gap: var(--ctp-space-5)  !important; }
+.gap-x-6  { column-gap: var(--ctp-space-6)  !important; }
+.gap-x-7  { column-gap: var(--ctp-space-7)  !important; }
+.gap-x-8  { column-gap: var(--ctp-space-8)  !important; }
+
+.gap-y-0  { row-gap: var(--ctp-space-0)  !important; }
+.gap-y-1  { row-gap: var(--ctp-space-1)  !important; }
+.gap-y-2  { row-gap: var(--ctp-space-2)  !important; }
+.gap-y-3  { row-gap: var(--ctp-space-3)  !important; }
+.gap-y-4  { row-gap: var(--ctp-space-4)  !important; }
+.gap-y-5  { row-gap: var(--ctp-space-5)  !important; }
+.gap-y-6  { row-gap: var(--ctp-space-6)  !important; }
+.gap-y-7  { row-gap: var(--ctp-space-7)  !important; }
+.gap-y-8  { row-gap: var(--ctp-space-8)  !important; }
+
+
+/* ==========================================================================
+   8. DISPLAY
+   Usage: <div class="d-flex">...</div>
+   ========================================================================== */
+
+.d-block        { display: block        !important; }
+.d-inline       { display: inline       !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex         { display: flex         !important; }
+.d-inline-flex  { display: inline-flex  !important; }
+.d-grid         { display: grid         !important; }
+.d-inline-grid  { display: inline-grid  !important; }
+.d-none         { display: none         !important; }
+.d-contents     { display: contents     !important; }
+
+
+/* ==========================================================================
+   9. FLEXBOX UTILITIES
+   Usage: <div class="d-flex flex-row justify-center align-center">
+   ========================================================================== */
+
+/* Flex Direction */
+.flex-row            { flex-direction: row            !important; }
+.flex-row-reverse    { flex-direction: row-reverse    !important; }
+.flex-col            { flex-direction: column         !important; }
+.flex-col-reverse    { flex-direction: column-reverse !important; }
+
+/* Flex Wrap */
+.flex-wrap           { flex-wrap: wrap    !important; }
+.flex-nowrap         { flex-wrap: nowrap  !important; }
+.flex-wrap-reverse   { flex-wrap: wrap-reverse !important; }
+
+/* Justify Content */
+.justify-start       { justify-content: flex-start    !important; }
+.justify-end         { justify-content: flex-end      !important; }
+.justify-center      { justify-content: center        !important; }
+.justify-between     { justify-content: space-between !important; }
+.justify-around      { justify-content: space-around  !important; }
+.justify-evenly      { justify-content: space-evenly  !important; }
+
+/* Align Items */
+.align-start         { align-items: flex-start !important; }
+.align-end           { align-items: flex-end   !important; }
+.align-center        { align-items: center     !important; }
+.align-baseline      { align-items: baseline   !important; }
+.align-stretch       { align-items: stretch    !important; }
+
+/* Align Self */
+.self-auto           { align-self: auto      !important; }
+.self-start          { align-self: flex-start !important; }
+.self-end            { align-self: flex-end   !important; }
+.self-center         { align-self: center     !important; }
+.self-stretch        { align-self: stretch    !important; }
+
+/* Flex Grow / Shrink */
+.flex-grow           { flex-grow: 1  !important; }
+.flex-grow-0         { flex-grow: 0  !important; }
+.flex-shrink         { flex-shrink: 1 !important; }
+.flex-shrink-0       { flex-shrink: 0 !important; }
+.flex-1              { flex: 1 1 0%  !important; }
+.flex-auto           { flex: 1 1 auto !important; }
+.flex-none           { flex: none    !important; }
+
+
+/* ==========================================================================
+   10. WIDTH & HEIGHT
+   Usage: <div class="w-full h-screen">...</div>
+   ========================================================================== */
+
+.w-full    { width: 100%      !important; }
+.w-screen  { width: 100vw     !important; }
+.w-auto    { width: auto      !important; }
+.w-fit     { width: fit-content !important; }
+.w-min     { width: min-content !important; }
+.w-max     { width: max-content !important; }
+
+.h-full    { height: 100%     !important; }
+.h-screen  { height: 100vh    !important; }
+.h-auto    { height: auto     !important; }
+.h-fit     { height: fit-content !important; }
+
+.min-w-0   { min-width: 0     !important; }
+.min-w-full { min-width: 100% !important; }
+.max-w-full { max-width: 100% !important; }
+
+.min-h-0      { min-height: 0      !important; }
+.min-h-full   { min-height: 100%   !important; }
+.min-h-screen { min-height: 100vh  !important; }
+
+
+/* ==========================================================================
+   11. POSITION
+   Usage: <div class="pos-relative">...</div>
+   ========================================================================== */
+
+.pos-static   { position: static   !important; }
+.pos-relative { position: relative !important; }
+.pos-absolute { position: absolute !important; }
+.pos-fixed    { position: fixed    !important; }
+.pos-sticky   { position: sticky   !important; }
+
+/* Inset shortcuts */
+.inset-0    { top: 0; right: 0; bottom: 0; left: 0; }
+.top-0      { top: 0     !important; }
+.right-0    { right: 0   !important; }
+.bottom-0   { bottom: 0  !important; }
+.left-0     { left: 0    !important; }
+
+/* Z-index scale */
+.z-0        { z-index: 0    !important; }
+.z-10       { z-index: 10   !important; }
+.z-20       { z-index: 20   !important; }
+.z-30       { z-index: 30   !important; }
+.z-40       { z-index: 40   !important; }
+.z-50       { z-index: 50   !important; }
+.z-100      { z-index: 100  !important; }
+.z-auto     { z-index: auto !important; }
+
+
+/* ==========================================================================
+   12. OVERFLOW
+   Usage: <div class="overflow-hidden">...</div>
+   ========================================================================== */
+
+.overflow-auto    { overflow: auto    !important; }
+.overflow-hidden  { overflow: hidden  !important; }
+.overflow-visible { overflow: visible !important; }
+.overflow-scroll  { overflow: scroll  !important; }
+.overflow-x-auto   { overflow-x: auto   !important; }
+.overflow-x-hidden { overflow-x: hidden !important; }
+.overflow-y-auto   { overflow-y: auto   !important; }
+.overflow-y-hidden { overflow-y: hidden !important; }
+
+
+/* ==========================================================================
+   13. BORDER RADIUS
+   Usage: <div class="radius-rounded">...</div>
+   ========================================================================== */
+
+.radius-none    { border-radius: 0                         !important; }
+.radius-xs      { border-radius: 2px                       !important; }
+.radius-sm      { border-radius: 4px                       !important; }
+.radius-md      { border-radius: var(--ctp-radius-rounded) !important; }
+.radius-lg      { border-radius: 12px                      !important; }
+.radius-xl      { border-radius: 16px                      !important; }
+.radius-2xl     { border-radius: 24px                      !important; }
+.radius-full    { border-radius: var(--ctp-radius-pill)    !important; }
+
+/* Individual corners */
+.radius-t-md    { border-top-left-radius: var(--ctp-radius-rounded) !important; border-top-right-radius: var(--ctp-radius-rounded) !important; }
+.radius-b-md    { border-bottom-left-radius: var(--ctp-radius-rounded) !important; border-bottom-right-radius: var(--ctp-radius-rounded) !important; }
+.radius-l-md    { border-top-left-radius: var(--ctp-radius-rounded) !important; border-bottom-left-radius: var(--ctp-radius-rounded) !important; }
+.radius-r-md    { border-top-right-radius: var(--ctp-radius-rounded) !important; border-bottom-right-radius: var(--ctp-radius-rounded) !important; }
+
+
+/* ==========================================================================
+   14. BORDER WIDTH
+   Usage: <div class="bw-1 border-mauve">...</div>
+   ========================================================================== */
+
+.bw-0   { border-width: 0    !important; border-style: solid; }
+.bw-1   { border-width: 1px  !important; border-style: solid; }
+.bw-2   { border-width: 2px  !important; border-style: solid; }
+.bw-4   { border-width: 4px  !important; border-style: solid; }
+.bw-8   { border-width: 8px  !important; border-style: solid; }
+
+.bw-t-1 { border-top-width: 1px    !important; border-top-style: solid; }
+.bw-b-1 { border-bottom-width: 1px !important; border-bottom-style: solid; }
+.bw-l-1 { border-left-width: 1px   !important; border-left-style: solid; }
+.bw-r-1 { border-right-width: 1px  !important; border-right-style: solid; }
+
+
+/* ==========================================================================
+   15. SHADOW
+   Usage: <div class="shadow-md">...</div>
+   ========================================================================== */
+
+.shadow-none { box-shadow: none                        !important; }
+.shadow-sm   { box-shadow: var(--ctp-shadow-sm)        !important; }
+.shadow-md   { box-shadow: var(--ctp-shadow-md)        !important; }
+.shadow-lg   { box-shadow: var(--ctp-shadow-lg)        !important; }
+.shadow-xl   {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15),
+              0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+}
+.shadow-glow-mauve {
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--ctp-mauve) 35%, transparent) !important;
+}
+.shadow-glow-blue {
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--ctp-blue) 35%, transparent) !important;
+}
+.shadow-glow-green {
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--ctp-green) 35%, transparent) !important;
+}
+.shadow-glow-peach {
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--ctp-peach) 35%, transparent) !important;
+}
+
+
+/* ==========================================================================
+   16. OPACITY
+   Usage: <div class="opacity-50">...</div>
+   ========================================================================== */
+
+.opacity-0   { opacity: 0    !important; }
+.opacity-10  { opacity: 0.1  !important; }
+.opacity-20  { opacity: 0.2  !important; }
+.opacity-25  { opacity: 0.25 !important; }
+.opacity-30  { opacity: 0.3  !important; }
+.opacity-40  { opacity: 0.4  !important; }
+.opacity-50  { opacity: 0.5  !important; }
+.opacity-60  { opacity: 0.6  !important; }
+.opacity-70  { opacity: 0.7  !important; }
+.opacity-75  { opacity: 0.75 !important; }
+.opacity-80  { opacity: 0.8  !important; }
+.opacity-90  { opacity: 0.9  !important; }
+.opacity-100 { opacity: 1    !important; }
+
+
+/* ==========================================================================
+   17. TEXT ALIGNMENT & TRANSFORM
+   Usage: <p class="text-align-center text-transform-uppercase">
+   ========================================================================== */
+
+.text-align-left    { text-align: left    !important; }
+.text-align-center  { text-align: center  !important; }
+.text-align-right   { text-align: right   !important; }
+.text-align-justify { text-align: justify !important; }
+
+.text-transform-uppercase  { text-transform: uppercase  !important; }
+.text-transform-lowercase  { text-transform: lowercase  !important; }
+.text-transform-capitalize { text-transform: capitalize !important; }
+.text-transform-none       { text-transform: none       !important; }
+
+.text-decoration-none      { text-decoration: none      !important; }
+.text-decoration-underline { text-decoration: underline !important; }
+.text-decoration-line-through { text-decoration: line-through !important; }
+
+.whitespace-normal  { white-space: normal   !important; }
+.whitespace-nowrap  { white-space: nowrap   !important; }
+.whitespace-pre     { white-space: pre      !important; }
+.whitespace-pre-wrap { white-space: pre-wrap !important; }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   18. FONT SIZE
+   Usage: <span class="font-size-sm">...</span>
+   ========================================================================== */
+
+.font-size-xs   { font-size: 0.75rem  !important; }
+.font-size-sm   { font-size: 0.875rem !important; }
+.font-size-base { font-size: 1rem     !important; }
+.font-size-md   { font-size: 1.125rem !important; }
+.font-size-lg   { font-size: 1.25rem  !important; }
+.font-size-xl   { font-size: 1.5rem   !important; }
+.font-size-2xl  { font-size: 1.875rem !important; }
+.font-size-3xl  { font-size: 2.25rem  !important; }
+.font-size-4xl  { font-size: 3rem     !important; }
+
+
+/* ==========================================================================
+   19. FONT WEIGHT
+   Usage: <span class="font-weight-semibold">...</span>
+   ========================================================================== */
+
+.font-weight-thin      { font-weight: 100 !important; }
+.font-weight-light     { font-weight: 300 !important; }
+.font-weight-regular   { font-weight: 400 !important; }
+.font-weight-medium    { font-weight: 500 !important; }
+.font-weight-semibold  { font-weight: 600 !important; }
+.font-weight-bold      { font-weight: 700 !important; }
+.font-weight-extrabold { font-weight: 800 !important; }
+.font-weight-black     { font-weight: 900 !important; }
+
+
+/* ==========================================================================
+   20. LINE HEIGHT
+   ========================================================================== */
+
+.leading-none    { line-height: 1    !important; }
+.leading-tight   { line-height: 1.25 !important; }
+.leading-snug    { line-height: 1.375 !important; }
+.leading-normal  { line-height: 1.5  !important; }
+.leading-relaxed { line-height: 1.625 !important; }
+.leading-loose   { line-height: 2    !important; }
+
+
+/* ==========================================================================
+   21. LETTER SPACING
+   ========================================================================== */
+
+.tracking-tighter { letter-spacing: -0.05em !important; }
+.tracking-tight   { letter-spacing: -0.025em !important; }
+.tracking-normal  { letter-spacing: 0 !important; }
+.tracking-wide    { letter-spacing: 0.025em !important; }
+.tracking-wider   { letter-spacing: 0.05em !important; }
+.tracking-widest  { letter-spacing: 0.1em !important; }
+
+
+/* ==========================================================================
+   22. CURSOR
+   ========================================================================== */
+
+.cursor-auto      { cursor: auto      !important; }
+.cursor-default   { cursor: default   !important; }
+.cursor-pointer   { cursor: pointer   !important; }
+.cursor-wait      { cursor: wait      !important; }
+.cursor-text      { cursor: text      !important; }
+.cursor-move      { cursor: move      !important; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+.cursor-grab      { cursor: grab      !important; }
+
+
+/* ==========================================================================
+   23. POINTER EVENTS & USER SELECT
+   ========================================================================== */
+
+.pointer-events-none { pointer-events: none !important; }
+.pointer-events-auto { pointer-events: auto !important; }
+
+.select-none { user-select: none !important; }
+.select-text { user-select: text !important; }
+.select-all  { user-select: all  !important; }
+.select-auto { user-select: auto !important; }
+
+
+/* ==========================================================================
+   24. VISIBILITY
+   ========================================================================== */
+
+.visible   { visibility: visible !important; }
+.invisible { visibility: hidden  !important; }
+
+
+/* ==========================================================================
+   25. TRANSITION & ANIMATION HELPERS
+   ========================================================================== */
+
+.transition          { transition: var(--ctp-transition) !important; }
+.transition-colors  { transition: color var(--ctp-transition-duration) var(--ctp-transition-timing),
+                                        background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+                                        border-color var(--ctp-transition-duration) var(--ctp-transition-timing) !important; }
+.transition-opacity { transition: opacity var(--ctp-transition-duration) var(--ctp-transition-timing) !important; }
+.transition-shadow  { transition: box-shadow var(--ctp-transition-duration) var(--ctp-transition-timing) !important; }
+.transition-transform { transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing) !important; }
+.transition-none    { transition: none !important; }
+
+
+/* ==========================================================================
+   26. TRANSFORM HELPERS
+   ========================================================================== */
+
+.scale-90   { transform: scale(0.90) !important; }
+.scale-95   { transform: scale(0.95) !important; }
+.scale-100  { transform: scale(1)    !important; }
+.scale-105  { transform: scale(1.05) !important; }
+.scale-110  { transform: scale(1.10) !important; }
+
+.rotate-45  { transform: rotate(45deg)  !important; }
+.rotate-90  { transform: rotate(90deg)  !important; }
+.rotate-180 { transform: rotate(180deg) !important; }
+
+.translate-x-full { transform: translateX(100%)  !important; }
+.translate-x-neg-full { transform: translateX(-100%) !important; }
+.translate-y-full { transform: translateY(100%)  !important; }
+.translate-y-neg-full { transform: translateY(-100%) !important; }
+
+
+/* ==========================================================================
+   27. INTERACTIVE STATES (hover/focus helpers)
+   Apply via .interactive on the element
+   ========================================================================== */
+
+/* Subtle hover lift effect */
+.hover-lift {
+  transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing),
+              box-shadow var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ctp-shadow-lg);
+}
+
+/* Subtle press scale */
+.hover-press:active {
+  transform: scale(0.97);
+}
+
+/* Highlight background on hover */
+.hover-highlight:hover {
+  background-color: color-mix(in srgb, var(--ctp-text) 6%, transparent);
+}
+
+/* Focus ring */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--ctp-mauve);
+  outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+   28. GLASSMORPHISM SURFACE HELPERS
+   ========================================================================== */
+
+.glass {
+  background-color: color-mix(in srgb, var(--ctp-surface0) 65%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 10%, transparent);
+}
+
+.glass-light {
+  background-color: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 8%, transparent);
+}
+
+.glass-heavy {
+  background-color: color-mix(in srgb, var(--ctp-surface1) 85%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 12%, transparent);
+}
+
+
+/* ==========================================================================
+   29. DIVIDER
+   Usage: <hr class="divider">  or  <hr class="divider divider-vertical">
+   ========================================================================== */
+
+.divider {
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--ctp-text) 10%, transparent);
+  margin: var(--ctp-space-4) 0;
+}
+
+.divider-thick {
+  border-top-width: 2px;
+}
+
+.divider-dashed {
+  border-top-style: dashed;
+}
+
+.divider-vertical {
+  border-top: none;
+  border-left: 1px solid color-mix(in srgb, var(--ctp-text) 10%, transparent);
+  align-self: stretch;
+  height: auto;
+  width: 0;
+  margin: 0 var(--ctp-space-4);
+}
+
+
+/* ==========================================================================
+   30. VISUALLY HIDDEN (Accessibility)
+   Hides element visually but keeps it accessible for screen readers.
+   ========================================================================== */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

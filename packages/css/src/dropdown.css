@@ -1,0 +1,160 @@
+/* Dropdown Component Stylesheet */
+
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--ctp-radius-rounded);
+  box-shadow: var(--ctp-shadow-lg);
+  padding: 6px 0;
+  min-width: 170px;
+  max-width: 320px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: scale(0.96) translateY(-6px);
+  transform-origin: top left;
+  animation: dropdown-fade-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@keyframes dropdown-fade-in {
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 6px 16px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ctp-overlay1);
+  user-select: none;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--ctp-surface0);
+  margin: 6px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  font-family: var(--ctp-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ctp-text);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  margin: 0 6px;
+  transition: background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              color var(--ctp-transition-duration) var(--ctp-transition-timing);
+  outline: none;
+}
+
+/* Accent colors styling for hover states */
+.dropdown-item[data-color="rosewater"]:hover:not(:disabled),
+.dropdown-item[data-color="rosewater"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-rosewater) 12%, transparent);
+  color: var(--ctp-rosewater);
+}
+.dropdown-item[data-color="flamingo"]:hover:not(:disabled),
+.dropdown-item[data-color="flamingo"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-flamingo) 12%, transparent);
+  color: var(--ctp-flamingo);
+}
+.dropdown-item[data-color="pink"]:hover:not(:disabled),
+.dropdown-item[data-color="pink"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-pink) 12%, transparent);
+  color: var(--ctp-pink);
+}
+.dropdown-item[data-color="mauve"]:hover:not(:disabled),
+.dropdown-item[data-color="mauve"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
+  color: var(--ctp-mauve);
+}
+.dropdown-item[data-color="red"]:hover:not(:disabled),
+.dropdown-item[data-color="red"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+  color: var(--ctp-red);
+}
+.dropdown-item[data-color="maroon"]:hover:not(:disabled),
+.dropdown-item[data-color="maroon"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-maroon) 12%, transparent);
+  color: var(--ctp-maroon);
+}
+.dropdown-item[data-color="peach"]:hover:not(:disabled),
+.dropdown-item[data-color="peach"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-peach) 12%, transparent);
+  color: var(--ctp-peach);
+}
+.dropdown-item[data-color="yellow"]:hover:not(:disabled),
+.dropdown-item[data-color="yellow"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 12%, transparent);
+  color: var(--ctp-yellow);
+}
+.dropdown-item[data-color="green"]:hover:not(:disabled),
+.dropdown-item[data-color="green"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-green) 12%, transparent);
+  color: var(--ctp-green);
+}
+.dropdown-item[data-color="teal"]:hover:not(:disabled),
+.dropdown-item[data-color="teal"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-teal) 12%, transparent);
+  color: var(--ctp-teal);
+}
+.dropdown-item[data-color="sky"]:hover:not(:disabled),
+.dropdown-item[data-color="sky"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-sky) 12%, transparent);
+  color: var(--ctp-sky);
+}
+.dropdown-item[data-color="sapphire"]:hover:not(:disabled),
+.dropdown-item[data-color="sapphire"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-sapphire) 12%, transparent);
+  color: var(--ctp-sapphire);
+}
+.dropdown-item[data-color="blue"]:hover:not(:disabled),
+.dropdown-item[data-color="blue"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-blue) 12%, transparent);
+  color: var(--ctp-blue);
+}
+.dropdown-item[data-color="lavender"]:hover:not(:disabled),
+.dropdown-item[data-color="lavender"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-lavender) 12%, transparent);
+  color: var(--ctp-lavender);
+}
+
+/* Danger Preset (Forces red/rose accents) */
+.dropdown-item[data-state="danger"]:hover:not(:disabled),
+.dropdown-item[data-state="danger"]:focus:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+  color: var(--ctp-red);
+}
+
+.dropdown-item[data-state="disabled"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dropdown-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.dropdown-item-content {
+  flex: 1;
+}

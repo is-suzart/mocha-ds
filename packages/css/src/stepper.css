@@ -1,0 +1,281 @@
+/* Stepper Component Core Stylesheet */
+
+.stepper-wrapper {
+  --ctp-btn-color-token: var(--ctp-mauve); /* default color */
+  --ctp-node-size: 36px;
+  position: relative;
+  width: 100%;
+}
+
+.stepper-wrapper,
+.stepper-wrapper * {
+  box-sizing: border-box;
+}
+
+/* Color mappings for Stepper active states */
+.stepper[data-color="rosewater"] { --ctp-btn-color-token: var(--ctp-rosewater); }
+.stepper[data-color="flamingo"]  { --ctp-btn-color-token: var(--ctp-flamingo); }
+.stepper[data-color="pink"]      { --ctp-btn-color-token: var(--ctp-pink); }
+.stepper[data-color="mauve"]     { --ctp-btn-color-token: var(--ctp-mauve); }
+.stepper[data-color="red"]       { --ctp-btn-color-token: var(--ctp-red); }
+.stepper[data-color="maroon"]    { --ctp-btn-color-token: var(--ctp-maroon); }
+.stepper[data-color="peach"]     { --ctp-btn-color-token: var(--ctp-peach); }
+.stepper[data-color="yellow"]    { --ctp-btn-color-token: var(--ctp-yellow); }
+.stepper[data-color="green"]     { --ctp-btn-color-token: var(--ctp-green); }
+.stepper[data-color="teal"]      { --ctp-btn-color-token: var(--ctp-teal); }
+.stepper[data-color="sky"]       { --ctp-btn-color-token: var(--ctp-sky); }
+.stepper[data-color="sapphire"]  { --ctp-btn-color-token: var(--ctp-sapphire); }
+.stepper[data-color="blue"]      { --ctp-btn-color-token: var(--ctp-blue); }
+.stepper[data-color="lavender"]  { --ctp-btn-color-token: var(--ctp-lavender); }
+
+/* --- 1. Horizontal Layout --- */
+.stepper[data-orientation="horizontal"] {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+/* Background Track Line */
+.stepper[data-orientation="horizontal"] .stepper-track {
+  position: absolute;
+  top: calc(var(--ctp-node-size) / 2 - 2px);
+  left: calc(100% / (var(--ctp-total-steps) * 2));
+  right: calc(100% / (var(--ctp-total-steps) * 2));
+  height: 4px;
+  background-color: var(--ctp-surface0);
+  border-radius: 2px;
+  z-index: 1;
+}
+
+/* Active Fill Line */
+.stepper[data-orientation="horizontal"] .stepper-track-active {
+  height: 100%;
+  width: var(--ctp-stepper-progress, 0%);
+  background-color: var(--ctp-btn-color-token);
+  border-radius: 2px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepper[data-orientation="horizontal"] .stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper[data-orientation="horizontal"] .stepper-label-group {
+  margin-top: 10px;
+  padding: 0 8px;
+}
+
+/* --- 2. Vertical Layout --- */
+.stepper[data-orientation="vertical"] {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  --ctp-stepper-vertical-gap: 2.6rem;
+  gap: var(--ctp-stepper-vertical-gap);
+}
+
+.stepper[data-orientation="vertical"] .stepper-step {
+  display: flex;
+  position: relative;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Vertical Track Line */
+.stepper[data-orientation="vertical"] .stepper-track {
+  position: absolute;
+  top: calc(var(--ctp-node-size) / 2);
+  bottom: calc(-1 * var(--ctp-stepper-vertical-gap));
+  left: calc(var(--ctp-node-size) / 2 - 2px);
+  width: 4px;
+  background-color: var(--ctp-surface0);
+  border-radius: 2px;
+  z-index: 1;
+}
+
+/* Hide track for the last step in vertical layout */
+.stepper[data-orientation="vertical"] .stepper-step:last-child .stepper-track {
+  display: none;
+}
+
+.stepper[data-orientation="vertical"] .stepper-track-active {
+  width: 100%;
+  height: var(--ctp-stepper-progress, 0%);
+  background-color: var(--ctp-btn-color-token);
+  border-radius: 2px;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepper[data-orientation="vertical"] .stepper-label-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--ctp-node-size);
+}
+
+/* --- 3. Dots Variant --- */
+.stepper[data-state="dots"] {
+  --ctp-node-size: 14px;
+}
+
+.stepper[data-state="dots"].stepper[data-orientation="horizontal"] .stepper-track {
+  top: calc(var(--ctp-node-size) / 2 - 1px);
+  height: 2px;
+}
+
+.stepper[data-state="dots"].stepper[data-orientation="vertical"] .stepper-track {
+  left: calc(var(--ctp-node-size) / 2 - 1px);
+  width: 2px;
+  top: calc(var(--ctp-node-size) / 2);
+  bottom: calc(-1 * var(--ctp-stepper-vertical-gap, 2.6rem));
+}
+
+/* --- 4. Node Indicators --- */
+.stepper-node {
+  width: var(--ctp-node-size);
+  height: var(--ctp-node-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ctp-font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
+  background-color: var(--ctp-surface0);
+  border: 2px solid var(--ctp-surface1);
+  color: var(--ctp-subtext0);
+  transition: var(--ctp-transition);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Inactive/upcoming status */
+.stepper-step[data-state="upcoming"] .stepper-node {
+  background-color: var(--ctp-mantle);
+  border-color: var(--ctp-surface0);
+  color: var(--ctp-overlay1);
+}
+
+/* Active Status style */
+.stepper-step[data-state="active"] .stepper-node {
+  background-color: var(--ctp-btn-color-token);
+  border-color: var(--ctp-btn-color-token);
+  color: var(--ctp-base);
+  transform: scale(1.08);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ctp-btn-color-token) 45%, transparent);
+}
+
+/* Completed Status style */
+.stepper-step[data-state="completed"] .stepper-node {
+  background-color: var(--ctp-green);
+  border-color: var(--ctp-green);
+  color: var(--ctp-base);
+}
+
+.stepper-step[data-state="completed"] .stepper-node svg {
+  width: 1.1em;
+  height: 1.1em;
+  fill: currentColor;
+}
+
+/* Dot Variant specifics */
+.stepper[data-state="dots"] .stepper-node {
+  border: none;
+}
+.stepper[data-state="dots"] .stepper-step[data-state="upcoming"] .stepper-node {
+  background-color: var(--ctp-surface1);
+}
+.stepper[data-state="dots"] .stepper-step[data-state="active"] .stepper-node {
+  background-color: var(--ctp-btn-color-token);
+  transform: scale(1.3);
+}
+.stepper[data-state="dots"] .stepper-step[data-state="completed"] .stepper-node {
+  background-color: var(--ctp-green);
+}
+
+/* --- 5. Labels & Descriptions --- */
+.stepper-title {
+  font-family: var(--ctp-font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ctp-subtext1);
+  transition: var(--ctp-transition);
+  margin: 0;
+}
+
+.stepper-step[data-state="active"] .stepper-title {
+  color: var(--ctp-btn-color-token);
+}
+
+.stepper-step[data-state="completed"] .stepper-title {
+  color: var(--ctp-text);
+}
+
+.stepper-description {
+  font-family: var(--ctp-font-family);
+  font-size: 0.78rem;
+  color: var(--ctp-subtext0);
+  margin: 3px 0 0 0;
+  transition: var(--ctp-transition);
+}
+
+/* --- 6. Content Panels Slide Animations --- */
+.stepper-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.stepper-panel {
+  display: none;
+  width: 100%;
+}
+
+.stepper-panel[data-state="active"] {
+  display: block;
+}
+
+/* Slide in from right (next step) */
+.stepper-panel[data-state="slide-in-right"] {
+  display: block;
+  animation: stepper-slide-right 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Slide in from left (previous step) */
+.stepper-panel[data-state="slide-in-left"] {
+  display: block;
+  animation: stepper-slide-left 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes stepper-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes stepper-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,196 @@
+/* ==========================================================================
+   foundation-demo.css — CUBE CSS Block Examples
+   Demonstrates how components consume the 4 global configuration axes.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DEMO CARD — Block consuming all foundation variables
+   ========================================================================== */
+
+.demo-card {
+  /* theme (colors) */
+  background-color: var(--ctp-color-surface);
+  border: 1px solid var(--ctp-color-border);
+  color: var(--ctp-color-text);
+
+  /* shape */
+  border-radius: var(--ctp-radius-base);
+
+  /* density */
+  padding: var(--ctp-space-md);
+  gap: var(--ctp-space-sm);
+
+  /* typography */
+  font-family: var(--ctp-font-body);
+
+  /* composition */
+  display: flex;
+  flex-direction: column;
+
+  /* squircle — active when global [data-shape="squircle"] */
+  clip-path: var(--ctp-clip-squircle);
+
+  transition: all 0.2s ease;
+}
+
+.demo-card-title {
+  font-family: var(--ctp-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.demo-card-body {
+  font-family: var(--ctp-font-body);
+  color: var(--ctp-color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.demo-card-code {
+  font-family: var(--ctp-font-mono);
+  font-size: 0.8rem;
+  background-color: var(--ctp-color-surface-raised);
+  border: 1px solid var(--ctp-color-border-subtle);
+  border-radius: var(--ctp-radius-sm);
+  padding: var(--ctp-space-xs) var(--ctp-space-sm);
+  margin: 0;
+}
+
+/* ==========================================================================
+   2. DEMO BUTTON — Block crossing all 4 axes
+   ========================================================================== */
+
+.demo-btn {
+  /* shape */
+  border-radius: var(--ctp-radius-pill);
+
+  /* density */
+  padding: var(--ctp-space-sm) var(--ctp-space-lg);
+  gap: var(--ctp-space-xs);
+
+  /* typography */
+  font-family: var(--ctp-font-heading);
+
+  /* theme */
+  background-color: var(--ctp-mauve);
+  color: var(--ctp-base);
+
+  /* composition */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+
+  /* squircle — active when global [data-shape="squircle"] */
+  clip-path: var(--ctp-clip-squircle);
+
+  transition: all 0.2s ease;
+}
+
+.demo-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   3. DEMO BADGE — Block consuming shape + density + theme
+   ========================================================================== */
+
+.demo-badge {
+  /* shape */
+  border-radius: var(--ctp-radius-sm);
+
+  /* density */
+  padding: var(--ctp-space-xs) var(--ctp-space-sm);
+
+  /* typography */
+  font-family: var(--ctp-font-body);
+
+  /* theme */
+  background-color: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+  color: var(--ctp-mauve);
+
+  /* composition */
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1;
+
+  /* squircle */
+  mask-image: var(--ctp-clip-squircle);
+  -webkit-mask-image: var(--ctp-clip-squircle);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* ==========================================================================
+   4. DEMO AVATAR — Block consuming shape + theme
+   ========================================================================== */
+
+.demo-avatar {
+  /* shape — full-round by default, respects squircle */
+  border-radius: var(--ctp-radius-full);
+
+  /* theme */
+  background-color: var(--ctp-color-surface-raised);
+  color: var(--ctp-color-text);
+
+  /* typography */
+  font-family: var(--ctp-font-body);
+
+  /* composition */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  font-weight: 600;
+  overflow: hidden;
+
+  /* squircle */
+  mask-image: var(--ctp-clip-squircle);
+  -webkit-mask-image: var(--ctp-clip-squircle);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* ==========================================================================
+   5. DENSITY CONFIGURATOR BAR — Visual debug reference
+   ========================================================================== */
+
+.demo-density-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ctp-space-sm);
+  padding: var(--ctp-space-sm) var(--ctp-space-md);
+  background-color: var(--ctp-color-surface-raised);
+  border: 1px solid var(--ctp-color-border);
+  border-radius: var(--ctp-radius-base);
+  font-family: var(--ctp-font-mono);
+  font-size: 0.75rem;
+  color: var(--ctp-color-text-muted);
+  margin-bottom: var(--ctp-space-md);
+}
+
+.demo-density-bar::before {
+  content: 'density: ' attr(data-density-value) ' — ';
+  color: var(--ctp-color-text);
+  font-weight: 600;
+}
+
+.demo-density-indicator {
+  display: inline-block;
+  min-width: var(--ctp-space-sm);
+  height: var(--ctp-space-sm);
+  background-color: var(--ctp-mauve);
+  border-radius: var(--ctp-radius-sm);
+  opacity: 0.5;
+}

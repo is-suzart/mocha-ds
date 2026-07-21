@@ -1,0 +1,22 @@
+{
+  "name": "@mocha-ds/css",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.css",
+  "style": "src/index.css",
+  "bin": {
+    "mocha-ds-css": "./bin/cli.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "build:legacy": "postcss src/index.css -o dist/catppuccin.css --no-map -u autoprefixer cssnano",
+    "build:neutral": "node -e \"require('./scripts/postcss-prefixer')({prefix:''}).process(require('fs').readFileSync('src/index.css','utf8'),{from:'src/index.css',to:'dist/neutral.css'}).then(r=>require('fs').writeFileSync('dist/neutral.css',r.css))\""
+  },
+  "devDependencies": {
+    "@catppuccin/palette": "^1.8.0",
+    "autoprefixer": "^10.5.2",
+    "cssnano": "^8.0.2",
+    "postcss": "^8.5.16",
+    "postcss-import": "^16.1.1"
+  }
+}

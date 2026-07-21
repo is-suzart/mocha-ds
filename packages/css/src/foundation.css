@@ -1,0 +1,254 @@
+/* ==========================================================================
+   foundation.css — CUBE CSS Global Configuration Layer
+   Philosophy: Composition rules applied via data-attributes on <html>.
+   Tokens propagate via CSS custom properties throughout the cascade.
+
+   Attributes:
+     [data-font-theme]  → routes --ctp-font-heading / --ctp-font-body / --ctp-font-mono
+     [data-shape]       → sets --ctp-radius-* scale + --ctp-clip-squircle
+     [data-density]     → scales --ctp-space-* with a density factor
+     [data-theme]       → delegates to tokens.css Catppuccin flavors
+   ========================================================================== */
+
+/* ==========================================================================
+   1. FONT SYSTEM — [data-font-theme]
+   Semantic routing of typefaces across the entire UI.
+   Components call var(--ctp-font-heading), var(--ctp-font-body), var(--ctp-font-mono).
+   ========================================================================== */
+
+:root {
+  /* --- Default (display theme) --- */
+  --ctp-font-heading: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ctp-font-body:    'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ctp-font-mono:    'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Bridge: components use --ctp-font-family (from tokens.css), route it through our font theme */
+  --ctp-font-family: var(--ctp-font-body);
+}
+
+/* --- UI Theme: Outfit everywhere for a clean, utilitarian feel --- */
+:root[data-font-theme="ui"] {
+  --ctp-font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ctp-font-body:    'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ctp-font-mono:    'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ctp-font-family:  'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- Mono Theme: Azeret Mono across the board (developer tooling aesthetic) --- */
+:root[data-font-theme="mono"] {
+  --ctp-font-heading: 'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ctp-font-body:    'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ctp-font-mono:    'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ctp-font-family:  'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* --- Serif Theme: editorial / long-form reading --- */
+:root[data-font-theme="serif"] {
+  --ctp-font-heading: 'Syne', Georgia, 'Times New Roman', serif;
+  --ctp-font-body:    Georgia, 'Times New Roman', Cambria, serif;
+  --ctp-font-mono:    'Azeret Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+  --ctp-font-family:  Georgia, 'Times New Roman', Cambria, serif;
+}
+
+/* ==========================================================================
+   2. SHAPE SYSTEM — [data-shape]
+   Controls the global corner radius scale and squircle clipping.
+   Per-element data-shape overrides (e.g. .btn[data-shape="pill"])
+   still work via higher specificity.
+
+   Squircle uses clip-path: shape() — a CSS native superellipse.
+   The --ctp-squircle-r parameter controls corner roundness:
+     0%  → square
+     25% → modern rounded
+     40% → Apple-style squircle (default)
+     50% → circle / ellipse
+   ========================================================================== */
+
+:root {
+  /* radius scale defaults (rounded) */
+  --ctp-radius-sm:   4px;
+  --ctp-radius-base: 8px;
+  --ctp-radius-md:   12px;
+  --ctp-radius-lg:   16px;
+  --ctp-radius-pill: 9999px;
+  --ctp-radius-full: 50%;
+
+  /* squircle clip-path — none by default, overridden by [data-shape="squircle"] */
+  --ctp-clip-squircle: none;
+
+  /* Squircle shape def — always available for per-element data-shape="squircle" usage */
+  --ctp-squircle-r: 40%;
+  --_r: clamp(0%, var(--ctp-squircle-r) / 2, 25%);
+  --_v: calc(var(--_r) * (1 - sqrt(2) / 4));
+  --_p: calc(var(--_v) - var(--_r) / 2);
+  --ctp-shape-squircle: shape(from var(--_v) var(--_p), curve to 50% 0 with var(--_r) 0, curve to calc(100% - var(--_v)) var(--_p) with calc(100% - var(--_r)) 0, curve to calc(100% - var(--_p)) var(--_v) with calc(100% - 2*var(--_p)) calc(2*var(--_p)), curve to 100% 50% with 100% var(--_r), curve to calc(100% - var(--_p)) calc(100% - var(--_v)) with 100% calc(100% - var(--_r)), curve to calc(100% - var(--_v)) calc(100% - var(--_p)) with calc(100% - 2*var(--_p)) calc(100% - 2*var(--_p)), curve to 50% 100% with calc(100% - var(--_r)) 100%, curve to var(--_v) calc(100% - var(--_p)) with var(--_r) 100%, curve to var(--_p) calc(100% - var(--_v)) with calc(2*var(--_p)) calc(100% - 2*var(--_p)), curve to 0 50% with 0 calc(100% - var(--_r)), curve to var(--_p) var(--_v) with 0 var(--_r), curve to var(--_v) var(--_p) with calc(2*var(--_p)) calc(2*var(--_p)));
+}
+
+/* --- Sharp: crisp, geometric, no rounding --- */
+:root[data-shape="sharp"] {
+  --ctp-radius-sm:   0;
+  --ctp-radius-base: 0;
+  --ctp-radius-md:   0;
+  --ctp-radius-lg:   0;
+  --ctp-radius-pill: 0;
+  --ctp-radius-full: 0;
+  --ctp-clip-squircle: none;
+}
+
+/* --- Rounded: the default, friendly radius scale --- */
+:root[data-shape="rounded"] {
+  --ctp-radius-sm:   4px;
+  --ctp-radius-base: 8px;
+  --ctp-radius-md:   12px;
+  --ctp-radius-lg:   16px;
+  --ctp-radius-pill: 9999px;
+  --ctp-radius-full: 50%;
+  --ctp-clip-squircle: none;
+}
+
+/* --- Squircle: Apple-like superellipse via clip-path: shape() --- */
+:root[data-shape="squircle"] {
+  --ctp-radius-sm:   0;
+  --ctp-radius-base: 0;
+  --ctp-radius-md:   0;
+  --ctp-radius-lg:   0;
+  --ctp-radius-pill: 0;
+  --ctp-radius-full: 0;
+  --ctp-clip-squircle: var(--ctp-shape-squircle);
+}
+
+/* Apply squircle clip to known component classes under global squircle mode */
+:root[data-shape="squircle"] .squircle-clip,
+:root[data-shape="squircle"] .btn,
+:root[data-shape="squircle"] .card,
+:root[data-shape="squircle"] .badge,
+:root[data-shape="squircle"] .avatar,
+:root[data-shape="squircle"] .avatar-group-more,
+:root[data-shape="squircle"] .demo-card,
+:root[data-shape="squircle"] .demo-btn,
+:root[data-shape="squircle"] .demo-badge,
+:root[data-shape="squircle"] .demo-avatar {
+  clip-path: var(--ctp-clip-squircle);
+}
+
+/* Reset clip for non-squircle global shapes */
+:root[data-shape="sharp"] .squircle-clip,
+:root[data-shape="sharp"] .btn,
+:root[data-shape="sharp"] .card,
+:root[data-shape="sharp"] .badge,
+:root[data-shape="sharp"] .avatar,
+:root[data-shape="sharp"] .avatar-group-more,
+:root[data-shape="sharp"] .demo-card,
+:root[data-shape="sharp"] .demo-btn,
+:root[data-shape="sharp"] .demo-badge,
+:root[data-shape="sharp"] .demo-avatar,
+:root[data-shape="rounded"] .squircle-clip,
+:root[data-shape="rounded"] .btn,
+:root[data-shape="rounded"] .card,
+:root[data-shape="rounded"] .badge,
+:root[data-shape="rounded"] .avatar,
+:root[data-shape="rounded"] .avatar-group-more,
+:root[data-shape="rounded"] .demo-card,
+:root[data-shape="rounded"] .demo-btn,
+:root[data-shape="rounded"] .demo-badge,
+:root[data-shape="rounded"] .demo-avatar {
+  clip-path: none;
+}
+
+/* Utility class: opt-in elements get squircle clip */
+.squircle-clip {
+  clip-path: var(--ctp-clip-squircle);
+}
+
+/* ==========================================================================
+   3. DENSITY SYSTEM — [data-density]
+   Spacing scale driven by a single density factor.
+   Components reference --ctp-space-* for padding, gap, margin.
+   ========================================================================== */
+
+:root {
+  --ctp-density: 1;
+  --ctp-space-xs:  calc(4px  * var(--ctp-density));
+  --ctp-space-sm:  calc(8px  * var(--ctp-density));
+  --ctp-space-md:  calc(16px * var(--ctp-density));
+  --ctp-space-lg:  calc(24px * var(--ctp-density));
+  --ctp-space-xl:  calc(32px * var(--ctp-density));
+  --ctp-space-2xl: calc(48px * var(--ctp-density));
+  --ctp-space-3xl: calc(64px * var(--ctp-density));
+}
+
+/* --- Compact: tight layouts, data-dense dashboards --- */
+:root[data-density="compact"] {
+  --ctp-density: 0.75;
+}
+
+/* --- Comfortable: default, balanced white space --- */
+:root[data-density="comfortable"] {
+  --ctp-density: 1;
+}
+
+/* --- Spacious: airy, presentation-focused, marketing pages --- */
+:root[data-density="spacious"] {
+  --ctp-density: 1.5;
+}
+
+/* ==========================================================================
+   4. THEME BASE — [data-theme]
+   Semantic aliases that bridge concrete Catppuccin tokens (defined in tokens.css)
+   to generic component-level variables.
+   The actual color mapping lives in tokens.css — this section defines stable
+   semantic slots that components reference regardless of the active flavor.
+   ========================================================================== */
+
+:root {
+  --ctp-color-bg:             var(--ctp-base);
+  --ctp-color-surface:        var(--ctp-surface0);
+  --ctp-color-surface-raised: var(--ctp-surface1);
+  --ctp-color-overlay:        var(--ctp-overlay0);
+  --ctp-color-text:           var(--ctp-text);
+  --ctp-color-text-muted:     var(--ctp-subtext0);
+  --ctp-color-text-subtle:    var(--ctp-overlay1);
+  --ctp-color-border:         color-mix(in srgb, var(--ctp-text) 12%, transparent);
+  --ctp-color-border-subtle:  color-mix(in srgb, var(--ctp-text) 6%, transparent);
+}
+
+/*
+   Theme flavors (latte, frappe, macchiato, mocha) are defined in tokens.css.
+   The semantic aliases above will automatically pick up the correct values
+   when [data-theme] is applied to the root element.
+*/
+
+/* ==========================================================================
+   5. GLOBAL RESETS (Composition)
+   Minimal, non-intrusive normalization for the CUBE CSS stack.
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--ctp-font-body);
+  color: var(--ctp-color-text);
+  background-color: var(--ctp-color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Ensure headings respect the font-heading token */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ctp-font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Code blocks use the mono token */
+code, pre, kbd, samp {
+  font-family: var(--ctp-font-mono);
+}

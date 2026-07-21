@@ -1,0 +1,207 @@
+/* ==========================================================================
+   animation.css — Catppuccin Animation & Transition Utilities
+   All classes follow BEM pattern: .anim--{name}
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. KEYFRAMES
+   ========================================================================== */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-left {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-right {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes blur-in {
+  from { opacity: 0; filter: blur(8px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes bounce-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  50%  { transform: scale(1.1); }
+  70%  { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+
+/* ==========================================================================
+   2. ANIMATION CLASSES
+   Usage: <div class="anim-fade-in">...</div>
+   ========================================================================== */
+
+.anim-fade-in {
+  animation: fade-in var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-fade-up {
+  animation: fade-up var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-fade-down {
+  animation: fade-down var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-fade-left {
+  animation: fade-left var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-fade-right {
+  animation: fade-right var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-scale-in {
+  animation: scale-in var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-slide-up {
+  animation: slide-up var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-slide-down {
+  animation: slide-down var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-blur-in {
+  animation: blur-in var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-bounce-in {
+  animation: bounce-in var(--ctp-anim-duration, 300ms) var(--ctp-anim-easing, ease-out) var(--ctp-anim-delay, 0ms) both;
+}
+
+.anim-spin {
+  animation: spin 1s linear infinite;
+}
+
+.anim-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+
+/* ==========================================================================
+   3. DURATION VARIANTS
+   Override --ctp-anim-duration via class
+   ========================================================================== */
+
+.anim-duration-fast    { --ctp-anim-duration: 150ms; }
+.anim-duration-normal  { --ctp-anim-duration: 300ms; }
+.anim-duration-slow    { --ctp-anim-duration: 500ms; }
+.anim-duration-slower  { --ctp-anim-duration: 700ms; }
+.anim-duration-slowest { --ctp-anim-duration: 1000ms; }
+
+
+/* ==========================================================================
+   4. EASING VARIANTS
+   Override --ctp-anim-easing via class
+   ========================================================================== */
+
+.anim-ease-out     { --ctp-anim-easing: cubic-bezier(0, 0, 0.2, 1); }
+.anim-ease-in-out  { --ctp-anim-easing: cubic-bezier(0.4, 0, 0.2, 1); }
+.anim-ease-spring  { --ctp-anim-easing: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+
+/* ==========================================================================
+   5. DELAY VARIANTS
+   Override --ctp-anim-delay via class
+   ========================================================================== */
+
+.anim-delay-0    { --ctp-anim-delay: 0ms; }
+.anim-delay-100  { --ctp-anim-delay: 100ms; }
+.anim-delay-200  { --ctp-anim-delay: 200ms; }
+.anim-delay-300  { --ctp-anim-delay: 300ms; }
+.anim-delay-500  { --ctp-anim-delay: 500ms; }
+.anim-delay-700  { --ctp-anim-delay: 700ms; }
+.anim-delay-1000 { --ctp-anim-delay: 1000ms; }
+
+
+/* ==========================================================================
+   6. SCROLL-TRIGGERED ANIMATION
+   Requires animation-timeline support (Chrome 115+).
+   The element needs both an animation class AND .anim-on-scroll.
+   In supported browsers: plays on entry, pauses when out of view.
+   In unsupported browsers: plays immediately on load (graceful fallback).
+   Usage: <div class="anim-fade-up anim-on-scroll">...</div>
+   ========================================================================== */
+
+@supports (animation-timeline: view()) {
+  .anim-on-scroll {
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
+
+/* ==========================================================================
+   7. STAGGER GROUP
+   Apply stagger delay to children automatically.
+   Usage: <div class="anim-stagger" style="--ctp-anim-stagger-count: 4">
+            <div class="anim-fade-up anim-on-scroll">1</div>
+            <div class="anim-fade-up anim-on-scroll">2</div>
+          </div>
+   ========================================================================== */
+
+.anim-stagger > .anim-fade-up,
+.anim-stagger > .anim-fade-down,
+.anim-stagger > .anim-fade-left,
+.anim-stagger > .anim-fade-right,
+.anim-stagger > .anim-scale-in,
+.anim-stagger > .anim-blur-in {
+  --ctp-anim-delay: calc(var(--ctp-anim-stagger-index, 0) * var(--ctp-anim-stagger-delay, 80ms));
+}
+
+.anim-stagger > *:nth-child(1)  { --ctp-anim-stagger-index: 0; }
+.anim-stagger > *:nth-child(2)  { --ctp-anim-stagger-index: 1; }
+.anim-stagger > *:nth-child(3)  { --ctp-anim-stagger-index: 2; }
+.anim-stagger > *:nth-child(4)  { --ctp-anim-stagger-index: 3; }
+.anim-stagger > *:nth-child(5)  { --ctp-anim-stagger-index: 4; }
+.anim-stagger > *:nth-child(6)  { --ctp-anim-stagger-index: 5; }
+.anim-stagger > *:nth-child(7)  { --ctp-anim-stagger-index: 6; }
+.anim-stagger > *:nth-child(8)  { --ctp-anim-stagger-index: 7; }
+.anim-stagger > *:nth-child(9)  { --ctp-anim-stagger-index: 8; }
+.anim-stagger > *:nth-child(10) { --ctp-anim-stagger-index: 9; }

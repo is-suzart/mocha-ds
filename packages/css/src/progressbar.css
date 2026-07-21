@@ -1,0 +1,188 @@
+/* Progress Bar & Custom Scrollbar Stylesheet */
+
+/* --- 1. Progress Bar Component --- */
+.progressbar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--ctp-font-family);
+  user-select: none;
+}
+
+.progressbar-label-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressbar-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ctp-subtext1);
+}
+
+.progressbar-value-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--ctp-subtext0);
+}
+
+.progressbar-track {
+  width: 100%;
+  background-color: var(--ctp-surface0);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--ctp-shadow-inner);
+}
+
+.progressbar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: var(--ctp-mauve);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Height Size modifiers */
+.progressbar[data-size="sm"] .progressbar-track {
+  height: 6px;
+}
+
+.progressbar[data-size="md"] .progressbar-track {
+  height: 10px;
+}
+
+.progressbar[data-size="lg"] .progressbar-track {
+  height: 16px;
+}
+
+/* Value inside text style */
+.progressbar-value-inside {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ctp-base);
+  font-family: var(--ctp-font-family);
+  padding: 0 6px;
+  user-select: none;
+}
+
+/* Striped variation */
+.progressbar[data-state="striped"] .progressbar-fill {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+}
+
+/* Animated stripes variation */
+.progressbar[data-state="animated"] .progressbar-fill {
+  animation: progressbar-stripes-anim 1s linear infinite;
+}
+
+@keyframes progressbar-stripes-anim {
+  from {
+    background-position: 1rem 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* Indeterminate state animation */
+.progressbar[data-state="indeterminate"] .progressbar-fill {
+  width: 30% !important;
+  position: absolute;
+  left: -30%;
+  top: 0;
+  bottom: 0;
+  animation: progressbar-indeterminate-anim 1.5s infinite ease-in-out;
+}
+
+@keyframes progressbar-indeterminate-anim {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Progress Bar Color Modifiers */
+.progressbar[data-color="rosewater"] .progressbar-fill { background-color: var(--ctp-rosewater); }
+.progressbar[data-color="flamingo"] .progressbar-fill { background-color: var(--ctp-flamingo); }
+.progressbar[data-color="pink"] .progressbar-fill { background-color: var(--ctp-pink); }
+.progressbar[data-color="mauve"] .progressbar-fill { background-color: var(--ctp-mauve); }
+.progressbar[data-color="red"] .progressbar-fill { background-color: var(--ctp-red); }
+.progressbar[data-color="maroon"] .progressbar-fill { background-color: var(--ctp-maroon); }
+.progressbar[data-color="peach"] .progressbar-fill { background-color: var(--ctp-peach); }
+.progressbar[data-color="yellow"] .progressbar-fill { background-color: var(--ctp-yellow); }
+.progressbar[data-color="green"] .progressbar-fill { background-color: var(--ctp-green); }
+.progressbar[data-color="teal"] .progressbar-fill { background-color: var(--ctp-teal); }
+.progressbar[data-color="sky"] .progressbar-fill { background-color: var(--ctp-sky); }
+.progressbar[data-color="sapphire"] .progressbar-fill { background-color: var(--ctp-sapphire); }
+.progressbar[data-color="blue"] .progressbar-fill { background-color: var(--ctp-blue); }
+.progressbar[data-color="lavender"] .progressbar-fill { background-color: var(--ctp-lavender); }
+
+/* Semantic Color Mappings */
+.progressbar[data-color="primary"] .progressbar-fill   { background-color: var(--ctp-primary); }
+.progressbar[data-color="secondary"] .progressbar-fill { background-color: var(--ctp-secondary); }
+.progressbar[data-color="success"] .progressbar-fill   { background-color: var(--ctp-success); }
+.progressbar[data-color="warning"] .progressbar-fill   { background-color: var(--ctp-warning); }
+.progressbar[data-color="danger"] .progressbar-fill    { background-color: var(--ctp-danger); }
+.progressbar[data-color="info"] .progressbar-fill      { background-color: var(--ctp-info); }
+
+
+/* --- 2. Custom Scrollbar Styling Utility --- */
+
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ctp-surface1) var(--ctp-mantle);
+}
+
+/* WebKit Scrollbar adjustments */
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--ctp-mantle);
+  border-radius: 9999px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--ctp-surface1);
+  border-radius: 9999px;
+  border: 2px solid var(--ctp-mantle);
+  transition: background-color 0.2s ease;
+}
+
+/* Hover Accent Colors for scroll thumbs */
+.scrollbar[data-color="rosewater"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-rosewater); }
+.scrollbar[data-color="flamingo"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-flamingo); }
+.scrollbar[data-color="pink"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-pink); }
+.scrollbar[data-color="mauve"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-mauve); }
+.scrollbar[data-color="red"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-red); }
+.scrollbar[data-color="maroon"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-maroon); }
+.scrollbar[data-color="peach"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-peach); }
+.scrollbar[data-color="yellow"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-yellow); }
+.scrollbar[data-color="green"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-green); }
+.scrollbar[data-color="teal"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-teal); }
+.scrollbar[data-color="sky"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-sky); }
+.scrollbar[data-color="sapphire"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-sapphire); }
+.scrollbar[data-color="blue"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-blue); }
+.scrollbar[data-color="lavender"]::-webkit-scrollbar-thumb:hover { background-color: var(--ctp-lavender); }

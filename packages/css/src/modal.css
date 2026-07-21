@@ -1,0 +1,125 @@
+/* Core Modal Stylesheet */
+
+.modal {
+  background-color: var(--ctp-base);
+  border: 1.5px solid color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  border-radius: 16px;
+  box-shadow: var(--ctp-shadow-lg), 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  color: var(--ctp-text);
+  overflow: hidden;
+  position: relative;
+  font-family: var(--ctp-font-family);
+  width: 90%;
+  
+  /* Slide down and scale animation */
+  transform: scale(0.94) translateY(12px);
+  opacity: 0;
+  transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing),
+              opacity var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+/* Activate transition when parent overlay is open */
+.overlay[data-state="open"] .modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Modal Sizes */
+.modal[data-size="sm"] {
+  max-width: 420px;
+}
+
+.modal[data-size="md"] {
+  max-width: 620px;
+}
+
+.modal[data-size="lg"] {
+  max-width: 840px;
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  background-color: var(--ctp-mantle);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ctp-rosewater);
+  background: linear-gradient(135deg, var(--ctp-rosewater), var(--ctp-mauve));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--ctp-transition);
+  outline: none;
+}
+
+.modal-close-btn:hover {
+  color: var(--ctp-red);
+  background-color: color-mix(in srgb, var(--ctp-red) 12%, transparent);
+}
+
+.modal-close-btn:focus-visible {
+  outline: 2px solid var(--ctp-red);
+  outline-offset: -1px;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ctp-text);
+  background-color: var(--ctp-base);
+}
+
+/* Customize scrollbar in modal body for premium feel */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--ctp-base);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--ctp-surface0);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--ctp-surface1);
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  background-color: var(--ctp-mantle);
+}

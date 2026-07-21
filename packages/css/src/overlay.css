@@ -1,0 +1,29 @@
+/* Core Overlay Stylesheet */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: color-mix(in srgb, var(--ctp-crust) 65%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* overridden dynamically by components but serves as base */
+  
+  /* Accessibility & Transitions */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ctp-transition-duration) var(--ctp-transition-timing),
+              visibility var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.overlay[data-state="open"] {
+  opacity: 1;
+  visibility: visible;
+}

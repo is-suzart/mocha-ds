@@ -1,0 +1,236 @@
+/* Core Accordion Stylesheet */
+
+.accordion {
+  --ctp-accordion-accent-color: var(--ctp-mauve);
+  --ctp-accordion-border-color: color-mix(in srgb, var(--ctp-text) 10%, transparent);
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: var(--ctp-font-family);
+  box-sizing: border-box;
+}
+
+/* ── Layout Variants ── */
+
+/* Default (merged items in a card-like container) */
+.accordion[data-state="default"] {
+  border: 1px solid var(--ctp-accordion-border-color);
+  border-radius: var(--ctp-radius-rounded);
+  background-color: var(--ctp-surface0);
+  overflow: hidden;
+}
+
+.accordion[data-state="default"] .accordion-item {
+  border-bottom: 1px solid var(--ctp-accordion-border-color);
+}
+
+.accordion[data-state="default"] .accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* Split (separated items with gaps) */
+.accordion[data-state="split"] {
+  gap: 12px;
+}
+
+.accordion[data-state="split"] .accordion-item {
+  border: 1px solid var(--ctp-accordion-border-color);
+  border-radius: var(--ctp-radius-rounded);
+  background-color: var(--ctp-surface0);
+  overflow: hidden;
+  transition: border-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              box-shadow var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.accordion[data-state="split"] .accordion-item[data-state="open"] {
+  border-color: var(--ctp-accordion-accent-color);
+  box-shadow: var(--ctp-shadow-md);
+}
+
+/* ── Color Modes ── */
+
+/* Colored: solid accent background on all items (closed & open) */
+.accordion[data-state="colored"] .accordion-item {
+  background-color: var(--ctp-accordion-accent-color);
+  border-color: color-mix(in srgb, var(--ctp-base) 15%, transparent);
+  transition: background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              border-color var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.accordion[data-state="colored"] .accordion-header {
+  color: var(--ctp-base);
+}
+
+.accordion[data-state="colored"] .accordion-chevron {
+  color: var(--ctp-base);
+}
+
+.accordion[data-state="colored"] .accordion-header:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-base) 8%, transparent);
+}
+
+.accordion[data-state="colored"] .accordion-item[data-state="open"] > .accordion-header {
+  color: var(--ctp-base);
+}
+
+.accordion[data-state="colored"] .accordion-item[data-state="open"] > .accordion-header .accordion-chevron {
+  color: var(--ctp-base);
+}
+
+.accordion[data-state="colored"] .accordion-item[data-state="open"] > .accordion-collapse .accordion-body {
+  color: color-mix(in srgb, var(--ctp-base) 85%, transparent);
+}
+
+.accordion[data-state="colored"] .accordion-item[data-state="open"] {
+  box-shadow: var(--ctp-shadow-md);
+}
+
+/* Tonal: tinted accent background on all items (closed & open) */
+.accordion[data-variant="tonal"] .accordion-item {
+  background-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 8%, var(--ctp-surface0));
+  border-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 15%, transparent);
+  transition: background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              border-color var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.accordion[data-variant="tonal"] .accordion-header {
+  color: var(--ctp-accordion-accent-color);
+}
+
+.accordion[data-variant="tonal"] .accordion-chevron {
+  color: var(--ctp-accordion-accent-color);
+}
+
+.accordion[data-variant="tonal"] .accordion-header:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 12%, var(--ctp-surface0));
+}
+
+/* Tonal: tinted accent background on open items (intensified to 14%) */
+.accordion[data-variant="tonal"] .accordion-item[data-state="open"] {
+  background-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 14%, var(--ctp-surface0));
+  border-color: var(--ctp-accordion-accent-color);
+  box-shadow: var(--ctp-shadow-md);
+}
+
+.accordion[data-variant="tonal"] .accordion-item[data-state="open"] > .accordion-header:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 18%, var(--ctp-surface0));
+}
+
+/* Themed default container borders and backgrounds */
+.accordion[data-state="default"].accordion[data-state="colored"] {
+  border-color: var(--ctp-accordion-accent-color);
+}
+
+.accordion[data-state="default"].accordion[data-variant="tonal"] {
+  border-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 25%, var(--ctp-accordion-border-color));
+  background-color: color-mix(in srgb, var(--ctp-accordion-accent-color) 8%, var(--ctp-surface0));
+}
+
+/* ── Accent Color Mappings ── */
+.accordion[data-color="rosewater"] { --ctp-accordion-accent-color: var(--ctp-rosewater); }
+.accordion[data-color="flamingo"]  { --ctp-accordion-accent-color: var(--ctp-flamingo); }
+.accordion[data-color="pink"]      { --ctp-accordion-accent-color: var(--ctp-pink); }
+.accordion[data-color="mauve"]     { --ctp-accordion-accent-color: var(--ctp-mauve); }
+.accordion[data-color="red"]       { --ctp-accordion-accent-color: var(--ctp-red); }
+.accordion[data-color="maroon"]    { --ctp-accordion-accent-color: var(--ctp-maroon); }
+.accordion[data-color="peach"]     { --ctp-accordion-accent-color: var(--ctp-peach); }
+.accordion[data-color="yellow"]    { --ctp-accordion-accent-color: var(--ctp-yellow); }
+.accordion[data-color="green"]     { --ctp-accordion-accent-color: var(--ctp-green); }
+.accordion[data-color="teal"]      { --ctp-accordion-accent-color: var(--ctp-teal); }
+.accordion[data-color="sky"]       { --ctp-accordion-accent-color: var(--ctp-sky); }
+.accordion[data-color="sapphire"]  { --ctp-accordion-accent-color: var(--ctp-sapphire); }
+.accordion[data-color="blue"]      { --ctp-accordion-accent-color: var(--ctp-blue); }
+.accordion[data-color="lavender"]  { --ctp-accordion-accent-color: var(--ctp-lavender); }
+
+/* ── Item ── */
+.accordion-item {
+  box-sizing: border-box;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--ctp-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ctp-text);
+  gap: 12px;
+  user-select: none;
+  transition: background-color var(--ctp-transition-duration) var(--ctp-transition-timing),
+              color var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.accordion-header:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ctp-text) 4%, transparent);
+}
+
+.accordion-header:focus-visible {
+  outline: 2px solid var(--ctp-accordion-accent-color);
+  outline-offset: -2px;
+}
+
+.accordion-header:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.accordion-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.accordion-item[data-state="open"] > .accordion-header {
+  color: var(--ctp-accordion-accent-color);
+}
+
+/* Chevron */
+.accordion-chevron {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--ctp-subtext0);
+  transition: transform var(--ctp-transition-duration) var(--ctp-transition-timing),
+              color var(--ctp-transition-duration) var(--ctp-transition-timing);
+  flex-shrink: 0;
+}
+
+.accordion-item[data-state="open"] > .accordion-header .accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--ctp-accordion-accent-color);
+}
+
+/* Collapse animation */
+.accordion-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--ctp-transition-duration) var(--ctp-transition-timing);
+}
+
+.accordion-item[data-state="open"] > .accordion-collapse {
+  grid-template-rows: 1fr;
+}
+
+.accordion-content {
+  overflow: hidden;
+}
+
+.accordion-body {
+  padding: 0 20px 20px 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ctp-subtext1);
+}

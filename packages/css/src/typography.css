@@ -1,0 +1,138 @@
+/* Typography Helper Stylesheet */
+
+/* --- Base Heading Helper --- */
+.title {
+  margin: 0 0 0.5em 0;
+  font-family: var(--ctp-font-family-display);
+  color: var(--ctp-text);
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+/* Heading Sizes Modifiers */
+.title-h1 {
+  font-size: 2.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.title-h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.title-h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.title-h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.title-h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.title-h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Base Text Helper --- */
+.text {
+  margin: 0 0 1em 0;
+  font-family: var(--ctp-font-family);
+  color: var(--ctp-subtext1);
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+/* Text Sizes Modifiers */
+.text-lead {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.text-body {
+  font-size: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+/* Text Weight Modifiers */
+.text-light { font-weight: 300; }
+.text-regular { font-weight: 400; }
+.text-medium { font-weight: 500; }
+.text-semibold { font-weight: 600; }
+.text-bold { font-weight: 700; }
+
+/* Text Color Modifiers */
+.text-rosewater { color: var(--ctp-rosewater); }
+.text-flamingo  { color: var(--ctp-flamingo); }
+.text-pink      { color: var(--ctp-pink); }
+.text-mauve     { color: var(--ctp-mauve); }
+.text-red       { color: var(--ctp-red); }
+.text-maroon    { color: var(--ctp-maroon); }
+.text-peach     { color: var(--ctp-peach); }
+.text-yellow    { color: var(--ctp-yellow); }
+.text-green     { color: var(--ctp-green); }
+.text-teal      { color: var(--ctp-teal); }
+.text-sky       { color: var(--ctp-sky); }
+.text-sapphire  { color: var(--ctp-sapphire); }
+.text-blue      { color: var(--ctp-blue); }
+.text-lavender  { color: var(--ctp-lavender); }
+.text-text      { color: var(--ctp-text); }
+.text-subtext1  { color: var(--ctp-subtext1); }
+.text-subtext0  { color: var(--ctp-subtext0); }
+.text-overlay2  { color: var(--ctp-overlay2); }
+
+/* --- Gradient Headings (CUBE CSS Exception/Utility) --- */
+[data-gradient] {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
+}
+
+[data-gradient="mauve-blue"] {
+  background-image: linear-gradient(135deg, var(--ctp-mauve), var(--ctp-blue));
+}
+
+[data-gradient="peach-red"] {
+  background-image: linear-gradient(135deg, var(--ctp-peach), var(--ctp-red));
+}
+
+[data-gradient="green-teal"] {
+  background-image: linear-gradient(135deg, var(--ctp-green), var(--ctp-teal));
+}
+
+[data-gradient="lavender-pink"] {
+  background-image: linear-gradient(135deg, var(--ctp-lavender), var(--ctp-pink));
+}
+
+[data-gradient="yellow-peach"] {
+  background-image: linear-gradient(135deg, var(--ctp-yellow), var(--ctp-peach));
+}
+
+[data-gradient="rosewater-flamingo"] {
+  background-image: linear-gradient(135deg, var(--ctp-rosewater), var(--ctp-flamingo));
+}
+
+[data-gradient="sky-blue"] {
+  background-image: linear-gradient(135deg, var(--ctp-sky), var(--ctp-blue));
+}
