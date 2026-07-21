@@ -12,6 +12,9 @@ ApplicationWindow {
     // Catppuccin Flavor: "mocha" | "macchiato" | "frappe" | "latte"
     property string flavor: Theme.flavor
 
+    // Dark native title bar — set to false for light themes (latte, vercel-light)
+    property bool darkTitleBar: true
+
     onFlavorChanged: {
         if (Theme.flavor !== flavor) {
             Theme.flavor = flavor;
@@ -39,7 +42,7 @@ ApplicationWindow {
 
     // Default window styling based on theme
     color: Theme.colors.background
-    
+
     font.family: Theme.typography.family
     font.pixelSize: Theme.typography.sizeMd
 }

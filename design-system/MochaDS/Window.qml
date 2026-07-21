@@ -102,23 +102,15 @@ Window {
                 color: root.borderColor
             }
 
-            // Window move
-            DragHandler {
-                id: moveHandler
-                target: null
+            // Window move — native system drag (zero lag)
+            MouseArea {
+                id: moveArea
+                anchors.fill: parent
                 enabled: root.showCaption && !root.__maximized
-
-                onActiveChanged: {
-                    if (active) {
-                        __sx = root.x
-                        __sy = root.y
-                    }
-                }
-
-                onTranslationChanged: {
-                    if (active && !root.__maximized) {
-                        root.x = __sx + translation.x
-                        root.y = __sy + translation.y
+                acceptedButtons: Qt.LeftButton
+                onPressed: {
+                    if (typeof root.startSystemMove === "function") {
+                        root.startSystemMove()
                     }
                 }
             }
