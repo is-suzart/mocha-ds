@@ -111,6 +111,7 @@ extern "C" {
 void* qt_app_create(int /*argc*/, char** /*argv*/) {
     qputenv("QT_QML_DEBUG", "1");
     qputenv("QML_DEBUGGER_PORT", "3768");
+    qputenv("QML_XHR_ALLOW_FILE_READ", "1");
     qInstallMessageHandler(mochaMessageHandler);
     fprintf(stderr, "[MOCHA DEBUG] Creating QGuiApplication...\n");
     static int dummy_argc = 1;

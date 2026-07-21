@@ -75,23 +75,11 @@ export class MochaDebugSession extends DebugSession {
 
     const programArgs = args.args || [];
 
-    const inheritedEnv: Record<string, string> = {};
-    for (const key of [
-      "PATH", "HOME", "USER", "SHELL", "LANG", "LC_ALL",
-      "DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE",
-      "QT_QPA_PLATFORM", "QT_QPA_PLATFORMTHEME",
-      "LD_LIBRARY_PATH", "LD_PRELOAD",
-      "DBUS_SESSION_BUS_ADDRESS", "XDG_DATA_DIRS",
-      "npm_config_cache", "npm_config_prefix",
-    ]) {
-      if (process.env[key] !== undefined) {
-        inheritedEnv[key] = process.env[key] as string;
-      }
-    }
     const spawnEnv = {
-      ...inheritedEnv,
+      ...process.env,
       MOCHA_DEVTOOLS: "1",
       MOCHA_DEVTOOLS_PORT: String(this._port),
+      MOCHA_ENV: "development",
     };
 
     this._process = spawn("npx", ["tsx", program, ...programArgs], {
@@ -132,6 +120,8 @@ export class MochaDebugSession extends DebugSession {
   private _connectInBackground(): void {
     let attempts = 0;
     const maxAttempts = 40; // 20s total
+    let portOffset = 0;
+    const maxPortOffset = 5;
     const tryConnect = () => {
       if (!this._process || attempts >= maxAttempts) {
         if (attempts >= maxAttempts) {
@@ -140,11 +130,12 @@ export class MochaDebugSession extends DebugSession {
         return;
       }
       attempts++;
-      this._fetchState()
+      const probePort = this._port + portOffset;
+      this._fetchState(probePort)
         .then(async () => {
-          this.sendEvent({ event: "output", body: { category: "console", output: "[Mocha] Inspector connected!\n" } } as any);
+          this._port = probePort;
+          this.sendEvent({ event: "output", body: { category: "console", output: `[Mocha] Inspector connected on port ${this._port}!\n` } } as any);
           await this._debuggerAction("connect");
-          // Sync pending breakpoints now that server is up (race condition fix)
           if (this._pendingBreakpoints && this._pendingBreakpoints.length > 0) {
             try {
               await this._httpPost("/debugger/setBreakpoints", { methods: this._pendingBreakpoints });
@@ -154,7 +145,10 @@ export class MochaDebugSession extends DebugSession {
           }
           this._startPausePolling();
         })
-        .catch(() => setTimeout(tryConnect, 500));
+        .catch(() => {
+          portOffset = (portOffset + 1) % (maxPortOffset + 1);
+          setTimeout(tryConnect, 500);
+        });
     };
     setTimeout(tryConnect, 500);
   }
@@ -504,10 +498,11 @@ export class MochaDebugSession extends DebugSession {
     return false;
   }
 
-  private _fetchState(): Promise<any> {
+  private _fetchState(port?: number): Promise<any> {
+    const targetPort = port ?? this._port;
     return new Promise((resolve, reject) => {
       const req = http.request(
-        { hostname: "localhost", port: this._port, path: "/state", method: "GET" },
+        { hostname: "localhost", port: targetPort, path: "/state", method: "GET" },
         (res) => {
           let data = "";
           res.on("data", (chunk) => (data += chunk));
