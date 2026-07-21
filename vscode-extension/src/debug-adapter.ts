@@ -85,9 +85,7 @@ export class MochaDebugSession extends DebugSession {
     this._process = spawn("npx", ["tsx", program, ...programArgs], {
       cwd,
       env: spawnEnv,
-      detached: true,
-      shell: true,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe"],
     });
 
     this._process.stdout?.on("data", (data: Buffer) => {
@@ -439,15 +437,15 @@ export class MochaDebugSession extends DebugSession {
     try { await this._httpGet("/debugger/shutdown"); } catch {}
     await sleep(300);
 
-    // 2. SIGTERM to the process group (detached: true)
+    // 2. SIGTERM
     if (!proc.killed && proc.pid) {
-      try { process.kill(-proc.pid, "SIGTERM"); } catch {}
+      try { process.kill(proc.pid, "SIGTERM"); } catch {}
       await sleep(1500);
     }
 
     // 3. SIGKILL if still alive
     if (!proc.killed && proc.pid) {
-      try { process.kill(-proc.pid, "SIGKILL"); } catch {}
+      try { process.kill(proc.pid, "SIGKILL"); } catch {}
     }
   }
 

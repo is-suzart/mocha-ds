@@ -462,7 +462,10 @@ function detectEntryPoint(workspaceFolder: string): string | null {
   } catch {}
 
   // 2. Common fixed paths
-  for (const rel of ["src/index.ts", "index.ts", "app/index.ts", "src/main.ts", "main.ts"]) {
+  for (const rel of [
+    "src/App.qml.ts", "src/app.qml.ts", "src/main.qml.ts", "src/index.qml.ts",
+    "src/index.ts", "index.ts", "app/index.ts", "src/main.ts", "main.ts",
+  ]) {
     const p = path.join(workspaceFolder, rel);
     if (fs.existsSync(p)) return p;
   }
