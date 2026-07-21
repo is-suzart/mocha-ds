@@ -1,0 +1,10 @@
+{
+  "name": "@mocha-ds/vue",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "peerDependencies": {
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0"
+  }
+}
