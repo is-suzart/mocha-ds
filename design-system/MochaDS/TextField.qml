@@ -243,6 +243,7 @@ Item {
                         root.text = text;
                         root.textEdited();
                     }
+                    root.textChanged();
                 }
 
                 // Echo mode selection for password
