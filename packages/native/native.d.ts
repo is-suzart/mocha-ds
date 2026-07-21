@@ -28,6 +28,8 @@ export declare function qmlGetTypeName(objId: number): string;
 export declare function qmlGetObjectName(objId: number): string;
 export declare function qmlSetProperty(objId: number, name: string, value: string): void;
 export declare function qmlGetAllProperties(objId: number): string;
+export declare function nativeWindowSetDarkTitleBar(objId: number, dark: boolean): void;
+export declare function nativeWindowStartSystemMove(objId: number): void;
 export interface QmlNode { id: number; className: string; objectName: string; children: QmlNode[]; }
 export interface QmlProperty { name: string; type: string; value: string; readable: boolean; writable: boolean; }
 export declare function createNativeApp(): Promise<NativeApp>;
@@ -37,7 +39,9 @@ export declare class NativeApp {
   createProxy(): number; proxySetValue(proxyId: number, name: string, value: string): void;
   proxyGetValue(proxyId: number, name: string): string; proxyHasPendingCalls(proxyId: number): boolean;
   proxyDrainPendingCalls(proxyId: number): string[]; setContextProperty(name: string, proxyId: number): void;
-  findChild(name: string): number; processEvents(): void; exec(): number; quit(): void;
+  findChild(name: string): number; getRootObject(): number;
+  setDarkTitleBar(dark: boolean): void; startSystemMove(objId: number): void;
+  processEvents(): void; exec(): number; quit(): void;
   registerAppObjects(): void; listRootObjects(): QmlNode[]; listChildren(objId: number): QmlNode[];
   getQmlProperty(objId: number, name: string): string; getQmlProperties(objId: number): QmlProperty[];
   setQmlProperty(objId: number, name: string, value: string): void;

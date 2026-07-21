@@ -47,6 +47,7 @@ export const {
   nativeAppCreate,
   nativeEngineCreate,
   nativeEngineLoad,
+  nativeEngineReload,
   nativeEngineRootObject,
   nativeObjectSetProperty,
   nativeObjectGetProperty,
@@ -73,6 +74,8 @@ export const {
   qmlGetObjectName,
   qmlSetProperty,
   qmlGetAllProperties,
+  nativeWindowSetDarkTitleBar,
+  nativeWindowStartSystemMove,
 } = native;
 
 // High-level API
@@ -91,8 +94,24 @@ class NativeApp {
   loadQML(qml, basePath) {
     if (!this._initialized) this.init();
     basePath = basePath || process.cwd();
-    let importPath = "";
-    // Auto-detect MochaDS import path based on CWD
+    let importPath = this._findImportPath(basePath);
+    nativeEngineLoad(this._engine, qml, basePath, importPath);
+    try {
+      this._rootObject = nativeEngineRootObject(this._engine);
+    } catch {
+      console.warn("[Mocha] QML loaded but no root object (window may not be visible yet)");
+    }
+  }
+
+  reloadQML(qml, basePath) {
+    basePath = basePath || process.cwd();
+    let importPath = this._findImportPath(basePath);
+    this._rootObject = nativeEngineReload(this._engine, qml, basePath, importPath);
+    console.log("[Mocha] QML reloaded, new root:", this._rootObject);
+    return this._rootObject;
+  }
+
+  _findImportPath(basePath) {
     const { existsSync } = require("node:fs");
     const { join } = require("node:path");
     const candidates = [
@@ -104,16 +123,10 @@ class NativeApp {
     ];
     for (const c of candidates) {
       if (existsSync(join(c, "MochaDS", "qmldir"))) {
-        importPath = c;
-        break;
+        return c;
       }
     }
-    nativeEngineLoad(this._engine, qml, basePath, importPath);
-    try {
-      this._rootObject = nativeEngineRootObject(this._engine);
-    } catch {
-      console.warn("[Mocha] QML loaded but no root object (window may not be visible yet)");
-    }
+    return "";
   }
 
   setProperty(property, value) {
@@ -144,9 +157,15 @@ class NativeApp {
     } else if (typeof value === "boolean") {
       console.log(`  → nativeProxySetBool`);
       nativeProxySetBool(proxyId, name, value);
+    } else if (typeof value === "string") {
+      console.log(`  → nativeProxySetValue (string)`);
+      nativeProxySetValue(proxyId, name, value);
+    } else if (value === null || value === undefined) {
+      console.log(`  → nativeProxySetValue (null/undefined → "")`);
+      nativeProxySetValue(proxyId, name, "");
     } else {
-      console.log(`  → nativeProxySetValue`);
-      nativeProxySetValue(proxyId, name, String(value));
+      console.log(`  → nativeProxySetValue (JSON)`);
+      nativeProxySetValue(proxyId, name, JSON.stringify(value));
     }
   }
 
@@ -167,8 +186,22 @@ class NativeApp {
   }
 
   findChild(name) {
-    if (!this._rootObject) throw new Error("No root object. Call loadQML first.");
+    if (!this._rootObject) return null;
     return nativeFindChildByName(this._rootObject, name);
+  }
+
+  getRootObject() {
+    return this._rootObject;
+  }
+
+  setDarkTitleBar(dark) {
+    if (!this._rootObject) return;
+    nativeWindowSetDarkTitleBar(this._rootObject, !!dark);
+  }
+
+  startSystemMove(objId) {
+    if (!objId) return;
+    nativeWindowStartSystemMove(objId);
   }
 
   getObjectProperty(objId, name) {
@@ -180,8 +213,12 @@ class NativeApp {
       nativeObjectSetInt(objId, name, value);
     } else if (typeof value === "boolean") {
       nativeObjectSetBool(objId, name, value);
+    } else if (typeof value === "string") {
+      nativeObjectSetProperty(objId, name, value);
+    } else if (value === null || value === undefined) {
+      nativeObjectSetProperty(objId, name, "");
     } else {
-      nativeObjectSetProperty(objId, name, String(value));
+      nativeObjectSetProperty(objId, name, JSON.stringify(value));
     }
   }
 

@@ -9,6 +9,7 @@
 #include <QVariant>
 #include <QMetaObject>
 #include <QMetaProperty>
+#include <QWindow>
 #include <QDebug>
 
 #include <QMap>
@@ -135,6 +136,25 @@ void* qml_engine_create() {
 
 void qml_engine_destroy(void* engine) {
     delete static_cast<QQmlApplicationEngine*>(engine);
+}
+
+void qml_engine_close_all_windows(void* engine) {
+    auto* e = static_cast<QQmlApplicationEngine*>(engine);
+    const auto roots = e->rootObjects();
+    fprintf(stderr, "[MOCHA DEBUG] Closing %d root windows...\n", (int)roots.size());
+    for (QObject* root : roots) {
+        QWindow* win = qobject_cast<QWindow*>(root);
+        if (win) {
+            fprintf(stderr, "[MOCHA DEBUG]   closing window: %p\n", (void*)win);
+            win->close();
+        }
+    }
+}
+
+void qml_engine_clear_cache(void* engine) {
+    auto* e = static_cast<QQmlApplicationEngine*>(engine);
+    fprintf(stderr, "[MOCHA DEBUG] Clearing QML component cache...\n");
+    e->clearComponentCache();
 }
 
 void qml_engine_load_data(void* engine, const char* qml_data, const char* base_path, const char* import_path) {
@@ -466,6 +486,79 @@ void native_qml_get_all_properties(int objId, char* buf, int max) {
     int len = qMin(result.size(), max - 1);
     memcpy(buf, result.constData(), len);
     buf[len] = '\0';
+}
+
+// ── Dark Title Bar (platform-specific) ──
+
+#ifdef _WIN32
+#include <windows.h>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+#endif
+
+#ifdef __APPLE__
+#include <objc/runtime.h>
+#include <objc/message.h>
+
+static id mocha_nsstring(const char* str) {
+    return ((id (*)(id, SEL, const char*))objc_msgSend)(
+        (id)objc_getClass("NSString"),
+        sel_registerName("stringWithUTF8String:"),
+        str
+    );
+}
+#endif
+
+void mocha_window_set_dark_title_bar(void* obj, int dark) {
+    QWindow* win = qobject_cast<QWindow*>(static_cast<QObject*>(obj));
+    if (!win) return;
+
+#ifdef _WIN32
+    HWND hwnd = reinterpret_cast<HWND>(win->winId());
+    if (!hwnd) return;
+    BOOL useDark = dark ? TRUE : FALSE;
+    // DWMWA_USE_IMMERSIVE_DARK_MODE = 20 (Windows 10 1809+)
+    DwmSetWindowAttribute(hwnd, 20, &useDark, sizeof(useDark));
+    fprintf(stderr, "[MOCHA] DWM dark title bar: %s\n", dark ? "on" : "off");
+#endif
+
+#ifdef __APPLE__
+    void* nsView = reinterpret_cast<void*>(win->winId());
+    if (!nsView) return;
+    id nsWindow = ((id (*)(id, SEL))objc_msgSend)((id)nsView, sel_registerName("window"));
+    if (!nsWindow) return;
+    Class appearanceClass = objc_getClass("NSAppearance");
+    id name = mocha_nsstring(dark ? "NSAppearanceNameDarkAqua" : "NSAppearanceNameAqua");
+    id appearance = ((id (*)(Class, SEL, id))objc_msgSend)(appearanceClass, sel_registerName("appearanceNamed:"), name);
+    if (appearance) {
+        ((void (*)(id, SEL, id))objc_msgSend)(nsWindow, sel_registerName("setAppearance:"), appearance);
+        fprintf(stderr, "[MOCHA] macOS dark title bar: %s\n", dark ? "on" : "off");
+    }
+#endif
+}
+
+void mocha_window_start_system_move(void* obj) {
+    QWindow* win = qobject_cast<QWindow*>(static_cast<QObject*>(obj));
+    if (!win) return;
+
+#ifdef _WIN32
+    HWND hwnd = reinterpret_cast<HWND>(win->winId());
+    if (!hwnd) return;
+    ReleaseCapture();
+    SendMessageW(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+#endif
+
+#ifdef __APPLE__
+    void* nsView = reinterpret_cast<void*>(win->winId());
+    if (!nsView) return;
+    id nsWindow = ((id (*)(id, SEL))objc_msgSend)((id)nsView, sel_registerName("window"));
+    if (!nsWindow) return;
+    id sharedApp = ((id (*)(Class, SEL))objc_msgSend)((id)objc_getClass("NSApplication"), sel_registerName("sharedApplication"));
+    id event = ((id (*)(id, SEL))objc_msgSend)(sharedApp, sel_registerName("currentEvent"));
+    if (event) {
+        ((void (*)(id, SEL, id))objc_msgSend)(nsWindow, sel_registerName("performWindowDragWithEvent:"), event);
+    }
+#endif
 }
 
 } // extern "C"

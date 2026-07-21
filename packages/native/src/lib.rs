@@ -10,6 +10,8 @@ extern "C" {
     fn qt_app_destroy(app: *mut c_void);
     fn qml_engine_create() -> *mut c_void;
     fn qml_engine_destroy(engine: *mut c_void);
+    fn qml_engine_close_all_windows(engine: *mut c_void);
+    fn qml_engine_clear_cache(engine: *mut c_void);
     fn qml_engine_load_data(engine: *mut c_void, qml_data: *const c_char, base_path: *const c_char, import_path: *const c_char);
     fn qml_engine_root_objects(engine: *mut c_void) -> *mut c_void;
     fn qt_object_get_property(obj: *mut c_void, name: *const c_char) -> *const c_char;
@@ -43,6 +45,10 @@ extern "C" {
     fn native_qml_get_object_name(obj_id: i32) -> *const c_char;
     fn native_qml_set_property(obj_id: i32, name: *const c_char, value: *const c_char);
     fn native_qml_get_all_properties(obj_id: i32, buf: *mut c_char, max: i32);
+
+    // Window management
+    fn mocha_window_set_dark_title_bar(obj: *mut c_void, dark: i32);
+    fn mocha_window_start_system_move(obj: *mut c_void);
 }
 
 struct NativeState {
@@ -116,6 +122,30 @@ pub fn native_engine_load(engine_id: u32, qml_data: String, base_path: String, i
         qml_engine_load_data(engine, c_qml.as_ptr(), c_base.as_ptr(), c_import.as_ptr());
     }
     Ok(())
+}
+
+#[napi]
+pub fn native_engine_reload(engine_id: u32, qml_data: String, base_path: String, import_path: Option<String>) -> Result<u32> {
+    let c_qml = CString::new(qml_data).map_err(|e| Error::from_reason(e.to_string()))?;
+    let c_base = CString::new(base_path).map_err(|e| Error::from_reason(e.to_string()))?;
+    let import_path_str = import_path.unwrap_or_default();
+    let c_import = CString::new(import_path_str.clone()).map_err(|e| Error::from_reason(e.to_string()))?;
+
+    let mut state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let engine = state.get_ptr(engine_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid engine handle"))?;
+
+    unsafe {
+        qml_engine_close_all_windows(engine);
+        qt_app_process_events();
+        qml_engine_clear_cache(engine);
+        qml_engine_load_data(engine, c_qml.as_ptr(), c_base.as_ptr(), c_import.as_ptr());
+        let obj = qml_engine_root_objects(engine);
+        if obj.is_null() {
+            return Err(Error::new(Status::GenericFailure, "QML reload failed — no root object"));
+        }
+        Ok(state.alloc_id(obj))
+    }
 }
 
 #[napi]
@@ -338,7 +368,7 @@ pub fn native_find_child_by_name(parent_id: u32, name: String) -> Result<u32> {
     unsafe {
         let child = qml_find_child_by_name(parent, c_name.as_ptr());
         if child.is_null() {
-            return Err(Error::new(Status::GenericFailure, format!("Child not found: {}", c_name.to_str().unwrap_or("?"))));
+            return Ok(0);
         }
         Ok(state.alloc_id(child))
     }
@@ -409,4 +439,24 @@ pub fn qml_get_all_properties(obj_id: i32) -> Result<String> {
     let s = String::from_utf8_lossy(&buf);
     let nul = s.find('\0').unwrap_or(s.len());
     Ok(s[..nul].to_string())
+}
+
+// ── Window management ──
+
+#[napi]
+pub fn native_window_set_dark_title_bar(obj_id: u32, dark: bool) -> Result<()> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let obj = state.get_ptr(obj_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid object handle"))?;
+    unsafe { mocha_window_set_dark_title_bar(obj, if dark { 1 } else { 0 }); }
+    Ok(())
+}
+
+#[napi]
+pub fn native_window_start_system_move(obj_id: u32) -> Result<()> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let obj = state.get_ptr(obj_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid object handle"))?;
+    unsafe { mocha_window_start_system_move(obj); }
+    Ok(())
 }
