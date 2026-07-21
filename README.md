@@ -1,4 +1,4 @@
-# <img src="design-system/assets/logo/mocha-logo.svg" width="40" height="40" style="vertical-align: middle; border-radius: 8px;" /> Mocha Framework
+# <img src="vscode-extension/assets/icon.png" width="40" height="40" style="vertical-align: middle; border-radius: 8px;" /> Mocha Framework
 
 **TypeScript que compila pra Qt/QML nativo.** Zero bridge manual. Escreva `.qml.ts`, rode como app desktop com QML real e MochaDS (117 componentes prontos).
 
