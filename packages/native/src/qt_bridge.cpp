@@ -146,12 +146,14 @@ static const char* SHELL_QML = R"mocha-shell(
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
+import MochaDS
 
 ApplicationWindow {
     id: mochaShell
     objectName: "mochaShell"
     visible: true
     title: "Mocha App"
+    color: Theme.colors.background
 
     property string mochaSource: ""
 
