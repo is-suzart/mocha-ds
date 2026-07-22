@@ -82,7 +82,7 @@ export interface Column {
               @if (rIdx === 0) {
                 <tr class="table-header-spacer">
                   <td [attr.colspan]="colspan()">
-                    <div class="table-header-spacer-inner" />
+                    <div class="table-header-spacer-inner"></div>
                   </td>
                 </tr>
               }
@@ -93,8 +93,8 @@ export interface Column {
               >
                 @if (showCheckbox()) {
                   <td style="text-align: center">
-                    <div class="table-skeleton-bar" style="width: 16px; margin: 0 auto" />
-                  </td>
+          <div class="table-skeleton-bar" style="width: 16px; margin: 0 auto"></div>
+        </td>
                 }
                 @for (col of columns(); track col.key) {
                   <td [class]="col.align ? 'table-cell--align-' + col.align : ''">
@@ -103,7 +103,7 @@ export interface Column {
                       [style.width]="col.align === 'right' ? '70%' : col.align === 'center' ? '50%' : '85%'"
                       [style.marginLeft]="col.align === 'right' ? 'auto' : col.align === 'center' ? 'auto' : '0'"
                       [style.marginRight]="col.align === 'center' ? 'auto' : '0'"
-                    />
+                    ></div>
                   </td>
                 }
               </tr>
@@ -115,7 +115,7 @@ export interface Column {
               @if (idx === 0) {
                 <tr class="table-header-spacer">
                   <td [attr.colspan]="colspan()">
-                    <div class="table-header-spacer-inner" />
+                    <div class="table-header-spacer-inner"></div>
                   </td>
                 </tr>
               }

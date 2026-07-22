@@ -66,7 +66,7 @@ export class ButtonGroupComponent implements ControlValueAccessor, AfterViewInit
 
   constructor(private cdr: ChangeDetectorRef) {}
 
-  private isPillReady = computed(() => {
+  protected isPillReady = computed(() => {
     const style = this.pillStyle();
     return !('opacity' in style);
   });

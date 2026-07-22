@@ -9,7 +9,7 @@ type PopoverPlacement = 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-sta
     <div class="popover-trigger" #triggerRef>
       <ng-content select="[ctpPopoverTrigger]" />
     </div>
-    @if (isOpen()) {
+    @if (isOpen) {
       <div
         #popoverRef
         class="popover" [attr.data-placement]="actualPlacement"

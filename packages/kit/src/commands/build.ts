@@ -2,7 +2,11 @@ import { Logger } from "@mocha/shared";
 import * as esbuild from "esbuild";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logger = new Logger("build");
 
@@ -31,11 +35,16 @@ export async function run(args: string[]): Promise<void> {
   const appName = parseOpt(args, "--name", detectAppName());
   const appVersion = parseOpt(args, "--app-version", "0.1.0");
   const cliIcon = parseOpt(args, "--icon", "");
+  const platform = parseOpt(args, "--platform", "desktop");
 
   if (!entry) {
     logger.error("No entry file specified and no default found");
     logger.info("Usage: mocha build <entry.qml.ts> [--output dist] [--minify]");
     process.exit(1);
+  }
+
+  if (platform === "web") {
+    process.env.MOCHA_PLATFORM = "web";
   }
 
   const entryPath = path.resolve(process.cwd(), entry);
@@ -44,26 +53,35 @@ export async function run(args: string[]): Promise<void> {
 
   const appMeta = readAppMetaFromSource(entryPath);
   const finalName = appName !== detectAppName() ? appName : (appMeta.name || appName);
-  const iconPath = resolveIcon(cliIcon || undefined, appMeta, entryPath, sanitizeAppName(finalName));
+  const iconPath = platform !== "web"
+    ? resolveIcon(cliIcon || undefined, appMeta, entryPath, sanitizeAppName(finalName))
+    : undefined;
 
   logger.info("Building Mocha application...");
   logger.info(`  Entry:    ${entry}`);
   logger.info(`  Output:   ${outputDir}`);
   logger.info(`  Minify:   ${minify}`);
   logger.info(`  Target:   ${targetPlatform}`);
+  logger.info(`  Platform: ${platform}`);
   if (format) logger.info(`  Format:   ${format}`);
 
   const startTime = performance.now();
 
   try {
-    await buildProject({ entry: entryPath, output: outputDir, minify, sourceMap }, targetPlatform);
+    if (platform === "web") {
+      await buildWebProject({ entry: entryPath, output: outputDir, minify, sourceMap }, finalName);
+    } else {
+      await buildProject({ entry: entryPath, output: outputDir, minify, sourceMap }, targetPlatform);
+    }
     const elapsed = (performance.now() - startTime).toFixed(0);
     logger.info(`Build completed in ${elapsed}ms`);
 
-    if (format) {
-      await packageProject(outputDir, format, { name: finalName, version: appVersion, target: targetPlatform, icon: iconPath, appMeta });
-    } else {
-      logger.info(`Run with: node ${path.join(output, "run.js")}`);
+    if (platform !== "web") {
+      if (format) {
+        await packageProject(outputDir, format, { name: finalName, version: appVersion, target: targetPlatform, icon: iconPath, appMeta });
+      } else {
+        logger.info(`Run with: node ${path.join(output, "run.js")}`);
+      }
     }
   } catch (err) {
     logger.error("Build failed:", err);
@@ -94,13 +112,7 @@ async function buildProject(
     outfile,
     minify,
     sourcemap: sourceMap,
-    external: ["@mocha/native"],
-    banner: {
-      js: [
-        "import { createRequire } from 'module';",
-        "const require = createRequire(import.meta.url);",
-      ].join("\n"),
-    },
+    external: ["@mocha/native", "@mocha/mobile"],
   });
 
   logger.info(`  Bundled JS: ${outfile}`);
@@ -359,6 +371,191 @@ interface PackageMeta {
   target: string;
   icon?: string;
   appMeta: AppMeta;
+}
+
+async function buildWebProject(
+  options: { entry: string; output: string; minify: boolean; sourceMap: boolean },
+  projectName: string
+): Promise<void> {
+  const { entry, output } = options;
+  const outputDir = output;
+
+  if (!fs.existsSync(entry)) {
+    throw new Error(`Entry file not found: ${entry}`);
+  }
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  const angularTemplateDir = findAngularTemplateDir();
+  if (!angularTemplateDir) throw new Error("Angular template not found.");
+
+  copyDirSync(angularTemplateDir, outputDir);
+  process.env.MOCHA_PLATFORM = "web";
+
+  const projectDir = process.cwd();
+  const sourceDir = path.dirname(entry);
+  const qmlFiles = findQmlTsFiles(sourceDir);
+  const fsPromises = await import("node:fs/promises");
+
+  let isFirstFile = true;
+  for (const qmlFile of qmlFiles) {
+    const relativePath = path.relative(sourceDir, qmlFile);
+    logger.info(`  Processing: ${relativePath}`);
+    try {
+      const tsx = path.resolve(projectDir, "node_modules", ".bin", "tsx");
+      const tempFile = path.join(projectDir, ".codegen-temp.mjs");
+      const isMain = isFirstFile;
+      isFirstFile = false;
+
+      await fsPromises.writeFile(tempFile, `
+import { getAllQMLComponents, generateAngularComponent } from "@mocha/qml";
+import { pathToFileURL } from "node:url";
+
+try { await import(pathToFileURL(${JSON.stringify(qmlFile)}).href); }
+catch (e) { console.error("[codegen] Failed to import entry:", e.message); }
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+const outputDir = ${JSON.stringify(outputDir)};
+const isMain = ${JSON.stringify(isMain)};
+
+for (const [ctor, meta] of getAllQMLComponents().entries()) {
+  if (meta.platform !== "web") continue;
+  const files = generateAngularComponent(ctor);
+  if (files.serviceTs) {
+    const svcDir = path.join(outputDir, "src", "app");
+    fs.mkdirSync(svcDir, { recursive: true });
+    fs.writeFileSync(path.join(svcDir, toKebab(meta.componentName) + ".service.ts"), files.serviceTs);
+    console.log("[codegen] Service:", meta.componentName);
+  }
+  if (isMain) {
+    const appDir = path.join(outputDir, "src", "app");
+    fs.mkdirSync(appDir, { recursive: true });
+    fs.writeFileSync(path.join(appDir, "app.component.ts"), files.componentTs);
+    fs.writeFileSync(path.join(appDir, "app.component.html"), files.componentHtml);
+    if (files.routesTs) fs.writeFileSync(path.join(appDir, "app.routes.ts"), files.routesTs);
+  }
+  for (const rf of files.routeFiles) {
+    const routeDir = path.join(outputDir, "src", "app");
+    fs.mkdirSync(routeDir, { recursive: true });
+    fs.writeFileSync(path.join(routeDir, rf.fileName + ".ts"), rf.tsContent);
+    fs.writeFileSync(path.join(routeDir, rf.fileName + ".html"), rf.htmlContent);
+  }
+}
+function toKebab(s) { return s.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(); }
+`);
+      execSync(`${tsx} ${tempFile}`, { cwd: projectDir, stdio: "inherit" });
+      fs.unlinkSync(tempFile);
+    } catch (err) {
+      logger.error(`Codegen error for ${qmlFile}:`, err);
+    }
+  }
+
+  try {
+    const cssDistDir = path.join(findMonorepoRoot(process.cwd()) || process.cwd(), "packages", "css", "dist");
+    const cssFile = path.join(cssDistDir, "catppuccin.css");
+    if (fs.existsSync(cssFile)) {
+      const themeDir = path.join(outputDir, "src", "app");
+      fs.mkdirSync(themeDir, { recursive: true });
+      fs.copyFileSync(cssFile, path.join(themeDir, "theme.css"));
+      logger.info("[web] Copied theme CSS from @mocha-ds/css/dist");
+    }
+  } catch (_e: any) {}
+
+  const projectSlug = sanitizeAppName(projectName);
+  applyPlaceholders(outputDir, { "{{project_slug}}": projectSlug, "{{project_name}}": projectName });
+
+  const monorepoRoot = findMonorepoRoot(process.cwd());
+  if (monorepoRoot) {
+    const pkgPath = path.join(outputDir, "package.json");
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+        pkg.dependencies = pkg.dependencies || {};
+        pkg.dependencies["@mocha-ds/angular"] = `file:${path.join(monorepoRoot, "packages", "angular")}`;
+        pkg.dependencies["@mocha-ds/css"] = `file:${path.join(monorepoRoot, "packages", "css")}`;
+        fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+      } catch {}
+    }
+  }
+
+  logger.info("");
+  logger.info("Angular project generated at: " + outputDir);
+  logger.info("To run: cd " + path.relative(process.cwd(), outputDir) + " && npm install && npm run dev");
+}
+
+function findAngularTemplateDir(): string | null {
+  const cwd = process.cwd();
+  const candidates = [
+    path.resolve(__dirname, "..", "..", "..", "cli", "templates", "angular"),
+    path.resolve(cwd, "node_modules", "@mocha", "cli", "templates", "angular"),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, "package.json"))) return c;
+  }
+  let dir = __dirname;
+  for (let i = 0; i < 10; i++) {
+    const c = path.join(dir, "packages", "cli", "templates", "angular");
+    if (fs.existsSync(path.join(c, "package.json"))) return c;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
+}
+
+function copyDirSync(src: string, dest: string): void {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirSync(s, d);
+    else fs.copyFileSync(s, d);
+  }
+}
+
+function findQmlTsFiles(dir: string): string[] {
+  const results: string[] = [];
+  const walk = (d: string) => {
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, e.name);
+      if (e.isDirectory() && !e.name.startsWith(".") && e.name !== "node_modules") walk(p);
+      else if (e.name.endsWith(".qml.ts")) results.push(p);
+    }
+  };
+  walk(dir);
+  return results;
+}
+
+function applyPlaceholders(dir: string, placeholders: Record<string, string>): void {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory() && entry.name !== "node_modules" && !entry.name.startsWith(".")) {
+      applyPlaceholders(p, placeholders);
+    } else if (entry.isFile()) {
+      try {
+        let content = fs.readFileSync(p, "utf-8");
+        let modified = false;
+        for (const [key, val] of Object.entries(placeholders)) {
+          if (content.includes(key)) {
+            content = content.split(key).join(val);
+            modified = true;
+          }
+        }
+        if (modified) fs.writeFileSync(p, content);
+      } catch {}
+    }
+  }
+}
+
+function findMonorepoRoot(from: string): string | null {
+  let dir = from;
+  for (let i = 0; i < 10; i++) {
+    if (fs.existsSync(path.join(dir, "packages", "core", "package.json"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
 }
 
 async function packageProject(distDir: string, format: string, meta: PackageMeta): Promise<void> {

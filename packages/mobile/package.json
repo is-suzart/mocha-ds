@@ -1,0 +1,17 @@
+{
+  "name": "@mocha/mobile",
+  "version": "0.1.0",
+  "description": "Mocha Mobile Bridge — QuickJS/Hermes ↔ Qt FFI for iOS/Android/Desktop standalone",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build:quickjs": "bash ../../scripts/build-quickjs.sh",
+    "build:cmake": "cmake -B ../../build/quickjs -S ../native/quickjs && cmake --build ../../build/quickjs",
+    "build": "npm run build:quickjs && npm run build:cmake"
+  }
+}

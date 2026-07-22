@@ -16,7 +16,7 @@ export class QMLTemplateParser {
   parse(template: string): ParsedQMLDocument {
     const trimmed = template.trim();
     const imports: string[] = [];
-    const importRegex = /import\s+(\S+(?:\s+\S+)*?)(?:\s*;)/g;
+    const importRegex = /^[ \t]*import\s+(.+?)(?:\s*;)?\s*$/gm;
     let match: RegExpExecArray | null;
 
     while ((match = importRegex.exec(trimmed)) !== null) {
@@ -70,11 +70,21 @@ export class QMLTemplateParser {
           continue;
         }
         if (i > 0) {
-          const childQML = this._extractBlock(lines, i);
+          const { block: childQML, endIndex } = this._extractBlock(lines, i);
           node.children.push(this._parseNode(childQML));
-          while (i < lines.length && !lines[i]?.endsWith("}")) i++;
+          i = endIndex;
           continue;
         }
+      }
+
+      const inlineObjectMatch = line.match(/^(\w+)\s*:\s*(\w+)\s*\{/);
+      if (inlineObjectMatch && braceCount >= 1) {
+        const [, propName, childType] = inlineObjectMatch;
+        const { block: rawBlock, endIndex } = this._extractBlock(lines, i);
+        let childQML = rawBlock.replace(/^\w+\s*:\s*\w+\s*/, childType + " ");
+        node.children.push(this._parseNode(childQML));
+        i = endIndex;
+        continue;
       }
 
       if (line.includes("{")) braceCount++;
@@ -99,7 +109,7 @@ export class QMLTemplateParser {
     return node;
   }
 
-  private _extractBlock(lines: string[], startIdx: number): string {
+  private _extractBlock(lines: string[], startIdx: number): { block: string; endIndex: number } {
     let braceDepth = 0;
     let endIdx = startIdx;
 
@@ -115,7 +125,10 @@ export class QMLTemplateParser {
       }
     }
 
-    return lines.slice(startIdx, endIdx + 1).join("\n");
+    return {
+      block: lines.slice(startIdx, endIdx + 1).join("\n"),
+      endIndex: endIdx,
+    };
   }
 
   private _parseValue(raw: string): any {

@@ -18,7 +18,7 @@ export interface ToastOptions {
   style?: Record<string, string>;
 }
 
-export interface ToastItem extends Required<ToastOptions> {
+export interface ToastItem extends ToastOptions {
   id: string;
   createdAt: number;
   exiting: boolean;
@@ -32,6 +32,7 @@ export class ToastService {
 
   show(options: ToastOptions | string): string {
     const opts: ToastOptions = typeof options === 'string' ? { title: options } : options;
+    const { filled = false, ...rest } = opts;
     const id = `toast-${++toastIdCounter}`;
     const item: ToastItem = {
       title: '',
@@ -39,14 +40,15 @@ export class ToastService {
       variant: 'info',
       duration: 4000,
       position: 'bottom-right',
-      ...opts,
+      filled,
       id,
       createdAt: Date.now(),
       exiting: false,
+      ...rest,
     };
     this.toasts.update(prev => [...prev, item]);
 
-    if (item.duration > 0) {
+    if (item.duration != null && item.duration > 0) {
       setTimeout(() => this.dismiss(id), item.duration);
     }
 

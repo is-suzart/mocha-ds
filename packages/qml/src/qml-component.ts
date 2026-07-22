@@ -2,6 +2,9 @@ import { QObject, QProperty } from "@mocha/core";
 import { Logger } from "@mocha/shared";
 import { QMLTemplateParser, type ParsedQMLDocument, type QMLBindingMap } from "./qml-parser.js";
 import { BindingEngine } from "./binding.js";
+import { preprocessPlatform, getTargetPlatform } from "./platform-if.js";
+import { generateAngularComponent } from "./codegen/gen-angular-component.js";
+import type { GeneratedAngularFiles } from "./codegen/gen-angular-component.js";
 
 const logger = new Logger("QMLComponent");
 const parser = new QMLTemplateParser();
@@ -20,6 +23,7 @@ export interface QMLComponentMetadata {
   bindings: QMLBindingMap;
   componentName: string;
   providedIn: "root" | "view";
+  platform: string;
 }
 
 const componentRegistry = new Map<Function, QMLComponentMetadata>();
@@ -33,7 +37,9 @@ export interface ProxyEntry {
 export function QMLComponent(options: QMLComponentOptions) {
   return function <T extends { new (...args: any[]): any }>(target: T): T {
     const componentName = target.name;
-    const document = parser.parse(options.qml);
+    const platform = getTargetPlatform();
+    const preprocessed = preprocessPlatform(options.qml, platform);
+    const document = parser.parse(preprocessed);
     const bindings = parser.generateBindings(document, "controller");
 
     const metadata: QMLComponentMetadata = {
@@ -42,13 +48,14 @@ export function QMLComponent(options: QMLComponentOptions) {
       bindings,
       componentName,
       providedIn: options.providedIn || "view",
+      platform,
     };
 
     componentRegistry.set(target, metadata);
-    logger.debug(`Registered QML component: ${componentName}`);
+    logger.debug(`Registered QML component: ${componentName} (platform: ${platform})`);
 
     (target as any).__qmlComponent = metadata;
-    (target as any).__qmlTemplate = options.qml;
+    (target as any).__qmlTemplate = preprocessed;
     (target as any).__qmlDocument = document;
     (target as any).__qmlBindings = bindings;
 
@@ -113,7 +120,7 @@ export function generateQMLSource(
   metadata: QMLComponentMetadata,
   rootProxies?: ProxyEntry[]
 ): string {
-  let qml = metadata.options.qml;
+  let qml = (component.constructor as any).__qmlTemplate || metadata.options.qml;
 
   // Transform controller.xxx bindings via global regex — robust against parser quirks
   qml = qml.replace(/controller\.(\w+)\.value\b/g, 'controller.$1');
@@ -215,8 +222,16 @@ export function generateQMLSource(
 
 export function generateQMLFile(
   component: QObject,
-  metadata: QMLComponentMetadata
+  metadata: QMLComponentMetadata,
+  platform?: string
 ): string {
+  const targetPlatform = platform || getTargetPlatform();
+
+  if (targetPlatform === "web") {
+    const files = generateAngularComponent(component.constructor);
+    return JSON.stringify(files, null, 2);
+  }
+
   const header = [
     "import QtQuick",
     "import QtQuick.Controls",
@@ -226,4 +241,11 @@ export function generateQMLFile(
   const body = generateQMLSource(component, metadata);
 
   return `${header}\n\n${body}`;
+}
+
+export function generateAngularFilesForComponent(
+  component: QObject,
+  metadata: QMLComponentMetadata
+): GeneratedAngularFiles {
+  return generateAngularComponent(component.constructor);
 }

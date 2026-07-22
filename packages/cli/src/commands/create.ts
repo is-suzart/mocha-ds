@@ -12,6 +12,7 @@ interface CreateOptions {
   python?: boolean;
   hybrid?: boolean;
   native?: boolean;
+  web?: boolean;
   i18n?: boolean;
   force?: boolean;
 }
@@ -26,6 +27,7 @@ export const createCommand = new Command("create")
   .option("--python", "scaffold with Python backend (PySide6)")
   .option("--native", "scaffold with Mocha native (napi-rs + Qt, recommended)")
   .option("--hybrid", "scaffold with Mocha TS hybrid (mock backend, dev only)")
+  .option("--web", "scaffold with Angular (web platform)")
   .option("--i18n", "enable i18n support")
   .option("-f, --force", "overwrite existing directory")
   .description("create a new Mocha-DS project")
@@ -34,7 +36,7 @@ export const createCommand = new Command("create")
 
     let i18nEnabled = options.i18n || false;
     const hasNativeFlag =
-      options.rust || options.node || options.python || options.hybrid || options.native;
+      options.rust || options.node || options.python || options.hybrid || options.native || options.web;
 
     if (!hasNativeFlag) {
       try {
@@ -45,6 +47,10 @@ export const createCommand = new Command("create")
             {
               name: "Mocha Native (napi-rs + Qt) — recommended",
               value: "native",
+            },
+            {
+              name: "Mocha Web (Angular) — web platform",
+              value: "web",
             },
             {
               name: "Mocha Hybrid (TypeScript mock) — dev only, no window",
@@ -69,6 +75,7 @@ export const createCommand = new Command("create")
         (options as any).node = answer === "node";
         (options as any).python = answer === "python";
         (options as any).rust = answer === "rust";
+        (options as any).web = answer === "web";
 
         i18nEnabled = await confirm({
           message: "Enable internationalization (i18n)?",
@@ -80,7 +87,8 @@ export const createCommand = new Command("create")
     }
 
     let templateDir = "native";
-    if (options.rust) templateDir = "rust";
+    if (options.web) templateDir = "angular";
+    else if (options.rust) templateDir = "rust";
     else if (options.python) templateDir = "python";
     else if (options.node) templateDir = "node";
     else if (options.hybrid) templateDir = "hybrid";
@@ -125,7 +133,10 @@ export const createCommand = new Command("create")
 
     console.log("\n" + chalk.bold("Next steps:"));
     console.log(`  cd ${name}`);
-    if (templateDir === "native") {
+    if (templateDir === "web" || templateDir === "angular") {
+      console.log("  npm install");
+      console.log("  npm run dev     # starts Angular dev server (ng serve)");
+    } else if (templateDir === "native") {
       console.log("  npm install");
       console.log("  npm run dev     # opens QML window via napi-rs + Qt");
     } else if (templateDir === "hybrid" || templateDir === "node") {
@@ -242,6 +253,7 @@ async function generateProject(
   const moduleName = slug.replace(/-/g, "_");
   const isHybrid = templatePath.endsWith("hybrid");
   const isNative = templatePath.endsWith("native");
+  const isWeb = templatePath.endsWith("angular") || templatePath === "web";
 
   if (existsSync(templatePath)) {
     await cp(templatePath, targetDir, { recursive: true });
@@ -253,6 +265,11 @@ async function generateProject(
     project_module: moduleName,
   };
   await replacePlaceholders(targetDir, placeholders);
+
+  if (isWeb) {
+    spinner.info("Angular project created. Install dependencies with: npm install");
+    return;
+  }
 
   // Clone MochaDS for ALL project types (QML needs the actual .qml files)
   const mochaDsDir = join(targetDir, "ui", "MochaDS");

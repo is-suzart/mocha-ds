@@ -35,7 +35,7 @@ import { Component, input, output, signal, computed, HostListener, effect } from
               role="tab"
               [attr.aria-selected]="$index === current()"
               [attr.aria-label]="'Go to slide ' + ($index + 1)"
-            />
+            ></button>
           }
         </div>
       }

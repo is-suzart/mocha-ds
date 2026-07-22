@@ -32,7 +32,7 @@ export const DOTS = '...';
             class="pagination-item"
             [class]="'pagination-item--' + size()"
             [class.pagination-item--active]="item === currentPage()"
-            (click)="goTo(item as number)"
+            (click)="goTo(Number(item))"
             [attr.aria-current]="item === currentPage() ? 'page' : null"
           >
             {{ item }}

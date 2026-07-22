@@ -1,4 +1,5 @@
 import { Component, input, computed, output, signal, effect, ElementRef, inject } from '@angular/core';
+import type { TableSize, TableColor } from './table.component';
 
 export interface TreeColumn {
   key: string;
@@ -15,11 +16,11 @@ export interface TreeColumn {
   ) => any;
 }
 
-export type TableSize = 'sm' | 'md' | 'lg';
-export type TableColor =
-  | 'rosewater' | 'flamingo' | 'pink' | 'mauve' | 'red' | 'maroon'
-  | 'peach' | 'yellow' | 'green' | 'teal' | 'sky' | 'sapphire'
-  | 'blue' | 'lavender';
+// export type TableSize = 'sm' | 'md' | 'lg';
+// export type TableColor =
+//   | 'rosewater' | 'flamingo' | 'pink' | 'mauve' | 'red' | 'maroon'
+//   | 'peach' | 'yellow' | 'green' | 'teal' | 'sky' | 'sapphire'
+//   | 'blue' | 'lavender';
 
 interface FlattenedTreeRow {
   row: any;
@@ -90,7 +91,7 @@ interface FlattenedTreeRow {
               @if (rIdx === 0) {
                 <tr class="table-header-spacer">
                   <td [attr.colspan]="colspan()">
-                    <div class="table-header-spacer-inner" />
+                    <div class="table-header-spacer-inner"></div>
                   </td>
                 </tr>
               }
@@ -101,15 +102,15 @@ interface FlattenedTreeRow {
               >
                 @if (showCheckbox()) {
                   <td style="text-align: center">
-                    <div class="table-skeleton-bar" style="width: 16px; margin: 0 auto" />
+                    <div class="table-skeleton-bar" style="width: 16px; margin: 0 auto"></div>
                   </td>
                 }
                 @for (col of columns(); track col.key; let colIdx = $index) {
                   <td [class]="col.align ? 'table-cell--align-' + col.align : ''">
                     @if (colIdx === 0) {
                       <div style="display: flex; align-items: center; gap: 8px">
-                        <div class="table-skeleton-bar" style="width: 16px; height: 16px; border-radius: 4px" />
-                        <div class="table-skeleton-bar" style="width: 70%" />
+                        <div class="table-skeleton-bar" style="width: 16px; height: 16px; border-radius: 4px"></div>
+                        <div class="table-skeleton-bar" style="width: 70%"></div>
                       </div>
                     } @else {
                       <div
@@ -117,7 +118,7 @@ interface FlattenedTreeRow {
                         [style.width]="col.align === 'right' ? '70%' : col.align === 'center' ? '50%' : '85%'"
                         [style.marginLeft]="col.align === 'right' ? 'auto' : col.align === 'center' ? 'auto' : '0'"
                         [style.marginRight]="col.align === 'center' ? 'auto' : '0'"
-                      />
+                      ></div>
                     }
                   </td>
                 }
@@ -134,7 +135,7 @@ interface FlattenedTreeRow {
               @if (idx === 0) {
                 <tr class="table-header-spacer">
                   <td [attr.colspan]="colspan()">
-                    <div class="table-header-spacer-inner" />
+                    <div class="table-header-spacer-inner"></div>
                   </td>
                 </tr>
               }
@@ -167,7 +168,7 @@ interface FlattenedTreeRow {
                           >
                             <div
                               style="width: 1px; height: 100%; border-left: 1px dashed var(--ctp-surface2); position: absolute; left: 11px; top: 0; bottom: 0;"
-                            />
+                            ></div>
                           </div>
                         }
 
@@ -195,7 +196,7 @@ interface FlattenedTreeRow {
                             </svg>
                           </button>
                         } @else {
-                          <div style="width: 24px; height: 24px; flex-shrink: 0;" />
+                          <div style="width: 24px; height: 24px; flex-shrink: 0;"></div>
                         }
 
                         <!-- Cell value -->

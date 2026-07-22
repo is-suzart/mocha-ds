@@ -66,6 +66,11 @@ export async function runApp<T extends QObject>(
   componentClass: new (...args: any[]) => T,
   options?: RunAppOptions
 ): Promise<void> {
+  if (process.env.MOCHA_PLATFORM === "web") {
+    logger.info("[runApp] Platform is web — skipping native app launch (codegen only)");
+    return;
+  }
+
   const meta = getQMLComponentMetadata(componentClass);
   if (!meta) {
     throw new Error(
@@ -83,25 +88,41 @@ export async function runApp<T extends QObject>(
   }
 
   let nativeApp: any = null;
-  try {
-    const { createNativeApp } = await import("@mocha/native");
-    nativeApp = await createNativeApp();
-  } catch (err) {
-    const fallback = options?.fallbackMode ?? process.env.MOCHA_FALLBACK_MOCK ?? "warn";
-    if (fallback === "error") {
+
+  // Detect runtime: QuickJS/Hermes (mobile) vs Node.js (desktop napi)
+  const isQuickJS = typeof (globalThis as any).__mocha_nativeAppCreate === "function";
+
+  if (isQuickJS) {
+    logger.info("[runApp] QuickJS runtime detected — using @mocha/mobile bridge");
+    try {
+      const { createMobileApp } = await import("@mocha/mobile");
+      nativeApp = createMobileApp();
+    } catch (err) {
       throw new Error(
-        "@mocha/native native module not found and MOCHA_FALLBACK_MOCK=error set. " +
-        "Run: cd packages/native && npx napi build --platform --release"
+        `@mocha/mobile failed to initialize on QuickJS: ${(err as any)?.message ?? err}`
       );
     }
-    if (fallback !== "silent") {
-      logger.warn(
-        "@mocha/native not available — using mock backend. " +
-        "Properties and QML rendering will be simulated. " +
-        "Set MOCHA_FALLBACK_MOCK=silent to suppress this message or MOCHA_FALLBACK_MOCK=error to fail hard."
-      );
+  } else {
+    try {
+      const { createNativeApp } = await import("@mocha/native");
+      nativeApp = await createNativeApp();
+    } catch (err) {
+      const fallback = options?.fallbackMode ?? process.env.MOCHA_FALLBACK_MOCK ?? "warn";
+      if (fallback === "error") {
+        throw new Error(
+          "@mocha/native native module not found and MOCHA_FALLBACK_MOCK=error set. " +
+          "Run: cd packages/native && npx napi build --platform --release"
+        );
+      }
+      if (fallback !== "silent") {
+        logger.warn(
+          "@mocha/native not available — using mock backend. " +
+          "Properties and QML rendering will be simulated. " +
+          "Set MOCHA_FALLBACK_MOCK=silent to suppress this message or MOCHA_FALLBACK_MOCK=error to fail hard."
+        );
+      }
+      nativeApp = createMockNativeApp();
     }
-    nativeApp = createMockNativeApp();
   }
   setNativeAppRef(nativeApp);
   // Expose for inspection in dev/test scripts

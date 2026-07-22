@@ -7,10 +7,7 @@ import {
   AfterViewInit,
   OnDestroy,
   signal,
-  PLATFORM_ID,
-  inject,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 
 export type AnimationName =
   | 'fade-in' | 'fade-up' | 'fade-down' | 'fade-left' | 'fade-right'
@@ -42,7 +39,10 @@ export class AnimateComponent implements AfterViewInit, OnDestroy {
 
   private visible = signal(false);
   private observer: IntersectionObserver | null = null;
-  private platformId = inject(PLATFORM_ID);
+
+  get isBrowser(): boolean {
+    return typeof document !== 'undefined';
+  }
 
   animClass = computed(() => {
     const parts = [
@@ -69,7 +69,7 @@ export class AnimateComponent implements AfterViewInit, OnDestroy {
   }
 
   private createObserver(): void {
-    if (!isPlatformBrowser(this.platformId) || typeof IntersectionObserver === 'undefined') {
+    if (!this.isBrowser || typeof IntersectionObserver === 'undefined') {
       this.visible.set(true);
       return;
     }

@@ -1,4 +1,4 @@
-export { QMLComponent, getQMLComponentMetadata, getAllQMLComponents, generateQMLSource, generateQMLFile } from "./qml-component.js";
+export { QMLComponent, getQMLComponentMetadata, getAllQMLComponents, generateQMLSource, generateQMLFile, generateAngularFilesForComponent } from "./qml-component.js";
 export type { QMLComponentOptions, QMLComponentMetadata, ProxyEntry } from "./qml-component.js";
 export { runApp, switchTheme } from "./run-app.js";
 export type { RunAppOptions, ThemeLike } from "./run-app.js";
@@ -15,3 +15,12 @@ export * from "./widget-types.js";
 export { viewChild, setNativeAppRef, resolveViewChild } from "./view-child.js";
 export type { ViewChildRef } from "./view-child.js";
 export { QMLNode, QMLTextField, QMLTextInput, QMLButton, QMLCheckBox, QMLSlider, QMLProgressBar } from "./widget-wrappers.js";
+export { preprocessPlatform, getTargetPlatform, setTargetPlatform } from "./platform-if.js";
+export { parseController } from "./codegen/parse-controller.js";
+export type { ControllerMeta, QPropertyMeta, InjectionMeta } from "./codegen/parse-controller.js";
+export { generateAngularTemplate } from "./codegen/gen-template.js";
+export { generateAngularRoutes } from "./codegen/gen-routes.js";
+export type { RouteDefinition } from "./codegen/gen-routes.js";
+export { mapDesignToken, mapAllTokens } from "./codegen/map-design-tokens.js";
+export { generateAngularComponent } from "./codegen/gen-angular-component.js";
+export type { GeneratedAngularFiles } from "./codegen/gen-angular-component.js";

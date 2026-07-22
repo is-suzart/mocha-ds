@@ -15,7 +15,7 @@ import { Component, input, ViewChild, ElementRef, HostListener, signal, computed
             [style.height.px]="thumbHeight()"
             [style.transform]="'translateY(' + thumbTop() + 'px)'"
             (mousedown)="startDragV($event)"
-          />
+          ></div>
         </div>
       }
       @if (showHorizontal()) {
@@ -25,11 +25,11 @@ import { Component, input, ViewChild, ElementRef, HostListener, signal, computed
             [style.width.px]="thumbWidth()"
             [style.transform]="'translateX(' + thumbLeft() + 'px)'"
             (mousedown)="startDragH($event)"
-          />
+          ></div>
         </div>
       }
       @if (showVertical() && showHorizontal()) {
-        <div class="scroll-area-corner" />
+        <div class="scroll-area-corner"></div>
       }
     </div>
   `

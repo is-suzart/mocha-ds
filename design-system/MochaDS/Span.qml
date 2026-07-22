@@ -10,7 +10,7 @@ Item {
 
     // ═══════════════════════════════════════════════
     // Variant — preset that sets defaults for size/weight/family/color
-    // h1 | h2 | h3 | h4 | h5 | h6 | body | caption | overline | inherit
+    // h1 | h2 | h3 | h4 | h5 | h6 | body | small | caption | overline | label | code | inherit
     // ═══════════════════════════════════════════════
     property string variant: "body"
 
@@ -126,7 +126,8 @@ Item {
             case "h4": return Theme.colors.text
             case "h5":
             case "h6": return Theme.colors.text
-            case "body": return Theme.colors.subtext1
+            case "body":
+            case "small": return Theme.colors.subtext1
             case "caption": return Theme.colors.subtext0
             case "overline": return Theme.colors.subtext0
             case "label": return Theme.colors.text
@@ -146,6 +147,7 @@ Item {
             case "h5":
             case "h6": return Theme.typography.familyMedium
             case "body":
+            case "small":
             case "caption":
             case "label": return Theme.typography.family
             case "code": return Theme.typography.familyMono || "monospace"
@@ -163,6 +165,7 @@ Item {
             case "h5": return Theme.typography.sizeMd      // 14
             case "h6": return Theme.typography.sizeSm      // 12
             case "body": return Theme.typography.sizeMd    // 14
+            case "small": return Theme.typography.sizeSm   // 12
             case "caption": return Theme.typography.sizeXs // 10
             case "overline": return Theme.typography.sizeXs // 10
             case "label": return Theme.typography.sizeSm   // 12
@@ -182,6 +185,7 @@ Item {
             case "h5": return 500  // medium
             case "h6": return 500  // medium
             case "body": return 400  // regular
+            case "small": return 400  // regular
             case "caption": return 400  // regular
             case "overline": return 700  // bold
             case "label": return 500  // medium
@@ -199,6 +203,7 @@ Item {
             case "h5":
             case "h6": return 1.35
             case "body": return 1.60
+            case "small": return 1.50
             case "caption": return 1.40
             case "overline": return 1.20
             case "label": return 1.40
