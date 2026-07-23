@@ -23,11 +23,11 @@ export class CounterState extends QObject {
   @qproperty count = new QProperty(0);
 
   increment() {
-    this.count.value += 1;
+    this.count.update(c => c + 1);
   }
 
   reset() {
-    this.count.value = 0;
+    this.count.set(0);
   }
 }
 
@@ -97,21 +97,21 @@ export class CounterState extends QObject {
                 Button {
                   text: "App +1"
                   color: "mauve"
-                  onClicked: controller.bridgeCall("increment")
+                  onClicked: controller.increment()
                 }
 
                 Button {
                   text: "Global +1"
                   color: "green"
-                  onClicked: CounterState.bridgeCall("increment")
+                  onClicked: CounterState.increment()
                 }
 
                 Button {
                   text: "Reset"
                   variant: "secondary"
                   onClicked: {
-                    controller.bridgeCall("reset")
-                    CounterState.bridgeCall("reset")
+                    controller.reset()
+                    CounterState.reset()
                   }
                 }
               }
@@ -164,7 +164,7 @@ export class CounterState extends QObject {
                 text: "Add Item"
                 variant: "secondary"
                 size: "sm"
-                onClicked: controller.bridgeCall("addItem")
+                onClicked: controller.addItem()
               }
 
               Text {
@@ -186,7 +186,7 @@ export class CounterState extends QObject {
                 text: "Add User"
                 variant: "secondary"
                 size: "sm"
-                onClicked: controller.bridgeCall("addUser")
+                onClicked: controller.addUser()
               }
               Text {
                 text: "--- @qcomputed Test ---"
@@ -251,11 +251,16 @@ export class AppController extends QObject {
   textField = viewChild("echoedText", QMLTextField);
 
   increment() {
-    this.count.value += 1;
+    this.count.update(c => c + 1);
   }
 
   reset() {
-    this.count.value = 0;
+    this.bulkSet({ count: 0, echoedText: "" });
+  }
+
+  /** Example: bulkSet updates multiple fields atomically. */
+  resetAll() {
+    this.bulkSet({ count: 0, echoedText: "" });
   }
 
   echo() {

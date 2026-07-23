@@ -94,6 +94,29 @@ importers:
         specifier: ^17.0.0 || ^18.0.0 || ^19.0.0
         version: 19.2.25(@angular/common@19.2.25(@angular/core@19.2.25(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.25(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@19.2.25(@angular/common@19.2.25(@angular/core@19.2.25(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.25(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
 
+  packages/bridge-api: {}
+
+  packages/bridge-napi:
+    dependencies:
+      '@mocha/bridge-api':
+        specifier: workspace:*
+        version: link:../bridge-api
+      '@mocha/bridge-qt':
+        specifier: workspace:*
+        version: link:../bridge-qt
+    devDependencies:
+      '@napi-rs/cli':
+        specifier: ^3.0.0
+        version: 3.7.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@20.19.43)
+
+  packages/bridge-qt: {}
+
+  packages/bridge-quickjs:
+    dependencies:
+      '@mocha/bridge-qt':
+        specifier: workspace:*
+        version: link:../bridge-qt
+
   packages/cli:
     dependencies:
       '@inquirer/prompts':
@@ -156,6 +179,12 @@ importers:
       tsx:
         specifier: ^4.15.0
         version: 4.23.1
+
+  packages/mobile:
+    dependencies:
+      '@mocha/bridge-api':
+        specifier: workspace:*
+        version: link:../bridge-api
 
   packages/native:
     devDependencies:
@@ -325,37 +354,6 @@ importers:
       vue-router:
         specifier: ^4.0.0
         version: 4.6.4(vue@3.5.40(typescript@5.9.3))
-
-  test-native:
-    dependencies:
-      '@mocha/core':
-        specifier: workspace:*
-        version: link:../packages/core
-      '@mocha/native':
-        specifier: workspace:*
-        version: link:../packages/native
-      '@mocha/qml':
-        specifier: workspace:*
-        version: link:../packages/qml
-      '@mocha/shared':
-        specifier: workspace:*
-        version: link:../packages/shared
-      '@mocha/tokens':
-        specifier: workspace:*
-        version: link:../packages/tokens
-    devDependencies:
-      '@mocha/cli':
-        specifier: workspace:*
-        version: link:../packages/cli
-      '@mocha/kit':
-        specifier: workspace:*
-        version: link:../packages/kit
-      tsx:
-        specifier: ^4.15.0
-        version: 4.23.1
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
 
 packages:
 
