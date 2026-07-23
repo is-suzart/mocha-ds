@@ -62,6 +62,7 @@ public:
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QVariantList[%d]), _seq=%d\n",
                     name.toUtf8().constData(), (int)variantList.size(), _seq);
                 emit seqChanged();
+                _notifyProperty(name);
                 return;
             }
             if (doc.isObject()) {
@@ -71,6 +72,7 @@ public:
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QVariantMap[%d]), _seq=%d\n",
                     name.toUtf8().constData(), (int)variantMap.size(), _seq);
                 emit seqChanged();
+                _notifyProperty(name);
                 return;
             }
         }
@@ -82,6 +84,7 @@ public:
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QColor('%s')), _seq=%d\n",
                     name.toUtf8().constData(), value.toUtf8().constData(), _seq);
                 emit seqChanged();
+                _notifyProperty(name);
                 return;
             }
         }
@@ -90,6 +93,7 @@ public:
         fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', '%s'), _seq=%d\n",
             name.toUtf8().constData(), value.toUtf8().constData(), _seq);
         emit seqChanged();
+        _notifyProperty(name);
     }
 
     Q_INVOKABLE void setInt(QString name, int value) {
@@ -98,6 +102,7 @@ public:
         fprintf(stderr, "[C++ MochaPropertyMap] setInt('%s', %d), _seq=%d\n",
             name.toUtf8().constData(), value, _seq);
         emit seqChanged();
+        _notifyProperty(name);
     }
 
     Q_INVOKABLE void setBool(QString name, bool value) {
@@ -106,6 +111,7 @@ public:
         fprintf(stderr, "[C++ MochaPropertyMap] setBool('%s', %d), _seq=%d\n",
             name.toUtf8().constData(), value ? 1 : 0, _seq);
         emit seqChanged();
+        _notifyProperty(name);
     }
 
     Q_INVOKABLE QVariant getValue(QString name) const {
@@ -136,6 +142,21 @@ public:
     void notifySeqChanged() {
         _seq++;
         emit seqChanged();
+    }
+
+private:
+    void _notifyProperty(const QString& name) {
+        const QMetaObject* mo = metaObject();
+        int idx = mo->indexOfProperty(name.toUtf8().constData());
+        if (idx >= 0) {
+            QMetaProperty prop = mo->property(idx);
+            if (prop.hasNotifySignal()) {
+                QVariant val = value(name);
+                prop.notifySignal().invoke(this, Qt::DirectConnection,
+                    Q_ARG(QString, name),
+                    Q_ARG(QVariant, val));
+            }
+        }
     }
 
 signals:

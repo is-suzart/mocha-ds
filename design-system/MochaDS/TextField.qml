@@ -6,7 +6,7 @@ Item {
     // ==========================================
     // Public API (Properties)
     // ==========================================
-    property string text: ""
+    property alias text: textInput.text
     property string placeholder: ""
     property string type: "text" // "text" | "password" | "email" | "number"
     property string iconLeft: ""
@@ -237,13 +237,8 @@ Item {
                 antialiasing: true
 
                 // Sync text value
-                text: root.text
                 onTextChanged: {
-                    if (root.text !== text) {
-                        root.text = text;
-                        root.textEdited();
-                    }
-                    root.textChanged();
+                    root.textEdited();
                 }
 
                 // Echo mode selection for password
