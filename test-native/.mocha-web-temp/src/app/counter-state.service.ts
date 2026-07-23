@@ -4,9 +4,9 @@ import { Injectable, signal } from "@angular/core";
 export class CounterStateService {
   readonly count = signal(0);
   increment() {
-    // TODO: implement increment
+    this.count.update(v=>v+1)
   }
   reset() {
-    // TODO: implement reset
+    this.count.set(0)
   }
 }

@@ -121,7 +121,7 @@ export class HotReloadManager {
     for (const [key, value] of state) {
       const prop = (component as any)[key];
       if (prop instanceof QProperty) {
-        prop.value = value;
+        prop.set(value as any);
       } else {
         (component as any)[key] = value;
       }

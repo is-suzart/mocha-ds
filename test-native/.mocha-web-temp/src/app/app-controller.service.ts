@@ -10,23 +10,19 @@ export class AppControllerService {
   readonly itemCount = computed(() => "");
   readonly counter = inject(CounterStateService);
   increment() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[AppControllerService] increment called");
+    this.count.update(v=>v+1)
   }
   reset() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[AppControllerService] reset called");
+    this.count.set(0)
   }
   echo() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[AppControllerService] echo called");
+    // TODO: adapt from QML — references: textField
+    // console.log("[MOCHA ECHO]",this.echoedText());this.textField.text=""
   }
   addItem() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[AppControllerService] addItem called");
+    this.items.update(items=>[...items,"item-"+(items.length+1)])
   }
   addUser() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[AppControllerService] addUser called");
+    this.usuarios.update(users=>[...users,{name:"Novo-"+(users.length+1),age:20+users.length}])
   }
 }

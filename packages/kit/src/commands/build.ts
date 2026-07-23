@@ -4,6 +4,16 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import {
+  generateAllAngularFiles,
+  copyAngularTemplate,
+  applyPlaceholders,
+  copyThemeCss,
+  linkLocalPackages,
+  findAngularTemplateDir,
+  findMonorepoRoot,
+  sanitizeAppName,
+} from "../web-codegen.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -361,10 +371,6 @@ function detectAppName(): string {
   }
 }
 
-function sanitizeAppName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
-}
-
 interface PackageMeta {
   name: string;
   version: string;
@@ -385,178 +391,31 @@ async function buildWebProject(
   }
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const angularTemplateDir = findAngularTemplateDir();
+  const angularTemplateDir = findAngularTemplateDir(__dirname);
   if (!angularTemplateDir) throw new Error("Angular template not found.");
 
-  copyDirSync(angularTemplateDir, outputDir);
+  copyAngularTemplate(angularTemplateDir, outputDir);
   process.env.MOCHA_PLATFORM = "web";
 
   const projectDir = process.cwd();
   const sourceDir = path.dirname(entry);
-  const qmlFiles = findQmlTsFiles(sourceDir);
-  const fsPromises = await import("node:fs/promises");
 
-  let isFirstFile = true;
-  for (const qmlFile of qmlFiles) {
-    const relativePath = path.relative(sourceDir, qmlFile);
-    logger.info(`  Processing: ${relativePath}`);
-    try {
-      const tsx = path.resolve(projectDir, "node_modules", ".bin", "tsx");
-      const tempFile = path.join(projectDir, ".codegen-temp.mjs");
-      const isMain = isFirstFile;
-      isFirstFile = false;
-
-      await fsPromises.writeFile(tempFile, `
-import { getAllQMLComponents, generateAngularComponent } from "@mocha/qml";
-import { pathToFileURL } from "node:url";
-
-try { await import(pathToFileURL(${JSON.stringify(qmlFile)}).href); }
-catch (e) { console.error("[codegen] Failed to import entry:", e.message); }
-
-import * as fs from "node:fs";
-import * as path from "node:path";
-const outputDir = ${JSON.stringify(outputDir)};
-const isMain = ${JSON.stringify(isMain)};
-
-for (const [ctor, meta] of getAllQMLComponents().entries()) {
-  if (meta.platform !== "web") continue;
-  const files = generateAngularComponent(ctor);
-  if (files.serviceTs) {
-    const svcDir = path.join(outputDir, "src", "app");
-    fs.mkdirSync(svcDir, { recursive: true });
-    fs.writeFileSync(path.join(svcDir, toKebab(meta.componentName) + ".service.ts"), files.serviceTs);
-    console.log("[codegen] Service:", meta.componentName);
-  }
-  if (isMain) {
-    const appDir = path.join(outputDir, "src", "app");
-    fs.mkdirSync(appDir, { recursive: true });
-    fs.writeFileSync(path.join(appDir, "app.component.ts"), files.componentTs);
-    fs.writeFileSync(path.join(appDir, "app.component.html"), files.componentHtml);
-    if (files.routesTs) fs.writeFileSync(path.join(appDir, "app.routes.ts"), files.routesTs);
-  }
-  for (const rf of files.routeFiles) {
-    const routeDir = path.join(outputDir, "src", "app");
-    fs.mkdirSync(routeDir, { recursive: true });
-    fs.writeFileSync(path.join(routeDir, rf.fileName + ".ts"), rf.tsContent);
-    fs.writeFileSync(path.join(routeDir, rf.fileName + ".html"), rf.htmlContent);
-  }
-}
-function toKebab(s) { return s.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(); }
-`);
-      execSync(`${tsx} ${tempFile}`, { cwd: projectDir, stdio: "inherit" });
-      fs.unlinkSync(tempFile);
-    } catch (err) {
-      logger.error(`Codegen error for ${qmlFile}:`, err);
-    }
-  }
-
-  try {
-    const cssDistDir = path.join(findMonorepoRoot(process.cwd()) || process.cwd(), "packages", "css", "dist");
-    const cssFile = path.join(cssDistDir, "catppuccin.css");
-    if (fs.existsSync(cssFile)) {
-      const themeDir = path.join(outputDir, "src", "app");
-      fs.mkdirSync(themeDir, { recursive: true });
-      fs.copyFileSync(cssFile, path.join(themeDir, "theme.css"));
-      logger.info("[web] Copied theme CSS from @mocha-ds/css/dist");
-    }
-  } catch (_e: any) {}
+  const monorepoRoot = findMonorepoRoot(projectDir);
+  copyThemeCss(outputDir, monorepoRoot);
+  linkLocalPackages(outputDir, monorepoRoot);
 
   const projectSlug = sanitizeAppName(projectName);
   applyPlaceholders(outputDir, { "{{project_slug}}": projectSlug, "{{project_name}}": projectName });
 
-  const monorepoRoot = findMonorepoRoot(process.cwd());
-  if (monorepoRoot) {
-    const pkgPath = path.join(outputDir, "package.json");
-    if (fs.existsSync(pkgPath)) {
-      try {
-        const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-        pkg.dependencies = pkg.dependencies || {};
-        pkg.dependencies["@mocha-ds/angular"] = `file:${path.join(monorepoRoot, "packages", "angular")}`;
-        pkg.dependencies["@mocha-ds/css"] = `file:${path.join(monorepoRoot, "packages", "css")}`;
-        fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
-      } catch {}
-    }
-  }
+  logger.info("[web] Generating Angular components from .qml.ts files...");
+  await generateAllAngularFiles(sourceDir, outputDir, projectDir, entry);
 
   logger.info("");
   logger.info("Angular project generated at: " + outputDir);
   logger.info("To run: cd " + path.relative(process.cwd(), outputDir) + " && npm install && npm run dev");
 }
 
-function findAngularTemplateDir(): string | null {
-  const cwd = process.cwd();
-  const candidates = [
-    path.resolve(__dirname, "..", "..", "..", "cli", "templates", "angular"),
-    path.resolve(cwd, "node_modules", "@mocha", "cli", "templates", "angular"),
-  ];
-  for (const c of candidates) {
-    if (fs.existsSync(path.join(c, "package.json"))) return c;
-  }
-  let dir = __dirname;
-  for (let i = 0; i < 10; i++) {
-    const c = path.join(dir, "packages", "cli", "templates", "angular");
-    if (fs.existsSync(path.join(c, "package.json"))) return c;
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return null;
-}
 
-function copyDirSync(src: string, dest: string): void {
-  fs.mkdirSync(dest, { recursive: true });
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    const s = path.join(src, entry.name);
-    const d = path.join(dest, entry.name);
-    if (entry.isDirectory()) copyDirSync(s, d);
-    else fs.copyFileSync(s, d);
-  }
-}
-
-function findQmlTsFiles(dir: string): string[] {
-  const results: string[] = [];
-  const walk = (d: string) => {
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-      const p = path.join(d, e.name);
-      if (e.isDirectory() && !e.name.startsWith(".") && e.name !== "node_modules") walk(p);
-      else if (e.name.endsWith(".qml.ts")) results.push(p);
-    }
-  };
-  walk(dir);
-  return results;
-}
-
-function applyPlaceholders(dir: string, placeholders: Record<string, string>): void {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, entry.name);
-    if (entry.isDirectory() && entry.name !== "node_modules" && !entry.name.startsWith(".")) {
-      applyPlaceholders(p, placeholders);
-    } else if (entry.isFile()) {
-      try {
-        let content = fs.readFileSync(p, "utf-8");
-        let modified = false;
-        for (const [key, val] of Object.entries(placeholders)) {
-          if (content.includes(key)) {
-            content = content.split(key).join(val);
-            modified = true;
-          }
-        }
-        if (modified) fs.writeFileSync(p, content);
-      } catch {}
-    }
-  }
-}
-
-function findMonorepoRoot(from: string): string | null {
-  let dir = from;
-  for (let i = 0; i < 10; i++) {
-    if (fs.existsSync(path.join(dir, "packages", "core", "package.json"))) return dir;
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return null;
-}
 
 async function packageProject(distDir: string, format: string, meta: PackageMeta): Promise<void> {
   if (format === "deb") {

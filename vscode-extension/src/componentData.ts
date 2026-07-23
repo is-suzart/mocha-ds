@@ -1,8 +1,8 @@
 // ============================================================
 // src/componentData.ts
-// AUTO-GERADO por scripts/sync-docs.mjs — NÃO EDITE MANUALMENTE
-// Para atualizar, edite scripts/sync-docs.mjs e rode:
-//   node scripts/sync-docs.mjs
+// AUTO-GERADO por cli/sync-docs.mjs — NÃO EDITE MANUALMENTE
+// Para atualizar, edite cli/sync-docs.mjs e rode:
+//   node cli/sync-docs.mjs
 // ============================================================
 
 export interface PropDefinition {
@@ -3047,7 +3047,7 @@ export const COMPONENTS: ComponentDefinition[] = [
   {
     "name": "Theme",
     "category": "Singletons",
-    "description": "Singleton de design tokens. Cores, tipografia, espaçamento e geometria. 6 flavors (4 Catppuccin + 2 Vercel b&w).",
+    "description": "Singleton de design tokens. Cores, tipografia, espaçamento e geometria. 4 flavors Catppuccin.",
     "props": [
       {
         "name": "flavor",
@@ -3057,11 +3057,9 @@ export const COMPONENTS: ComponentDefinition[] = [
           "mocha",
           "macchiato",
           "frappe",
-          "latte",
-          "vercel",
-          "vercel-light"
+          "latte"
         ],
-        "description": "Flavor do tema (Catppuccin ou Vercel black & white)"
+        "description": "Flavor Catppuccin"
       },
       {
         "name": "useSystemTheme",

@@ -57,10 +57,10 @@ export class HomeController extends QObject {
   }
 
   increment(): void {
-    this.count.value += 1;
+    this.count.update(v => v + 1);
   }
 
   reset(): void {
-    this.count.value = 0;
+    this.count.set(0);
   }
 }

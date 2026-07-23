@@ -63,7 +63,7 @@ export class BindingEngine {
   ): () => void {
     const update = () => {
       const values = dependencies.map((d) => d.value);
-      prop.value = evaluate(...values);
+      prop.set(evaluate(...values));
     };
 
     const unsubs = dependencies.map((dep) => dep.changed.connect(update));

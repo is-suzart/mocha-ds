@@ -73,6 +73,10 @@ export function getAllQMLComponents(): Map<Function, QMLComponentMetadata> {
   return new Map(componentRegistry);
 }
 
+export function clearQMLComponents(): void {
+  componentRegistry.clear();
+}
+
 export function generateInnerQML(
   qml: string,
   templateForImports?: string

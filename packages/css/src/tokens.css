@@ -61,6 +61,28 @@
   --ctp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --ctp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --ctp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #c6a0f6;
+  --ctp-onPrimary: #181926;
+  --ctp-primaryContainer: #802ceb;
+  --ctp-onPrimaryContainer: #24273a;
+  --ctp-secondary: #8aadf4;
+  --ctp-onSecondary: #181926;
+  --ctp-secondaryContainer: #165be9;
+  --ctp-onSecondaryContainer: #24273a;
+  --ctp-tertiary: #8bd5ca;
+  --ctp-onTertiary: #181926;
+  --ctp-surface: #363a4f;
+  --ctp-onSurface: #cad3f5;
+  --ctp-surfaceVariant: #494d64;
+  --ctp-onSurfaceVariant: #a5adcb;
+  --ctp-background: #24273a;
+  --ctp-onBackground: #cad3f5;
+  --ctp-error: #ed8796;
+  --ctp-onError: #181926;
+  --ctp-outline: #6e738d;
+  --ctp-outlineVariant: #8087a2;
 }
 
 /* Mocha Flavor */
@@ -103,6 +125,28 @@
   --ctp-warning: var(--ctp-yellow);
   --ctp-danger: var(--ctp-red);
   --ctp-info: var(--ctp-sky);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #cba6f7;
+  --ctp-onPrimary: #11111b;
+  --ctp-primaryContainer: #8731ec;
+  --ctp-onPrimaryContainer: #1e1e2e;
+  --ctp-secondary: #89b4fa;
+  --ctp-onSecondary: #11111b;
+  --ctp-secondaryContainer: #0f66f5;
+  --ctp-onSecondaryContainer: #1e1e2e;
+  --ctp-tertiary: #94e2d5;
+  --ctp-onTertiary: #11111b;
+  --ctp-surface: #313244;
+  --ctp-onSurface: #cdd6f4;
+  --ctp-surfaceVariant: #45475a;
+  --ctp-onSurfaceVariant: #a6adc8;
+  --ctp-background: #1e1e2e;
+  --ctp-onBackground: #cdd6f4;
+  --ctp-error: #f38ba8;
+  --ctp-onError: #11111b;
+  --ctp-outline: #6c7086;
+  --ctp-outlineVariant: #7f849c;
 }
 
 /* Frappe Flavor */
@@ -145,6 +189,28 @@
   --ctp-warning: var(--ctp-yellow);
   --ctp-danger: var(--ctp-red);
   --ctp-info: var(--ctp-sky);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #ca9ee6;
+  --ctp-onPrimary: #232634;
+  --ctp-primaryContainer: #9339cc;
+  --ctp-onPrimaryContainer: #303446;
+  --ctp-secondary: #8caaee;
+  --ctp-onSecondary: #232634;
+  --ctp-secondaryContainer: #2059da;
+  --ctp-onSecondaryContainer: #303446;
+  --ctp-tertiary: #81c8be;
+  --ctp-onTertiary: #232634;
+  --ctp-surface: #414559;
+  --ctp-onSurface: #c6d0f5;
+  --ctp-surfaceVariant: #51576d;
+  --ctp-onSurfaceVariant: #a5adce;
+  --ctp-background: #303446;
+  --ctp-onBackground: #c6d0f5;
+  --ctp-error: #e78284;
+  --ctp-onError: #232634;
+  --ctp-outline: #737994;
+  --ctp-outlineVariant: #838ba7;
 }
 
 /* Latte Flavor */
@@ -187,6 +253,28 @@
   --ctp-warning: var(--ctp-yellow);
   --ctp-danger: var(--ctp-red);
   --ctp-info: var(--ctp-sky);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #8839ef;
+  --ctp-onPrimary: #eff1f5;
+  --ctp-primaryContainer: #c197f7;
+  --ctp-onPrimaryContainer: #4c4f69;
+  --ctp-secondary: #1e66f5;
+  --ctp-onSecondary: #eff1f5;
+  --ctp-secondaryContainer: #80a8f9;
+  --ctp-onSecondaryContainer: #4c4f69;
+  --ctp-tertiary: #179299;
+  --ctp-onTertiary: #eff1f5;
+  --ctp-surface: #ccd0da;
+  --ctp-onSurface: #4c4f69;
+  --ctp-surfaceVariant: #bcc0cc;
+  --ctp-onSurfaceVariant: #6c6f85;
+  --ctp-background: #eff1f5;
+  --ctp-onBackground: #4c4f69;
+  --ctp-error: #d20f39;
+  --ctp-onError: #eff1f5;
+  --ctp-outline: #9ca0b0;
+  --ctp-outlineVariant: #8c8fa1;
 }
 
 /* Vercel Flavor */
@@ -229,6 +317,28 @@
   --ctp-warning: var(--ctp-yellow);
   --ctp-danger: var(--ctp-red);
   --ctp-info: var(--ctp-teal);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #ffffff;
+  --ctp-onPrimary: #1a1a1a;
+  --ctp-primaryContainer: #bfbfbf;
+  --ctp-onPrimaryContainer: #000000;
+  --ctp-secondary: #444444;
+  --ctp-onSecondary: #1a1a1a;
+  --ctp-secondaryContainer: #040404;
+  --ctp-onSecondaryContainer: #000000;
+  --ctp-tertiary: #50e3c2;
+  --ctp-onTertiary: #1a1a1a;
+  --ctp-surface: #222222;
+  --ctp-onSurface: #ffffff;
+  --ctp-surfaceVariant: #333333;
+  --ctp-onSurfaceVariant: #888888;
+  --ctp-background: #000000;
+  --ctp-onBackground: #ffffff;
+  --ctp-error: #ee0000;
+  --ctp-onError: #1a1a1a;
+  --ctp-outline: #555555;
+  --ctp-outlineVariant: #666666;
 }
 
 /* Vercel-light Flavor */
@@ -271,5 +381,27 @@
   --ctp-warning: var(--ctp-yellow);
   --ctp-danger: var(--ctp-red);
   --ctp-info: var(--ctp-teal);
+
+  /* Material 3 Color Scheme */
+  --ctp-primary: #000000;
+  --ctp-onPrimary: #ffffff;
+  --ctp-primaryContainer: #333333;
+  --ctp-onPrimaryContainer: #000000;
+  --ctp-secondary: #999999;
+  --ctp-onSecondary: #ffffff;
+  --ctp-secondaryContainer: #cccccc;
+  --ctp-onSecondaryContainer: #000000;
+  --ctp-tertiary: #007a22;
+  --ctp-onTertiary: #ffffff;
+  --ctp-surface: #eaeaea;
+  --ctp-onSurface: #000000;
+  --ctp-surfaceVariant: #cccccc;
+  --ctp-onSurfaceVariant: #888888;
+  --ctp-background: #ffffff;
+  --ctp-onBackground: #000000;
+  --ctp-error: #ee0000;
+  --ctp-onError: #ffffff;
+  --ctp-outline: #888888;
+  --ctp-outlineVariant: #666666;
 }
 

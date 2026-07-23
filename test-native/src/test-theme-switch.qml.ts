@@ -400,10 +400,10 @@ export class ThemeSwitchController extends QObject {
 
   toggleTheme() {
     if (this.currentTheme.value === "Dark") {
-      this.currentTheme.value = "Light";
+      this.currentTheme.set("Light");
       switchTheme(santanderLight);
     } else {
-      this.currentTheme.value = "Dark";
+      this.currentTheme.set("Dark");
       switchTheme(santanderDark);
     }
   }

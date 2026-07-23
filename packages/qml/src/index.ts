@@ -1,4 +1,4 @@
-export { QMLComponent, getQMLComponentMetadata, getAllQMLComponents, generateQMLSource, generateQMLFile, generateAngularFilesForComponent } from "./qml-component.js";
+export { QMLComponent, getQMLComponentMetadata, getAllQMLComponents, clearQMLComponents, generateQMLSource, generateQMLFile, generateAngularFilesForComponent } from "./qml-component.js";
 export type { QMLComponentOptions, QMLComponentMetadata, ProxyEntry } from "./qml-component.js";
 export { runApp, switchTheme } from "./run-app.js";
 export type { RunAppOptions, ThemeLike } from "./run-app.js";

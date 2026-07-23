@@ -1,7 +1,23 @@
 import { Logger } from "@mocha/shared";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { execSync, spawn } from "node:child_process";
+import type { ChildProcess } from "node:child_process";
+import {
+  generateAllAngularFiles,
+  startWebFileWatcher,
+  copyAngularTemplate,
+  applyPlaceholders,
+  copyThemeCss,
+  linkLocalPackages,
+  findAngularTemplateDir,
+  findMonorepoRoot,
+  sanitizeAppName,
+} from "../web-codegen.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logger = new Logger("dev");
 
@@ -39,25 +55,75 @@ export async function run(args: string[]): Promise<void> {
 }
 
 async function runWebDev(entryPath: string): Promise<void> {
-  logger.info("[web] Generating Angular project...");
-
-  process.env.MOCHA_PLATFORM = "web";
-
   const projectName = path.basename(path.dirname(entryPath)) || "mocha-app";
   const tempOutput = path.resolve(process.cwd(), ".mocha-web-temp");
+  const sourceDir = path.dirname(entryPath);
 
-  const { run: buildRun } = await import("./build.js");
-  await buildRun([entryPath, "--output", tempOutput, "--platform", "web", "--name", projectName]);
+  logger.info("[web] Generating Angular project...");
+  process.env.MOCHA_PLATFORM = "web";
 
-  logger.info("");
-  logger.info("[web] Installing dependencies...");
-  execSync("npm install --ignore-scripts --legacy-peer-deps 2>&1 || true", {
-    cwd: tempOutput,
-    stdio: "inherit",
+  if (fs.existsSync(tempOutput)) {
+    fs.rmSync(tempOutput, { recursive: true, force: true });
+  }
+
+  const angularTemplateDir = findAngularTemplateDir(__dirname);
+  if (!angularTemplateDir) {
+    logger.error("Angular template not found. Ensure @mocha/cli is installed.");
+    process.exit(1);
+  }
+
+  copyAngularTemplate(angularTemplateDir, tempOutput);
+
+  const monorepoRoot = findMonorepoRoot(process.cwd());
+  copyThemeCss(tempOutput, monorepoRoot);
+  linkLocalPackages(tempOutput, monorepoRoot);
+
+  const projectSlug = sanitizeAppName(projectName);
+  applyPlaceholders(tempOutput, {
+    "{{project_slug}}": projectSlug,
+    "{{project_name}}": projectName,
   });
 
-  logger.info("[web] Starting Angular dev server...");
-  const ngServe = spawn("npx", ["ng", "serve", "--open", "--host", "0.0.0.0"], {
+  logger.info("[web] Generating Angular components from .qml.ts files...");
+  try {
+    await generateAllAngularFiles(sourceDir, tempOutput, process.cwd(), entryPath);
+  } catch (err) {
+    logger.error("[web] Initial codegen failed:", err);
+    process.exit(1);
+  }
+
+  logger.info("[web] Installing dependencies...");
+  try {
+    execSync("rm -rf node_modules 2>/dev/null; npm install --ignore-scripts --legacy-peer-deps 2>&1", {
+      cwd: tempOutput,
+      stdio: "inherit",
+    });
+  } catch {
+    logger.warn("[web] npm install had issues — continuing anyway");
+  }
+
+  let ngServe: ChildProcess | null = null;
+  let watcher = { close: () => {} };
+  let closed = false;
+
+  const cleanup = () => {
+    if (closed) return;
+    closed = true;
+    watcher.close();
+    if (ngServe) ngServe.kill("SIGKILL");
+    try {
+      if (fs.existsSync(tempOutput)) {
+        fs.rmSync(tempOutput, { recursive: true, force: true });
+      }
+    } catch {}
+    process.exit(0);
+  };
+
+  process.on("SIGINT", cleanup);
+  process.on("SIGTERM", cleanup);
+
+  logger.info("[web] Starting Angular dev server with HMR...");
+  ngServe = spawn("npx", ["ng", "serve", "--open", "--host", "0.0.0.0"], {
     cwd: tempOutput,
     stdio: "inherit",
     shell: true,
@@ -66,15 +132,41 @@ async function runWebDev(entryPath: string): Promise<void> {
   ngServe.on("error", () => {
     logger.warn("[web] ng serve not available. Run manually:");
     logger.info(`  cd ${path.relative(process.cwd(), tempOutput)}`);
-    logger.info("  npm install && npx ng serve");
+    cleanup();
   });
 
-  return new Promise(() => {
-    process.on("SIGINT", () => {
-      ngServe.kill("SIGKILL");
-      process.exit(0);
-    });
+  ngServe.on("exit", (code) => {
+    if (code !== 0 && code !== null && !closed) {
+      logger.error(`[web] ng serve fechou com código ${code} — abortando`);
+      cleanup();
+    }
   });
+
+  // Timeout: se não ficou pronto em 90s, assume falha
+  const timeout = setTimeout(() => {
+    if (!closed) {
+      logger.error("[web] ng serve não ficou pronto em 90s — abortando");
+      cleanup();
+    }
+  }, 90000);
+
+  ngServe.on("spawn", () => {
+    // Se chegou aqui, ng serve startou — cancela o timeout inicial
+    // mas deixa um segundo timeout pra detectar falha de build inicial
+    clearTimeout(timeout);
+    setTimeout(() => {
+      if (!closed) {
+        logger.info("[web] ng serve está rodando (primeiro build pode ter falhado — veja os erros acima)");
+      }
+    }, 15000);
+  });
+
+  // Start file watcher for .qml.ts hot reload
+  watcher = startWebFileWatcher(sourceDir, tempOutput, process.cwd(), (filename) => {
+    logger.info(`[web-hmr] Angular files updated from ${filename}`);
+  }, entryPath);
+
+  return new Promise(() => {});
 }
 
 function findEntry(): string | null {

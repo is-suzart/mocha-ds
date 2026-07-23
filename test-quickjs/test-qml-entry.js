@@ -1,90 +1,108 @@
 // test-quickjs/test-qml-entry.js
-// Minimal counter app — imports NativeApp from @mocha/mobile via relative path
+// Minimal counter app using @mocha/mobile + MochaDS components
 // Bundled with esbuild → loaded by mocha-quickjs
 
 import { createMobileApp } from "../packages/mobile/index.js";
 
 (function () {
   "use strict";
-  console.log("[test-qml] Starting QML window test...");
+  console.log("[test-qml] Starting MochaDS + QuickJS test...");
 
   const app = createMobileApp();
 
-  // Create proxy for controller properties
   const proxyId = app.createProxy();
   console.log("[test-qml] proxyId = " + proxyId);
 
-  // Set initial values
-  app.proxySetValue(proxyId, "message", "Hello from QuickJS!");
+  app.proxySetValue(proxyId, "title", "MochaDS + QuickJS");
   app.proxySetValue(proxyId, "count", 0);
 
-  // Set proxy as context property visible in QML
   app.setContextProperty("controller", proxyId);
 
-  // Minimal QML with Window + Text bound to controller properties
+  // Setup _brandTheme proxy (Theme.qml references it for overrides)
+  var themeProxyId = app.createProxy();
+  app.setContextProperty("_brandTheme", themeProxyId);
+
+  // QML using MochaDS components (Text, Small, Button, H1)
   const qml = [
     'import QtQuick',
     'import QtQuick.Controls',
+    'import QtQuick.Layouts',
+    'import MochaDS',
     '',
     'ApplicationWindow {',
     '  id: root',
     '  visible: true',
-    '  width: 500',
-    '  height: 300',
-    '  title: "Mocha QuickJS Test"',
-    '  color: "#1a1a2e"',
+    '  width: 480',
+    '  height: 320',
+    '  title: "MochaDS + QuickJS"',
+    '  color: Theme.colors.background',
     '',
-    '  Column {',
+    '  ColumnLayout {',
     '    anchors.centerIn: parent',
-    '    spacing: 16',
+    '    spacing: Theme.spacing.lg',
     '',
-    '    Text {',
-    '      anchors.horizontalCenter: parent.horizontalCenter',
-    '      text: controller.message',
-    '      font.pixelSize: 28',
-    '      color: "#e0e0e0"',
+    '    H1 {',
+    '      Layout.alignment: Qt.AlignHCenter',
+    '      text: controller.title',
     '    }',
     '',
-    '    Text {',
-    '      anchors.horizontalCenter: parent.horizontalCenter',
-    '      text: "Count: " + controller.count',
-    '      font.pixelSize: 20',
-    '      color: "#a0a0ff"',
+    '    Small {',
+    '      Layout.alignment: Qt.AlignHCenter',
+    '      text: "Running on QuickJS — zero Node.js"',
+    '      colorName: "subtext0"',
     '    }',
     '',
-    '    Row {',
-    '      anchors.horizontalCenter: parent.horizontalCenter',
-    '      spacing: 12',
+    '    RowLayout {',
+    '      Layout.alignment: Qt.AlignHCenter',
+    '      spacing: Theme.spacing.md',
     '',
-    '      Button {',
-    '        text: "-"',
-    '        width: 60',
-    '        onClicked: controller.bridgeCall("decrement")',
+    '      Text {',
+    '        text: "Count: " + controller.count',
+    '        variant: "h4"',
+    '        colorName: "mauve"',
     '      }',
+    '    }',
+    '',
+    '    RowLayout {',
+    '      Layout.alignment: Qt.AlignHCenter',
+    '      spacing: Theme.spacing.md',
     '',
     '      Button {',
     '        text: "+"',
-    '        width: 60',
+    '        variant: "primary"',
+    '        size: "lg"',
     '        onClicked: controller.bridgeCall("increment")',
+    '      }',
+    '',
+    '      Button {',
+    '        text: "-"',
+    '        variant: "outline"',
+    '        size: "lg"',
+    '        onClicked: controller.bridgeCall("decrement")',
     '      }',
     '    }',
     '  }',
     '}',
   ].join("\n");
 
+  // Point QML engine to MochaDS components (relative to CWD = project root)
+  var importPath = "design-system";
+  console.log("[test-qml] Import path: " + importPath);
   console.log("[test-qml] Loading QML (" + qml.length + " bytes)...");
-  app.loadQML(qml, "/");
 
-  // Event loop: periodically update counter and drain bridge calls
+  app._engine = 2; // engine handle from init
+  var engineId = app._engine;
+  var g = globalThis;
+  g.__mocha_nativeEngineLoad(engineId, qml, "/", importPath);
+
+  // Event loop — drains bridgeCalls from QML buttons
   var count = 0;
   function tick() {
     app.processEvents();
 
-    // Drain bridgeCalls from QML buttons
     var calls = app.proxyDrainPendingCalls(proxyId);
     for (var i = 0; i < calls.length; i++) {
       var call = calls[i];
-      console.log("[test-qml] bridgeCall: " + call);
       if (call === "increment") {
         count++;
         app.proxySetValue(proxyId, "count", count);
@@ -94,15 +112,9 @@ import { createMobileApp } from "../packages/mobile/index.js";
       }
     }
 
-    // Update message every 50 ticks (~400ms)
-    if (count % 50 === 0) {
-      app.proxySetValue(proxyId, "message", "Ticks: " + count);
-    }
-
-    count++;
     setTimeout(tick, 8);
   }
 
-  console.log("[test-qml] Entering event loop...");
+  console.log("[test-qml] Event loop started");
   tick();
 })();

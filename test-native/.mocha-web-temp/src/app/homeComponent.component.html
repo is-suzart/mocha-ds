@@ -1,28 +1,28 @@
 <div class="d-flex flex-col gap-6 align-center">
   <span class="var(--ctp-text)">Bridge Test</span>
-  <span class="var(--ctp-mauve)">"App count: " + controller.count.value</span>
-  <span class="var(--ctp-green)">"Global count: " + CounterState.get("count")</span>
+  <span class="var(--ctp-mauve)">{{ "App count: " + ctrl.count() }}</span>
+  <span class="var(--ctp-green)">{{ "Global count: " + ctrl.counter.count() }}</span>
   <div class="d-flex flex-row gap-3">
-    <button variant="filled" color="mauve" size="md" (clicked)="ctrl.increment()" text="App +1" class=""></button>
-    <button variant="filled" color="green" size="md" (clicked)="ctrl.increment()" text="Global +1" class=""></button>
+    <button variant="filled" color="mauve" size="md" (click)="ctrl.increment()" text="App +1" class=""></button>
+    <button variant="filled" color="green" size="md" (click)="ctrl.counter.increment()" text="Global +1" class=""></button>
     <button variant="outline" color="mauve" size="md" text="Reset" class="variant-secondary"></button>
   </div>
   <a [routerLink]="['/about']" class=""><icon name="info" size="md"></icon> About</a>
   <div class="d-flex flex-row gap-3">
     <input placeholder="Digite algo..." #echoedText class="" />
-    <button variant="outline" color="mauve" size="md" (clicked)="ctrl.echo()" text="aA" class="variant-secondary"></button>
+    <button variant="outline" color="mauve" size="md" (click)="ctrl.echo()" text="echo" class="variant-secondary"></button>
   </div>
-  <span class="var(--ctp-yellow)">"Echo: " + controller.echoedText.value</span>
+  <span class="var(--ctp-yellow)">{{ "Echo: " + ctrl.echoedText() }}</span>
   <span class="var(--ctp-mauve)">--- Array QProperty Test ---</span>
   @for (item of ctrl.items(); track $index) {
-    <span class="var(--ctp-text)">"  • " + modelData</span>
+    <span class="var(--ctp-text)">{{ "  • " + item }}</span>
   }
-  <button variant="outline" color="mauve" size="sm" (clicked)="ctrl.addItem()" text="Add Item" class="variant-secondary"></button>
+  <button variant="outline" color="mauve" size="sm" (click)="ctrl.addItem()" text="Add Item" class="variant-secondary"></button>
   <span class="var(--ctp-mauve)">--- Object Array Test (MochaListModel) ---</span>
   @for (item of ctrl.usuarios(); track $index) {
-    <span class="var(--ctp-text)">  • " + name + " (" + age + ")</span>
+    <span class="var(--ctp-text)">{{ "  • " + name + " (" + age + ")" }}</span>
   }
-  <button variant="outline" color="mauve" size="sm" (clicked)="ctrl.addUser()" text="Add User" class="variant-secondary"></button>
+  <button variant="outline" color="mauve" size="sm" (click)="ctrl.addUser()" text="Add User" class="variant-secondary"></button>
   <span class="var(--ctp-mauve)">--- &#64;qcomputed Test ---</span>
-  <span class="var(--ctp-teal)">"Item count: " + controller.itemCount</span>
+  <span class="var(--ctp-teal)">{{ "Item count: " + ctrl.itemCount() }}</span>
 </div>

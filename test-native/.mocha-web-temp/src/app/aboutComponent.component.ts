@@ -1,6 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { RouterModule } from "@angular/router";
-import { ButtonComponent, IconComponent, InputComponent } from "@mocha-ds/angular";
+import { ButtonComponent, IconComponent, InputComponent } from "./mocha-ds/index";
 import { AppControllerService } from "./app-controller.service";
 
 @Component({

@@ -45,7 +45,11 @@ export class QProperty<T = unknown> extends Disposable {
     return this._value;
   }
 
-  set value(v: T) {
+  get(): T {
+    return this._value;
+  }
+
+  set(v: T): void {
     if (this.meta.isConstant) return;
     const previous = this._value;
     if (this._shouldSkipUpdate(previous, v)) return;
@@ -56,12 +60,8 @@ export class QProperty<T = unknown> extends Disposable {
     this._propagateToBindings(v);
   }
 
-  get(): T {
-    return this._value;
-  }
-
-  set(v: T): void {
-    this.value = v;
+  update(fn: (v: T) => T): void {
+    this.set(fn(this._value));
   }
 
   bindTo(
@@ -70,7 +70,7 @@ export class QProperty<T = unknown> extends Disposable {
   ): () => void {
     const callback: PropertyChangeCallback<T> = (value) => {
       const targetValue = transform ? transform(value) : value;
-      this.value = targetValue;
+      this.set(targetValue);
     };
 
     source._bindings.add(this);
@@ -78,7 +78,7 @@ export class QProperty<T = unknown> extends Disposable {
     source.changed.connect(callback);
 
     const initialValue = transform ? transform(source.value) : source.value;
-    this.value = initialValue;
+    this.set(initialValue);
 
     const disconnect = () => {
       source.changed.disconnect(callback);
@@ -100,12 +100,12 @@ export class QProperty<T = unknown> extends Disposable {
 
   toggle(): void {
     if (typeof this._value === "boolean") {
-      this.value = (!this._value) as T;
+      this.set((!this._value) as T);
     }
   }
 
   reset(): void {
-    this.value = undefined as unknown as T;
+    this.set(undefined as unknown as T);
   }
 
   dispose(): void {

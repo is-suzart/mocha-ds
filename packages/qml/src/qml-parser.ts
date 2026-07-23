@@ -24,7 +24,8 @@ export class QMLTemplateParser {
     }
 
     const cleanTemplate = trimmed.replace(importRegex, "").trim();
-    const root = this._parseNode(cleanTemplate);
+    const normalizedTemplate = this._normalizeQML(cleanTemplate);
+    const root = this._parseNode(normalizedTemplate);
 
     return { imports, root };
   }
@@ -36,6 +37,38 @@ export class QMLTemplateParser {
     const bindings: QMLBindingMap = {};
     this._collectBindings(document.root, componentId, bindings);
     return bindings;
+  }
+
+  private _normalizeQML(qml: string): string {
+    let result = "";
+    let inString = false;
+    let stringChar = "";
+    for (let i = 0; i < qml.length; i++) {
+      const char = qml[i];
+      if ((char === '"' || char === "'") && (i === 0 || qml[i - 1] !== '\\')) {
+        if (!inString) {
+          inString = true;
+          stringChar = char;
+        } else if (stringChar === char) {
+          inString = false;
+        }
+      }
+      
+      if (!inString) {
+        if (char === "{") {
+          result += "{\n";
+        } else if (char === "}") {
+          result += "\n}\n";
+        } else if (char === ";") {
+          result += ";\n";
+        } else {
+          result += char;
+        }
+      } else {
+        result += char;
+      }
+    }
+    return result;
   }
 
   private _parseNode(qml: string): ParsedQMLNode {
@@ -141,10 +174,18 @@ export class QMLTemplateParser {
     if (!isNaN(num) && raw !== "") return num;
 
     if (raw.startsWith('"') && raw.endsWith('"')) {
-      return raw.slice(1, -1);
+      const inner = raw.slice(1, -1);
+      if (inner.includes('"') || inner.includes("'")) {
+        return raw;
+      }
+      return inner;
     }
     if (raw.startsWith("'") && raw.endsWith("'")) {
-      return raw.slice(1, -1);
+      const inner = raw.slice(1, -1);
+      if (inner.includes('"') || inner.includes("'")) {
+        return raw;
+      }
+      return inner;
     }
 
     if (raw.startsWith("#")) return raw;

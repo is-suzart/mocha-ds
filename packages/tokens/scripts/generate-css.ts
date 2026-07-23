@@ -2,6 +2,7 @@ import { palettes, cssDefaultFlavor, colorKeys } from "../src/palettes";
 import { semanticAliases, shadowTokens, transitionTokens } from "../src/semantics";
 import { typography } from "../src/typography";
 import { geometry } from "../src/geometry";
+import { ColorScheme } from "../src/color-scheme";
 import type { FlavorName, Palette } from "../src/palettes";
 import * as fs from "fs";
 import * as path from "path";
@@ -52,6 +53,13 @@ function generateFlavorBlock(flavorName: FlavorName, selector: string, palette: 
     }
   }
 
+  block += `\n  /* Material 3 Color Scheme */\n`;
+  const scheme = ColorScheme.fromFlavor(flavorName);
+  const schemeRecord = scheme.toRecord();
+  for (const [key, value] of Object.entries(schemeRecord)) {
+    block += `  ${cssVar(key)}: ${value};\n`;
+  }
+
   block += `}\n\n`;
   return block;
 }
@@ -95,6 +103,13 @@ function generate(): void {
   css += `\n  /* Shadow variables */\n`;
   for (const [size, value] of Object.entries(shadowTokens)) {
     css += `  ${cssVar(`shadow-${size}`)}: ${value};\n`;
+  }
+
+  css += `\n  /* Material 3 Color Scheme */\n`;
+  const defaultScheme = ColorScheme.fromFlavor(cssDefaultFlavor);
+  const defaultSchemeRecord = defaultScheme.toRecord();
+  for (const [key, value] of Object.entries(defaultSchemeRecord)) {
+    css += `  ${cssVar(key)}: ${value};\n`;
   }
 
   css += `}\n\n`;

@@ -91,7 +91,7 @@ export class PropertyInspector {
   setProperty(obj: QObject, name: string, value: unknown): boolean {
     const prop = (obj as any)[name];
     if (prop instanceof QProperty) {
-      prop.value = value;
+      prop.set(value);
       return true;
     }
     (obj as any)[name] = value;

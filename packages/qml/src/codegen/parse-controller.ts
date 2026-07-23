@@ -1,6 +1,3 @@
-import { createRequire } from "node:module";
-
-const _require = createRequire(import.meta.url);
 
 export interface QPropertyMeta {
   name: string;
@@ -19,6 +16,7 @@ export interface ControllerMeta {
   qproperties: QPropertyMeta[];
   injections: InjectionMeta[];
   methods: string[];
+  methodBodies: Record<string, string>;
   viewChildren: string[];
   qmlTemplate: string;
   imports: string[];
@@ -36,35 +34,61 @@ export function parseController(target: any): ControllerMeta {
   const providedIn = meta?.providedIn ?? "view";
   const platform = meta?.platform ?? "desktop";
 
-  const qproperties = scanQProperties(target);
-  const computedProps = scanComputedProps(target);
-  const allProps = [...qproperties, ...computedProps];
-
+  let instance: any = null;
   let injections: InjectionMeta[] = [];
   let methods: string[] = [];
+  const methodBodies: Record<string, string> = {};
   let viewChildren: string[] = [];
 
-  let instance: any = null;
   try {
     instance = new target();
-    injections = detectInjections(instance, allProps.map(p => p.name));
-    methods = detectMethods(instance, className);
-    viewChildren = detectViewChildren(instance);
-
-    for (const prop of allProps) {
-      try {
-        const val = instance[prop.name];
-        if (val && typeof val === "object" && "_value" in val) {
-          prop.initialValue = val._value;
-        } else if (val !== undefined && val !== null) {
-          prop.initialValue = val;
-        }
-      } catch {}
-    }
   } catch (_e) {
-    injections = [];
+    instance = null;
+  }
+
+  const qproperties = scanQProperties(target, instance);
+  const computedProps = scanComputedProps(target, instance);
+  const allProps = [...qproperties, ...computedProps];
+
+  if (instance) {
+    try {
+      injections = detectInjections(instance, allProps.map(p => p.name));
+      methods = detectMethods(instance, className);
+      for (const m of methods) {
+        try {
+          const fn = instance[m];
+          if (typeof fn === "function") {
+            const src = fn.toString();
+            const braceIdx = src.indexOf("{");
+            const parenIdx = src.indexOf("(");
+            const closeParen = parenIdx >= 0 ? src.indexOf(")", parenIdx) : -1;
+            const params = closeParen > parenIdx ? src.slice(parenIdx + 1, closeParen) : "";
+            const body = braceIdx >= 0
+              ? src.slice(braceIdx + 1, src.lastIndexOf("}")).trim()
+              : "";
+            if (body || params) {
+              methodBodies[m] = params
+                ? `__params(${params})__${body}`
+                : body;
+            }
+          }
+        } catch {}
+      }
+      viewChildren = detectViewChildren(instance);
+
+      for (const prop of allProps) {
+        try {
+          const val = instance[prop.name];
+          if (val && typeof val === "object" && "_value" in val) {
+            prop.initialValue = val._value;
+          } else if (val !== undefined && val !== null) {
+            prop.initialValue = val;
+          }
+        } catch {}
+      }
+    } catch {}
+  } else {
     methods = scanMethodsFromProto(target);
-    viewChildren = [];
   }
 
   const imports = extractImports(qmlTemplate);
@@ -74,6 +98,7 @@ export function parseController(target: any): ControllerMeta {
     qproperties: allProps,
     injections,
     methods,
+    methodBodies,
     viewChildren,
     qmlTemplate,
     imports,
@@ -83,7 +108,7 @@ export function parseController(target: any): ControllerMeta {
   };
 }
 
-function scanQProperties(target: any): QPropertyMeta[] {
+function scanQProperties(target: any, instance?: any): QPropertyMeta[] {
   const props: QPropertyMeta[] = [];
   const visited = new Set<string>();
 
@@ -101,10 +126,22 @@ function scanQProperties(target: any): QPropertyMeta[] {
     proto = Object.getPrototypeOf(proto);
   }
 
+  // Also scan instance for standard decorator (addInitializer) keys
+  if (instance) {
+    for (const key of Object.getOwnPropertyNames(instance)) {
+      if (key.startsWith("__qproperty_")) {
+        const propName = key.replace("__qproperty_", "");
+        if (visited.has(propName)) continue;
+        visited.add(propName);
+        props.push({ name: propName, type: "unknown", isComputed: false });
+      }
+    }
+  }
+
   return props;
 }
 
-function scanComputedProps(target: any): QPropertyMeta[] {
+function scanComputedProps(target: any, instance?: any): QPropertyMeta[] {
   const props: QPropertyMeta[] = [];
   const visited = new Set<string>();
 
@@ -120,6 +157,17 @@ function scanComputedProps(target: any): QPropertyMeta[] {
       }
     }
     proto = Object.getPrototypeOf(proto);
+  }
+
+  if (instance) {
+    for (const key of Object.getOwnPropertyNames(instance)) {
+      if (key.startsWith("__qcomputed_")) {
+        const propName = key.replace("__qcomputed_", "");
+        if (visited.has(propName)) continue;
+        visited.add(propName);
+        props.push({ name: propName, type: "unknown", isComputed: true });
+      }
+    }
   }
 
   return props;
@@ -144,26 +192,17 @@ function detectInjections(instance: any, qpropNames: string[]): InjectionMeta[] 
     const value = instance[key];
     if (value === null || value === undefined) continue;
 
-    const QP = getQPropertyClass();
-    if (QP && value instanceof QP) continue;
+    const ctorName = value?.constructor?.name;
+    if (ctorName === "QProperty" || ctorName === "QComputedProperty") continue;
 
-    const typeName = value?.constructor?.name || "unknown";
-    if (typeName === "Object" || typeName === "Array") continue;
-    if (typeName === "Signal") continue;
-    if (typeName === "String" || typeName === "Number" || typeName === "Boolean") continue;
+    if (ctorName === "Object" || ctorName === "Array") continue;
+    if (ctorName === "Signal") continue;
+    if (ctorName === "String" || ctorName === "Number" || ctorName === "Boolean") continue;
 
-    injections.push({ name: key, token: typeName });
+    injections.push({ name: key, token: ctorName || "unknown" });
   }
 
   return injections;
-}
-
-function getQPropertyClass(): any {
-  try {
-    return _require("@mocha/core")?.QProperty;
-  } catch {
-    return null;
-  }
 }
 
 function detectMethods(instance: any, className: string): string[] {

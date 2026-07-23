@@ -195,7 +195,7 @@ async function bindControllerToQML(ctx: AppContext): Promise<void> {
   for (const p of mainProps) {
     logger.info(`  - ${p.name}: initial=${JSON.stringify(p.qp.value)}${p.qp instanceof QComputedProperty ? " [computed]" : ""}`);
     if (ctx.propsSnapshot.has(p.name) && !(p.qp instanceof QComputedProperty)) {
-      p.qp.value = ctx.propsSnapshot.get(p.name);
+      p.qp.set(ctx.propsSnapshot.get(p.name));
     }
   }
   for (const { name, qp } of mainProps) {
@@ -427,7 +427,7 @@ function drainPendingCalls(nativeApp: any, entries: ProxyEntry[]): boolean {
           const propName = method.slice(6);
           const qp = (entry.instance as any)[propName];
           if (qp instanceof QProperty) {
-            qp.value = args ? JSON.parse(args) : "";
+            qp.set(args ? JSON.parse(args) : "");
             logger.debug(`[autoBind] ${propName} = ${JSON.stringify(qp.value)}`);
           } else {
             logger.warn(`[autoBind] _bind_ target "${propName}" is not a QProperty on ${entry.componentName}`);
@@ -455,9 +455,17 @@ function runEventLoop(nativeApp: any, entries: ProxyEntry[]): Promise<void> {
   return new Promise((resolve) => {
     let running = true;
 
+    let shellId: number | null = null;
+
     const tick = async () => {
       if (!running) { resolve(); return; }
       try { nativeApp.processEvents(); } catch { running = false; resolve(); return; }
+      if (shellId === null) {
+        try { shellId = nativeApp.findChild("mochaShell"); } catch {}
+      }
+      if (shellId && nativeApp.getQmlProperty(shellId, "closing") === "true") {
+        running = false; resolve(); return;
+      }
       const breakpointHit = drainPendingCalls(nativeApp, entries);
       if (breakpointHit || (_debugServer && _debugServer.isPaused)) {
         await _debugServer!.waitWhilePaused();

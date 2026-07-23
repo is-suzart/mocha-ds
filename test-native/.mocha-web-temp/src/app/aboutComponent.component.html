@@ -1,5 +1,5 @@
 <div class="d-flex flex-col gap-6 align-center">
   <span class="var(--ctp-text)">About</span>
-  <span class="var(--ctp-green)">"Global count still: " + CounterState.get("count")</span>
+  <span class="var(--ctp-green)">{{ "Global count still: " + ctrl.counter.count() }}</span>
   <a [routerLink]="['/home']" class=""><icon name="home" size="md"></icon> Home</a>
 </div>

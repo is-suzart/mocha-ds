@@ -97,10 +97,10 @@
 
 /* --- Rounded: the default, friendly radius scale --- */
 :root[data-shape="rounded"] {
-  --ctp-radius-sm:   4px;
+  --ctp-radius-sm:   6px;
   --ctp-radius-base: 8px;
   --ctp-radius-md:   12px;
-  --ctp-radius-lg:   16px;
+  --ctp-radius-lg:   18px;
   --ctp-radius-pill: 9999px;
   --ctp-radius-full: 50%;
   --ctp-clip-squircle: none;
@@ -170,9 +170,10 @@
   --ctp-density: 1;
   --ctp-space-xs:  calc(4px  * var(--ctp-density));
   --ctp-space-sm:  calc(8px  * var(--ctp-density));
-  --ctp-space-md:  calc(16px * var(--ctp-density));
-  --ctp-space-lg:  calc(24px * var(--ctp-density));
-  --ctp-space-xl:  calc(32px * var(--ctp-density));
+  --ctp-space-md:  calc(12px * var(--ctp-density));
+  --ctp-space-lg:  calc(16px * var(--ctp-density));
+  --ctp-space-xl:  calc(24px * var(--ctp-density));
+  --ctp-space-xxl: calc(32px * var(--ctp-density));
   --ctp-space-2xl: calc(48px * var(--ctp-density));
   --ctp-space-3xl: calc(64px * var(--ctp-density));
 }

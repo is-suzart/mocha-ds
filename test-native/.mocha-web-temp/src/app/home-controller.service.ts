@@ -4,11 +4,9 @@ import { Injectable, signal } from "@angular/core";
 export class HomeControllerService {
   readonly count = signal(0);
   increment() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[HomeControllerService] increment called");
+    this.count.update(v=>v+1)
   }
   reset() {
-    // TODO: migrate from QML bridgeCall
-    console.log("[HomeControllerService] reset called");
+    this.count.set(0)
   }
 }

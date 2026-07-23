@@ -23,26 +23,25 @@ export function generateAngularComponent(target: any): GeneratedAngularFiles {
   const parser = new QMLTemplateParser();
   const document = parser.parse(meta.qmlTemplate);
 
+  const injectionMap: Record<string, string> = {};
+  for (const inj of meta.injections) {
+    injectionMap[inj.token] = inj.name;
+  }
+
   const options = {
     controllerName: "ctrl",
     useComponents: true,
+    injectionMap,
   };
 
   const { template, imports: usedImports, routes: routeInfos } = generateAngularTemplate(document, options);
 
   const usedImportsSet: Set<string> = new Set(usedImports);
   const componentImports = getAngularComponentImports(usedImportsSet);
-  const moduleImports = [...new Set([
-    "Component",
-    "inject",
-    ...componentImports,
-  ])];
-
-  const importBlock = `import { ${moduleImports.join(", ")} } from "@angular/core";`;
-  const mochaImport = `import { ${meta.className} as _OriginalClass } from "./${meta.className.toLowerCase()}.original";`;
 
   const serviceName = meta.className + "Service";
   const serviceFileName = toKebabCase(meta.className) + ".service";
+  const hasRouter = routeInfos.length > 0;
 
   const serviceTs = generateServiceFile(meta, serviceName);
 
@@ -50,16 +49,25 @@ export function generateAngularComponent(target: any): GeneratedAngularFiles {
 
   const routesTs = routes.length > 0 ? generateRoutesFile(routes) : undefined;
 
-  const componentTs = `import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+  const coreImports = ["Component", "inject"];
+  const mochaDsImport = componentImports.length > 0
+    ? `import { ${componentImports.join(", ")} } from "./mocha-ds/index";`
+    : "";
+
+  const componentTs = `import { ${coreImports.join(", ")} } from "@angular/core";
+${hasRouter ? `import { RouterOutlet } from "@angular/router";` : ""}
+${mochaDsImport}
+import { ${serviceName} } from "./${serviceFileName}";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [${hasRouter ? "RouterOutlet, " : ""}${componentImports.join(", ")}],
   templateUrl: "./app.component.html",
 })
-export class AppComponent {}
+export class AppComponent {
+  ctrl = inject(${serviceName});
+}
 `;
 
   const rawHtml = mapAllTokens(template);
@@ -127,11 +135,40 @@ function generateServiceFile(meta: ControllerMeta, serviceName: string): string 
     if (method.startsWith("on") || method === "bridgeCall") continue;
     if (method === "routeLeave" || method === "routeEnter" || method === "routeUpdate") continue;
 
-    if (meta.autoBind) {
-      lines.push(`  ${method}() {`);
-      lines.push(`    // TODO: migrate from QML bridgeCall`);
-      lines.push(`    console.log("[${serviceName}] ${method} called");`);
-      lines.push(`  }`);
+    const raw = meta.methodBodies[method];
+    if (raw) {
+      let params = "";
+      let body = raw;
+      const paramsMatch = raw.match(/^__params\((.+)\)__(.*)$/s);
+      if (paramsMatch) {
+        params = paramsMatch[1].replace(/(\w+)(\s*[,)]|$)/g, (m, p) => `${p}: any`);
+        body = paramsMatch[2];
+      }
+      const translated = translateMethodBody(body);
+      const thisRefs = translated.match(/this\.(\w+)\b/g) || [];
+      const unknownRefs = thisRefs
+        .map(r => r.replace("this.", ""))
+        .filter(r => !accessModifiers.has(r) && !["console"].includes(r));
+      const qmlKeywords = ["switchTheme", "santanderLight", "santanderDark", "bridgeCall",
+        "__mochaNative", "__name", "runApp"];
+      const hasQmlRefs = qmlKeywords.some(k => translated.includes(k));
+      if (unknownRefs.length > 0 || hasQmlRefs) {
+        lines.push(`  ${method}(${params}) {`);
+        const hints: string[] = [];
+        if (unknownRefs.length > 0) hints.push(`references: ${unknownRefs.join(", ")}`);
+        if (hasQmlRefs) hints.push(`QML-specific symbols`);
+        lines.push(`    // TODO: adapt from QML — ${hints.join("; ")}`);
+        for (const line of translated.split("\n")) {
+          lines.push(`    // ${line}`);
+        }
+        lines.push(`  }`);
+      } else {
+        lines.push(`  ${method}(${params}) {`);
+        for (const line of translated.split("\n")) {
+          lines.push(`    ${line}`);
+        }
+        lines.push(`  }`);
+      }
     } else {
       lines.push(`  ${method}() {`);
       lines.push(`    // TODO: implement ${method}`);
@@ -142,6 +179,21 @@ function generateServiceFile(meta: ControllerMeta, serviceName: string): string 
   lines.push("}");
 
   return lines.join("\n");
+}
+
+function translateMethodBody(body: string): string {
+  let result = body;
+  result = result.replace(/this\.(\w+)\.set\((.+?)\)(\s*[;}]|$)/g, (_, prop, expr, end) => {
+    return `this.${prop}.set(${expr})${end}`;
+  });
+  result = result.replace(/this\.(\w+)\.value\s*\+=(.+?)(\s*[;}]|$)/g, (_, prop, expr, end) => {
+    return `this.${prop}.update(v => v + ${expr.trim()})${end}`;
+  });
+  result = result.replace(/this\.(\w+)\.value\s*=(?!=)(.+?)(\s*[;}]|$)/g, (_, prop, expr, end) => {
+    return `this.${prop}.set(${expr.trim()})${end}`;
+  });
+  result = result.replace(/this\.(\w+)\.value\b(?!\s*=)/g, (_, prop) => `this.${prop}()`);
+  return result;
 }
 
 function toKebabCase(str: string): string {

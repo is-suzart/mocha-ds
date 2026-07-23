@@ -30,7 +30,7 @@ export function generateAngularRoutes(
     const routeImports = getAngularComponentImports(collectedImports);
 
     const mochaImportLine = routeImports.length > 0
-      ? `import { ${routeImports.join(", ")} } from "@mocha-ds/angular";`
+      ? `import { ${routeImports.join(", ")} } from "./mocha-ds/index";`
       : "";
 
     const importStatements = [

@@ -23,11 +23,11 @@ export class CounterState extends QObject {
   @qproperty count = new QProperty(0);
 
   increment() {
-    this.count.value += 1;
+    this.count.update(v => v + 1);
   }
 
   reset() {
-    this.count.value = 0;
+    this.count.set(0);
   }
 }
 
@@ -131,7 +131,7 @@ export class CounterState extends QObject {
                 }
 
                 Button {
-                  text: "aA"
+                  text: "echo"
                   variant: "secondary"
                   onClicked: controller.echo()
                 }
@@ -251,11 +251,11 @@ export class AppController extends QObject {
   textField = viewChild("echoedText", QMLTextField);
 
   increment() {
-    this.count.value += 1;
+    this.count.update(v => v + 1);
   }
 
   reset() {
-    this.count.value = 0;
+    this.count.set(0);
   }
 
   echo() {
@@ -274,7 +274,7 @@ export class AppController extends QObject {
   routeLeave(path: string) {
     console.log("[MOCHA ROUTER] leaving:", path);
     if (path === "/home") {
-      this.count.value = 0;
+      this.count.set(0);
     }
   }
 

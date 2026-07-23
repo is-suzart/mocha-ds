@@ -19,7 +19,6 @@
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0",
-    "@mocha-ds/angular": "file:/home/savunma/.gemini/antigravity/scratch/mocha-framework/packages/angular",
     "@mocha-ds/css": "file:/home/savunma/.gemini/antigravity/scratch/mocha-framework/packages/css"
   },
   "devDependencies": {

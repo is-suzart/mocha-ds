@@ -156,12 +156,15 @@ ApplicationWindow {
     color: Theme.colors.background
 
     property string mochaSource: ""
+    property bool closing: false
 
     onMochaSourceChanged: {
         if (mochaSource !== "") {
             mochaLoader.source = mochaSource
         }
     }
+
+    onClosing: { closing = true }
 
     Loader {
         id: mochaLoader
